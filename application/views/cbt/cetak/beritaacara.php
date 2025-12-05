@@ -160,11 +160,11 @@
                                                  style="width:85px; height:85px; margin: 6px;">
                                         </td>
                                         <td style="width:70%; text-align: center;">
-                                            <div style="line-height: 1.1; font-family: 'Times New Roman'; font-size: 14pt"><?= isset($kop->header_1) ? $kop->header_1 : '' ?></div>
-                                            <div style="line-height: 1.1; font-family: 'Times New Roman'; font-size: 16pt">
+                                            <div style="line-height: 1.1; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 14pt"><?= isset($kop->header_1) ? $kop->header_1 : '' ?></div>
+                                            <div style="line-height: 1.1; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 16pt">
                                                 <b><?= isset($kop->header_2) ? $kop->header_2 : '' ?></b></div>
-                                            <div style="line-height: 1.2; font-family: 'Times New Roman'; font-size: 13pt"><?= isset($kop->header_3) ? $kop->header_3 : '' ?></div>
-                                            <div style="line-height: 1.2; font-family: 'Times New Roman'; font-size: 12pt"><?= isset($kop->header_4) ? $kop->header_4 : '' ?></div>
+                                            <div style="line-height: 1.2; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 13pt"><?= isset($kop->header_3) ? $kop->header_3 : '' ?></div>
+                                            <div style="line-height: 1.2; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 12pt"><?= isset($kop->header_4) ? $kop->header_4 : '' ?></div>
                                         </td>
                                         <td style="width:15%;">
                                             <img alt="logo kanan" id="prev-logo-kiri-print"
@@ -176,7 +176,7 @@
                                 <hr style="border: 1px solid; margin-bottom: 6px">
                                 <br>
                                 <br>
-                                <div style="text-align: justify; font-family: 'Times New Roman'">
+                                <div style="text-align: justify; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif">
                                     Pada hari ini <span class="editable bg-gray-light" id="edit-hari"
                                                         style="display: inline-block;min-width: 20px"><?= buat_tanggal(date('D')) ?></span>
                                     tanggal <span class="editable bg-gray-light" id="edit-tanggal"
@@ -195,7 +195,7 @@
                                                               style="display: inline-block;min-width: 20px">...........</span>
                                 </div>
                                 <br>
-                                <table style="width: 100%;font-family: 'Times New Roman';">
+                                <table style="width: 100%;font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;">
                                     <tr>
                                         <td style="width: 30px;">1.</td>
                                         <td style="width: 30%;">
@@ -282,7 +282,7 @@
                                 <br>
                                 <br>
                                 <div id="berita-ttd">
-                                    <table style="width:90%; font-family: 'Times New Roman';">
+                                    <table style="width:90%; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;">
                                         <tr>
                                             <th></th>
                                             <th></th>
@@ -446,14 +446,14 @@
 
                 const header1Div = document.createElement("div");
                 header1Div.style.lineHeight = "1.1";
-                header1Div.style.fontFamily = "'Times New Roman'";
+                header1Div.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
                 header1Div.style.fontSize = "14pt";
                 header1Div.textContent = kop?.header_1 || 'Header 1'; // Ganti dengan data dinamis
                 centerTd.appendChild(header1Div);
 
                 const header2Div = document.createElement("div");
                 header2Div.style.lineHeight = "1.1";
-                header2Div.style.fontFamily = "'Times New Roman'";
+                header2Div.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
                 header2Div.style.fontSize = "16pt";
                 header2Div.style.fontWeight = "bold";
                 header2Div.textContent = kop?.header_2 || 'Header 2'; // Ganti dengan data dinamis
@@ -461,14 +461,14 @@
 
                 const header3Div = document.createElement("div");
                 header3Div.style.lineHeight = "1.2";
-                header3Div.style.fontFamily = "'Times New Roman'";
+                header3Div.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
                 header3Div.style.fontSize = "13pt";
                 header3Div.textContent = kop?.header_3 || 'Header 3'; // Ganti dengan data dinamis
                 centerTd.appendChild(header3Div);
 
                 const header4Div = document.createElement("div");
                 header4Div.style.lineHeight = "1.2";
-                header4Div.style.fontFamily = "'Times New Roman'";
+                header4Div.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
                 header4Div.style.fontSize = "12pt";
                 header4Div.textContent = kop?.header_4 || 'Header 4'; // Ganti dengan data dinamis
                 centerTd.appendChild(header4Div);
@@ -508,7 +508,7 @@
                 const paragraph = document.createElement("div");
                 paragraph.style.marginBottom = "12px";
                 paragraph.style.textAlign = "justify";
-                paragraph.style.fontFamily = "'Times New Roman'";
+                paragraph.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
                 paragraph.innerHTML = `Pada hari ini <b>${tgl?.HARI}</b> tanggal <b>${tgl?.TANGGAL}</b> bulan <b>${tgl?.BULAN}</b> tahun <b>${tgl?.TAHUN}</b>
                         telah diselenggarakan <b>${group.jadwal.nama_jenis}</b> untuk Mata Pelajaran <b>${group.jadwal.nama_mapel}</b>
                         dari pukul <b>${group.dari}</b> sampai dengan pukul <b>${group.sampai}</b>`;
@@ -517,7 +517,7 @@
                 // Membuat tabel data
                 const dataTable = document.createElement("table");
                 dataTable.style.width = "100%";
-                dataTable.style.fontFamily = "'Times New Roman'";
+                dataTable.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
 
                 // Baris data
                 const rowsData = [
@@ -611,7 +611,7 @@
                 // Tabel Tanda Tangan
                 const signatureTable = document.createElement("table");
                 signatureTable.style.width = "90%";
-                signatureTable.style.fontFamily = "'Times New Roman'";
+                signatureTable.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
                 signatureTable.style.marginTop = '100px'
 
                 // Data tanda tangan
@@ -1122,7 +1122,7 @@
         var nip2 = pengawas.length > 1 ? pengawas[1].nip : '_________________________';
         var title_p1 = pengawas2 === '' ? 'Pengawas' : 'Pengawas 1';
 
-        var table = '<table style="width:90%; font-family: \'Times New Roman\';">' +
+        var table = '<table style="width:90%; font-family: \'Segoe UI\', -apple-system, BlinkMacSystemFont, \'Helvetica Neue\', sans-serif;">' +
         ' <tr>' +
         ' <th></th>' +
         ' <th></th>' +

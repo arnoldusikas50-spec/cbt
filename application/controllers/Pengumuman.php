@@ -7,8 +7,8 @@ class Pengumuman extends MY_Controller {
         parent::__construct();
         if (!$this->auth->logged_in()) {
             redirect('auth');
-        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru')) {
-            show_error('Hanya Administrator dan guru yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
+        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru') && !$this->auth->in_group('panitia')) {
+            show_error('Hanya Administrator, guru, dan panitia yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
         }
         $this->load->library(['datatables', 'form_validation']);// Load Library Ignited-Datatables
         $this->load->model('Master_model', 'master');
@@ -46,10 +46,18 @@ class Pengumuman extends MY_Controller {
             $this->render_view(1, 'pengumuman/data', $data);
         }else{
             $data['subjudul'] = 'Pengumuman Anda';
-            $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
-            $data['guru'] = $guru;
-            $data['pengumumans'] = $this->post->getPostUser($guru->id_guru);
-            $this->render_view(2, 'pengumuman/data', $data);
+            if ($this->auth->in_group('guru')) {
+                $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+                $data['guru'] = $guru;
+                $data['pengumumans'] = $this->post->getPostUser($guru->id_guru);
+                $this->render_view(2, 'pengumuman/data', $data);
+            } elseif ($this->auth->in_group('panitia')) {
+                $panitia = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+                $data['panitia'] = $panitia;
+                $data['subjudul'] = 'Semua Pengumuman';
+                $data['pengumumans'] = $this->post->getPostUser(0);
+                $this->render_view(4, 'pengumuman/data', $data);
+            }
         }
     }
 
@@ -115,9 +123,12 @@ class Pengumuman extends MY_Controller {
 
         if($this->auth->is_admin()){
             $this->render_view(1, 'pengumuman/data', $data);
-        }else{
+        } elseif ($this->auth->in_group('guru')) {
             $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $this->render_view(2, 'pengumuman/data', $data);
+        } elseif ($this->auth->in_group('panitia')) {
+             $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+             $this->render_view(4, 'pengumuman/data', $data);
         }
     }
 
@@ -188,9 +199,15 @@ class Pengumuman extends MY_Controller {
             $user = $this->auth->user();
             $tp = $this->master->getTahunActive();
             $smt = $this->master->getSemesterActive();
-            $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
-            $dari = $guru->id_guru;
-            $dari_group = 2;
+            if ($this->auth->in_group('guru')) {
+                $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+                $dari = $guru->id_guru;
+                $dari_group = 2;
+            } elseif ($this->auth->in_group('panitia')) {
+                $panitia = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+                $dari = $panitia->id_panitia;
+                $dari_group = 2;
+            }
         }
         $data = [
             'id_post' => $this->input->post('id_post'),
@@ -221,9 +238,15 @@ class Pengumuman extends MY_Controller {
             $user = $this->auth->user();
             $tp = $this->master->getTahunActive();
             $smt = $this->master->getSemesterActive();
-            $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
-            $dari = $guru->id_guru;
-            $dari_group = 2;
+            if ($this->auth->in_group('guru')) {
+                $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+                $dari = $guru->id_guru;
+                $dari_group = 2;
+            } elseif ($this->auth->in_group('panitia')) {
+                $panitia = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+                $dari = $panitia->id_panitia;
+                $dari_group = 2;
+            }
         }
         $data = [
             'id_comment' => $this->input->post('id_comment'),

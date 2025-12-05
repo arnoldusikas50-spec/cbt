@@ -14,6 +14,14 @@ class Guru extends MY_Controller {
 
 		$this->load->model('Dashboard_model', 'dashboard');
 		$this->load->model('Master_model', 'master');
+
+        // Check if ttd column exists and add it if missing
+        if (!$this->db->field_exists('ttd', 'master_guru')) {
+            $this->load->dbforge();
+            $this->dbforge->add_column('master_guru', [
+                'ttd' => ['type' => 'VARCHAR', 'constraint' => '255', 'null' => TRUE, 'default' => NULL, 'after' => 'foto']
+            ]);
+        }
 	}
 
     /**
@@ -401,10 +409,107 @@ class Guru extends MY_Controller {
             $this->logging->saveLog($this->LOG_TYPE->DELETE, 'Menghapus dokumen guru: '.$file_type.' - '.$dok->nama_guru);
         }
 
+
         $this->output_json([
             'status' => true,
             'message' => 'Dokumen deleted successfully.',
             'dokumen' => $dokumen
         ]);
+    }
+
+    public function save_signature() {
+        $id_guru = $this->input->post('id_guru');
+        $image = $this->input->post('image');
+
+        if (empty($image) || empty($id_guru)) {
+            $this->output_json(['status' => false, 'message' => 'Data tidak lengkap']);
+            return;
+        }
+
+        $image = preg_replace('#^data:image/\w+;base64,#i', '', $image);
+        $image = str_replace(' ', '+', $image);
+        $data = base64_decode($image);
+
+        $file_name = 'ttd_' . $id_guru . '_' . time() . '.png';
+        $file_path = 'uploads/profile_guru/' . $file_name;
+        
+        if (!is_dir('./uploads/profile_guru/')) {
+            mkdir('./uploads/profile_guru/', 0777, true);
+        }
+
+        if (file_put_contents('./' . $file_path, $data)) {
+            $guru = $this->db->get_where('master_guru', ['id_guru' => $id_guru])->row();
+            if ($guru && !empty($guru->ttd) && file_exists($guru->ttd)) {
+                unlink($guru->ttd);
+            }
+
+            $this->db->where('id_guru', $id_guru);
+            $this->db->update('master_guru', ['ttd' => $file_path]);
+
+            $this->output_json([
+                'status' => true,
+                'src' => base_url().$file_path,
+                'message' => 'Tanda tangan berhasil disimpan'
+            ]);
+        } else {
+            $this->output_json([
+                'status' => false,
+                'message' => 'Gagal menyimpan file'
+            ]);
+        }
+    }
+
+    public function delete_ttd() {
+        $id_guru = $this->input->post('id_guru');
+        $guru = $this->db->get_where('master_guru', ['id_guru' => $id_guru])->row();
+
+        if ($guru && !empty($guru->ttd)) {
+            if (file_exists($guru->ttd)) {
+                unlink($guru->ttd);
+            }
+            $this->db->where('id_guru', $id_guru);
+            $this->db->update('master_guru', ['ttd' => null]);
+            
+            $this->output_json(['status' => true, 'message' => 'Tanda tangan berhasil dihapus']);
+        } else {
+            $this->output_json(['status' => false, 'message' => 'Tanda tangan tidak ditemukan']);
+        }
+    }
+
+    public function upload_ttd() {
+        $id_guru = $this->input->post('id_guru');
+        $guru = $this->db->get_where('master_guru', ['id_guru' => $id_guru])->row();
+        
+        if(isset($_FILES["file"]["name"])){
+			$config['upload_path'] = './uploads/profile_guru/';
+			$config['allowed_types'] = 'gif|jpg|png|jpeg|JPEG|JPG|PNG|GIF';
+			$config['overwrite'] = true;
+			$config['encrypt_name'] = TRUE; // Random name
+
+			$this->upload->initialize($config);
+			if(!$this->upload->do_upload('file')){
+				$data['status'] = false;
+				$data['message'] = $this->upload->display_errors();
+			} else {
+				$result = $this->upload->data();
+				$file_path = 'uploads/profile_guru/'.$result['file_name'];
+				
+                if ($guru && !empty($guru->ttd) && file_exists($guru->ttd)) {
+                    unlink($guru->ttd);
+                }
+
+				$this->db->where('id_guru', $id_guru);
+				$this->db->update('master_guru', ['ttd' => $file_path]);
+
+                $data = [
+    				'status' => true,
+    				'src' => base_url().$file_path,
+    				'message' => 'Tanda tangan berhasil diupload'
+                ];
+			}
+		} else {
+			$data = ['status' => false, 'message' => 'File tidak ditemukan'];
+		}
+		$this->output_json($data);
     }
 }

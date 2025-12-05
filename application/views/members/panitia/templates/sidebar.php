@@ -28,94 +28,37 @@
 
 <script>
     const page = '<?= $this->uri->segment(1)?>';
-    const jabatan = '<?=$guru->id_jabatan?>';
+    const jabatan = '4'; // Panitia role
     const pageact = '<?= $this->uri->segment(2); ?>';
     const menus = [
         {
-            'header': 'HOME', 'cbt': '1',
+            'header': 'MAIN MENU', 'cbt': '1',
             'menu': [
                 {'name': 'Beranda', 'link': 'dashboard', 'icon': 'fas fa-desktop', 'cbt': '1'},
-                {'name': 'Profile', 'link': 'guru', 'icon': 'fas fa-user', 'cbt': '1'},
+                {'name': 'Profile', 'link': 'panitia', 'icon': 'fas fa-user', 'cbt': '1'},
+                {'name': 'Data Siswa', 'link': 'usersiswa', 'icon': 'fas fa-users', 'cbt': '1'},
                 {'name': 'Pengumuman', 'link': 'pengumuman', 'icon': 'fas fa-bullhorn', 'cbt': '1'},
                 {
-                    'name': 'Wali Kelas', 'icon': 'fas fa-chart-pie', 'cbt': '1', 'wali': true,
+                    'name': 'Manajemen Ujian', 'icon': 'fas fa-edit', 'cbt': '1',
                     'submenu': [
-                        {'name': 'Siswa', 'link':"walisiswa", 'icon': 'fas fa-users'},
-                        {'name': 'Struktur', 'link':"walistruktur", 'icon': 'far fa-circle'},
-                        {'name': 'Catatan', 'link':"walicatatan", 'icon': 'fa fa-pencil-alt'}
+                        {'name': 'Bank Soal', 'link': 'cbtbanksoal', 'icon': 'fas fa-folder-open'},
+                        {'name': 'Jadwal', 'link': 'cbtjadwal', 'icon': 'fas fa-calendar-alt'},
+                        {'name': 'Status Peserta', 'link': 'cbtstatus', 'icon': 'fas fa-user-clock'},
                     ]
                 },
                 {
-                    'name': 'E-Learning', 'icon': 'fas fa-chalkboard', 'cbt': '0',
+                    'name': 'Administrasi', 'icon': 'fas fa-file-alt', 'cbt': '1',
                     'submenu': [
-                        //{'name': "Perpustakaan Digital", 'link': "elearning/perpustakaan", 'icon': 'fa fa-book'},
-                        {'name': "Jadwal Pelajaran", 'link': "elearning/jadwal", 'icon': 'fa fa-calendar-alt'},
-                        {'name': "Materi", 'link': "elearning/materi", 'icon': 'fa fa-pencil-ruler'},
-                        {'name': "Tugas", 'link': "elearning/tugas", 'icon': 'fa fa-drafting-compass'},
-
-                        {'name': 'Nilai Harian', 'link':"elearning/status", 'icon': 'far fa-clipboard'},
-                        {'name': 'Kehadiran Harian', 'link':"elearning/harian", 'icon': 'fa fa-user-check'},
-                        {'name': 'Kehadiran Bulanan', 'link':"elearning/bulanan", 'icon': 'fa fa-tasks'},
-                        {'name': 'Rekap Nilai', 'link':"elearning/nilaisemester", 'icon': 'fa fa-trophy'},
-                        {'name': 'Catatan Guru', 'link':"kelascatatan", 'icon': 'fa fa-pencil-alt'},
+                        {'name': 'Berita Acara', 'link': 'cbtcetak/beritaAcara', 'icon': 'fas fa-file-signature'},
+                        {'name': 'Pakta Integritas', 'link': 'cbtcetak/paktaIntegritas', 'icon': 'fas fa-file-contract'},
+                        {'name': 'Daftar Hadir', 'link': 'cbtcetak/absenPeserta', 'icon': 'fas fa-clipboard-list'},
+                        {'name': 'Kartu Peserta', 'link': 'cbtcetak/kartuPeserta', 'icon': 'fas fa-id-card'},
+                        {'name': 'Kartu Meja', 'link': 'cbtcetak/kartuMeja', 'icon': 'fas fa-print'},
                     ]
                 },
-                {
-                    'name': 'Manajemen Ujian', 'icon': 'fa fa-user-graduate', 'cbt': '1',
-                    'submenu': [
-                        {'name':"Nomor Peserta", 'link':"cbtnomorpeserta", 'icon': 'far fa-id-card'},
-                        {'name':"Atur Ruang/Sesi", 'link':"cbtsesisiswa", 'icon': 'fa fa-user-clock'},
-                        {'name':"Bank Soal", 'link':"cbtbanksoal", 'icon': 'far fa-folder-open'},
-                        {'name':"Jadwal", 'link':"cbtjadwal", 'icon': 'far fa-calendar-alt'},
-                        {'name':"Alokasi Waktu", 'link':"cbtalokasi", 'icon': 'fa fa-clock-o'},
-                        {'name': 'Cetak', 'link':"cbtcetak", 'icon': 'fa fa-print'},
-                        {'name': 'Status Siswa', 'link':"cbtstatus", 'icon': 'fa fa-user-clock'},
-                        {'name': 'Hasil Ujian', 'link':"cbtnilai", 'icon': 'fa fa-file-alt'},
-                        {'name': 'Rekap Nilai', 'link':"cbtrekap", 'icon': 'fas fa-trophy'}, // sementara dihilangkan
-                    ]
-                },
-                {
-                    'name': 'Log Aktivitas', 'link': 'datalogs', 'icon': 'fas fa-clock', 'cbt': '1'
-                },
-            ]
-        },
-        {
-            'header': 'PENILAIAN', 'cbt': '1',
-            'menu': [
-                {
-                    'name': 'Data Rapor', 'icon': 'fas fa-chart-pie', 'cbt': '1',
-                    'submenu': [
-                        {'name': 'KKM dan Bobot', 'link': 'rapor/raporkkm', 'icon': 'fa fa-balance-scale-right', 'cbt': '1'},
-                        {'name': 'Indikator Nilai', 'link': 'rapor/raporkikd', 'icon': 'fas fa-book', 'cbt': '1'},
-                    ]
-                },
-                {'name': 'Input Nilai', 'link': 'rapor/rapornilai', 'icon': 'fa fa-users', 'cbt': '1'},
-                {'name': 'Periksa Nilai', 'link': 'rapor/rapornilaiguru', 'icon': 'fa fa-users', 'cbt': '1', 'wali': true},
-                {
-                    'name': 'Input Wali Kelas', 'icon': 'fas fa-chart-pie', 'cbt': '0', 'wali': true,
-                    'submenu': [
-                        {'name': 'Sikap Spiritual', 'link': 'rapor/raporspiritual', 'icon': 'fas fa-book', 'cbt': '1'},
-                        {'name': 'Sikap Sosial', 'link': 'rapor/raporsosial', 'icon': 'fas fa-book', 'cbt': '1'},
-                        {'name': 'Prestasi', 'link': 'rapor/raporprestasi', 'icon': 'fa fa-users', 'cbt': '1'},
-                        {'name': 'Kehadiran', 'link': 'rapor/raporcatatan', 'icon': 'fa fa-users', 'cbt': '1'},
-                        {'name': 'Kenaikan', 'link': 'rapor/rapornaik', 'icon': 'fa fa-users', 'cbt': '1'},
-                    ]
-                },
-            ]
-        },
-        {
-            'header': 'CETAK', 'cbt': '1', 'wali': true,
-            'menu': [
-                {'name': 'Rapor PTS', 'link': 'rapor/cetakpts', 'icon': 'fas fa-book', 'cbt': '1'},
-                {'name': 'Rapor Akhir', 'link': 'rapor/cetakakhir', 'icon': 'fas fa-book', 'cbt': '1'},
-                {'name': 'Ledger', 'link': 'rapor/cetakleger', 'icon': 'fa fa-users', 'cbt': '1'},
-                {'name': 'DKN', 'link': 'rapor/dkn', 'icon': 'fa fa-users', 'cbt': '1'},
-            ]
-        },
-        {
-            'header': 'ARSIP', 'cbt': '1', 'wali': true,
-            'menu': [
-                {'name': 'Arsip Rapor', 'link': 'bukurapor', 'icon': 'fas fa-university', 'cbt': '1',},
+                {'name': 'Nilai Ujian', 'link': 'cbtnilai', 'icon': 'fas fa-chart-bar', 'cbt': '1'},
+                {'name': 'Analisis', 'link': 'cbtanalisis', 'icon': 'fas fa-chart-line', 'cbt': '1'},
+                {'name': 'Arsip Laporan', 'link': 'laporan', 'icon': 'fas fa-file-pdf', 'cbt': '1'},
             ]
         },
         {'name': 'LOGOUT', 'link': '', 'icon': 'fas fa-sign-out-alt', 'cbt': '1'},
@@ -128,16 +71,10 @@
         if (isCbtMode && header.cbt === '0') {
             return
         }
-        if (jabatan !== '4' && header.wali) {
-            return
-        }
         if (header.header) {
             htmlMenu += `<li class="nav-header">${header.header}</li>`;
             header.menu.forEach(function (menu) {
                 if (isCbtMode && menu.cbt === '0') {
-                    return
-                }
-                if (jabatan !== '4' && menu.wali) {
                     return
                 }
                 if (menu.submenu) {

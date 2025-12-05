@@ -7,7 +7,7 @@ class Cbtalokasi extends MY_Controller {
 		parent::__construct();
 		if (!$this->auth->logged_in()) {
 			redirect('auth');
-        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru')) {
+        } else if (!$this->auth->is_admin() && !$this->auth->in_group('panitia') && !$this->auth->in_group('guru')) {
             show_error('Hanya Administrator dan guru yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
 		}
 		$this->load->library(['form_validation']); // Load Library Ignited-Datatables
@@ -475,3 +475,4 @@ class Cbtalokasi extends MY_Controller {
 
     }
 }
+

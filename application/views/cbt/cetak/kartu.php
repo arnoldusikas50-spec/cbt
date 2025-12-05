@@ -86,14 +86,14 @@
                                             </td>
                                             <td style="width:60%;">
                                                 <div id="prev-header-1" class="text-center"
-                                                     style="line-height: 1.1; font-family: 'Times New Roman'; font-size: 9pt"><?= isset($kartu->header_1) ? $kartu->header_1 : '' ?></div>
+                                                     style="line-height: 1.1; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 8pt"><?= isset($kartu->header_1) ? $kartu->header_1 : '' ?></div>
                                                 <div id="prev-header-2" class="text-center"
-                                                     style="line-height: 1.1; font-family: 'Times New Roman'; font-size: 10pt">
-                                                    <b><?= isset($kartu->header_2) ? $kartu->header_2 : '' ?></b></div>
+                                                     style="line-height: 1.1; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 8pt">
+                                                    <?= isset($kartu->header_2) ? $kartu->header_2 : '' ?></div>
                                                 <div id="prev-header-3" class="text-center"
-                                                     style="line-height: 1.2; font-family: 'Times New Roman'; font-size: 8pt"><?= isset($kartu->header_3) ? $kartu->header_3 : '' ?></div>
+                                                     style="line-height: 1.2; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10pt"><b><?= isset($kartu->header_3) ? $kartu->header_3 : '' ?></b></div>
                                                 <div id="prev-header-4" class="text-center"
-                                                     style="line-height: 1.2; font-family: 'Times New Roman'; font-size: 8pt"><?= isset($kartu->header_4) ? $kartu->header_4 : '' ?></div>
+                                                     style="line-height: 1.2; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 6pt"><?= isset($kartu->header_4) ? $kartu->header_4 : '' ?></div>
                                             </td>
                                             <td style="width:20%;">
                                                 <img alt="Logo kanan" id="prev-logo-kanan"
@@ -103,37 +103,37 @@
                                         </tr>
                                     </table>
                                     <table id="table-body" style="width:100%;border: 1px solid black">
-                                        <tr style="line-height: 1; font-family: 'Times New Roman'; font-size: 9pt">
+                                        <tr style="line-height: 1; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9pt">
                                             <td style="padding-top:8px;padding-left:22px;width: 35%">Nomor Peserta</td>
                                             <td style="padding-top:8px;">:</td>
                                             <td style="padding-top:8px;width: 60%">0000.00.000</td>
                                         </tr>
-                                        <tr style="line-height: 1; font-family: 'Times New Roman'; font-size: 9pt">
+                                        <tr style="line-height: 1; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9pt">
                                             <td style="padding-left:22px">Nama</td>
                                             <td>:</td>
                                             <td>Nama Siswa</td>
                                         </tr>
-                                        <tr style="line-height: 1; font-family: 'Times New Roman'; font-size: 9pt">
+                                        <tr style="line-height: 1; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9pt">
                                             <td style="padding-left:22px;width: 35%">NIS/NISN</td>
                                             <td>:</td>
                                             <td>012334455</td>
                                         </tr>
-                                        <tr style="line-height: 1; font-family: 'Times New Roman'; font-size: 9pt">
+                                        <tr style="line-height: 1; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9pt">
                                             <td style="padding-left:22px;width: 35%">Kelas</td>
                                             <td>:</td>
                                             <td>IXA</td>
                                         </tr>
-                                        <tr style="line-height: 1; font-family: 'Times New Roman'; font-size: 9pt">
+                                        <tr style="line-height: 1; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9pt">
                                             <td style="padding-left:22px;width: 35%">Ruang/Sesi</td>
                                             <td>:</td>
                                             <td>1/2</td>
                                         </tr>
-                                        <tr style="line-height: 1; font-family: 'Times New Roman'; font-size: 9pt">
+                                        <tr style="line-height: 1; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9pt">
                                             <td style="padding-left:22px;width: 35%">Username</td>
                                             <td>:</td>
                                             <td><b>umbk001</b></td>
                                         </tr>
-                                        <tr style="line-height: 1; font-family: 'Times New Roman'; font-size: 9pt">
+                                        <tr style="line-height: 1; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9pt">
                                             <td style="padding-left:22px;width: 35%">Password</td>
                                             <td>:</td>
                                             <td><b>umbk001</b></td>
@@ -146,7 +146,7 @@
                                             </td>
                                             <td style="text-align: center;">
                                                 <div id="prev-tandatangan"
-                                                     style="font-family: 'Times New Roman'; font-size: 9pt; line-height: 1; background: url('<?= base_url() . $setting->tanda_tangan ?>') no-repeat center; background-size: 100px 60px">
+                                                     style="font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9pt; line-height: 1; background: url('<?= base_url() . $setting->tanda_tangan ?>') no-repeat center; background-size: 100px 60px">
                                                     <span id="prev-kota"><?= $setting->kota ?></span>, <span
                                                             id="prev-tanggal"><?= isset($kartu->tanggal) ? $kartu->tanggal : '' ?></span>
                                                     <br>
@@ -294,10 +294,10 @@
                         '<img id="prev-logo-kiri-print" src="' + logoKiri + '" style="width:55px; height:55px; margin-left: 6px; margin-right: 6px; margin-top:4px;">' +
                         '</td>' +
                         '<td style="width:60%; text-align: center;">' +
-                        '<div style="line-height: 1.1; font-family: \'Times New Roman\'; font-size: 8pt">' + oldVal1 + '</div>' +
-                        '<div class="text-center" style="line-height: 1.1; font-family: \'Times New Roman\'; font-size: 9pt"><b>' + oldVal2 + '</b></div>' +
-                        '<div class="text-center" style="line-height: 1.2; font-family: \'Times New Roman\'; font-size: 8pt">' + oldVal3 + '</div>' +
-                        '<div class="text-center" style="line-height: 1.2; font-family: \'Times New Roman\'; font-size: 8pt">' + oldVal4 + '</div>' +
+                        '<div style="line-height: 1.1; font-family: \'Segoe UI\', -apple-system, BlinkMacSystemFont, \'Helvetica Neue\', sans-serif; font-size: 8pt">' + oldVal1 + '</div>' +
+                        '<div class="text-center" style="line-height: 1.1; font-family: \'Segoe UI\', -apple-system, BlinkMacSystemFont, \'Helvetica Neue\', sans-serif; font-size: 8pt">' + oldVal2 + '</div>' +
+                        '<div class="text-center" style="line-height: 1.2; font-family: \'Segoe UI\', -apple-system, BlinkMacSystemFont, \'Helvetica Neue\', sans-serif; font-size: 10pt"><b>' + oldVal3 + '</b></div>' +
+                        '<div class="text-center" style="line-height: 1.2; font-family: \'Segoe UI\', -apple-system, BlinkMacSystemFont, \'Helvetica Neue\', sans-serif; font-size: 6pt">' + oldVal4 + '</div>' +
                         '</td>' +
                         '<td style="width:20%;">' +
                         '<img id="prev-logo-kanan-print" src="' + logoKanan + '" style="width:55px; height:55px; margin-left: 6px; margin-right: 6px; margin-top:4px; border-style: none">' +
@@ -305,37 +305,37 @@
                         '</tr>' +
                         '</table>' +
                         '<table id="table-body-print" style="width:100%;border: 1px solid black">' +
-                        '<tr style="line-height: 1; font-family: \'Times New Roman\'; font-size: 10pt">' +
+                        '<tr style="line-height: 1; font-family: \'Segoe UI\', -apple-system, BlinkMacSystemFont, \'Helvetica Neue\', sans-serif; font-size: 10pt">' +
                         '<td style="padding-top:4px;padding-left:22px;width: 30%">No. Peserta</td>' +
                         '<td style="padding-top:4px;">:</td>' +
                         '<td style="padding-top:4px;width: 65%">' + data[i]?.nomor_peserta + '</td>' +
                         '</tr>' +
-                        '<tr style="line-height: 1; font-family: \'Times New Roman\'; font-size: 9pt">' +
+                        '<tr style="line-height: 1; font-family: \'Segoe UI\', -apple-system, BlinkMacSystemFont, \'Helvetica Neue\', sans-serif; font-size: 9pt">' +
                         '<td style="padding-left:22px;width: 30%">Nama</td>' +
                         '<td>:</td>' +
                         '<td><b>' + data[i]?.nama + '</b></td>' +
                         '</tr>' +
-                        '<tr style="line-height: 1; font-family: \'Times New Roman\'; font-size: 9pt">' +
+                        '<tr style="line-height: 1; font-family: \'Segoe UI\', -apple-system, BlinkMacSystemFont, \'Helvetica Neue\', sans-serif; font-size: 9pt">' +
                         '<td style="padding-left:22px;width: 30%">NIS / NISN</td>' +
                         '<td>:</td>' +
                         '<td>' + data[i]?.nis + '/' + data[i]?.nisn + '</td>' +
                         '</tr>' +
-                        '<tr style="line-height: 1; font-family: \'Times New Roman\'; font-size: 9pt">' +
+                        '<tr style="line-height: 1; font-family: \'Segoe UI\', -apple-system, BlinkMacSystemFont, \'Helvetica Neue\', sans-serif; font-size: 9pt">' +
                         '<td style="padding-left:22px;width: 30%">Kelas</td>' +
                         '<td>:</td>' +
                         '<td>' + data[i]?.nama_kelas + '</td>' +
                         '</tr>' +
-                        '<tr style="line-height: 1; font-family: \'Times New Roman\'; font-size: 9pt">' +
+                        '<tr style="line-height: 1; font-family: \'Segoe UI\', -apple-system, BlinkMacSystemFont, \'Helvetica Neue\', sans-serif; font-size: 9pt">' +
                         '<td style="padding-left:22px;width: 30%">Ruang/Sesi</td>' +
                         '<td>:</td>' +
                         '<td>' + ruang + '/' + sesi + '</td>' +
                         '</tr>' +
-                        '<tr style="line-height: 1; font-family: \'Times New Roman\'; font-size: 9pt">' +
+                        '<tr style="line-height: 1; font-family: \'Segoe UI\', -apple-system, BlinkMacSystemFont, \'Helvetica Neue\', sans-serif; font-size: 9pt">' +
                         '<td style="padding-left:22px;width: 30%">Username</td>' +
                         '<td>:</td>' +
                         '<td><b>' + data[i]?.username + '</b></td>' +
                         '</tr>' +
-                        '<tr style="line-height: 1; font-family: \'Times New Roman\'; font-size: 9pt">' +
+                        '<tr style="line-height: 1; font-family: \'Segoe UI\', -apple-system, BlinkMacSystemFont, \'Helvetica Neue\', sans-serif; font-size: 9pt">' +
                         '<td style="padding-left:22px;width: 30%">Password</td>' +
                         '<td>:</td>' +
                         '<td><b>' + data[i]?.password + '</b></td>' +
@@ -348,7 +348,7 @@
                         '/>' +
                         '</td>' +
                         '<td style="text-align: center;">' +
-                        '<div id="prev-tandatangan-print" style="font-family: \'Times New Roman\'; font-size: 9pt; line-height: 1; background: url(' + tandatangan + ') no-repeat center; background-size: 100px 60px">' +
+                        '<div id="prev-tandatangan-print" style="font-family: \'Segoe UI\', -apple-system, BlinkMacSystemFont, \'Helvetica Neue\', sans-serif; font-size: 9pt; line-height: 1; background: url(' + tandatangan + ') no-repeat center; background-size: 100px 60px">' +
                         '<span>' + oldKota + '</span>, <span>' + oldTgl + '</span>' +
                         '<br>Kepala ' + satuanPend +
                         '<br>' +

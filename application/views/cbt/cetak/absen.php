@@ -219,29 +219,67 @@
         mplTgl.html('');
 
         console.log(data);
+        console.log('printBy:', printBy);
+        
         var sesi = data.info.sesi;
         var ruang = data.info.ruang;
+        
+        console.log('Looking for mapel:', data.info.mapel, 'sesi:', sesi);
+        
+        // Validate sesi data
+        if (!sesi || !sesi.id_sesi) {
+            $('#print-preview').html('<b>Error: Data sesi tidak ditemukan. Pastikan Anda memilih sesi yang valid.</b>');
+            $('#loading').addClass('d-none');
+            return;
+        }
 
         const alokasiJadwal = alokasiJam(data, false)
+        console.log('alokasiJadwal:', alokasiJadwal);
 
         const currJadwal = [];
         for (const tanggal in alokasiJadwal) {
             const arrJadwal = alokasiJadwal[tanggal]
+            console.log(`Processing tanggal: ${tanggal}, jadwal count: ${arrJadwal.length}`);
+            
             for (const jadwal of arrJadwal) {
+                console.log('Checking jadwal:', {
+                    id_mapel: jadwal.id_mapel,
+                    sesi_id: jadwal.sesi_id,
+                    ruang_id: jadwal.ruang_id,
+                    kelas_id: jadwal.kelas_id
+                });
+                
+                console.log('Looking for:', {
+                    mapel: data.info.mapel,
+                    sesi_id: sesi.id_sesi,
+                    ruang_id: ruang ? ruang.id_ruang : 'N/A',
+                    kelas_id: printBy === 2 ? data.info.kelas.id_kelas : 'N/A'
+                });
+                
                 let match;
                 if (printBy === 2) {
-                    match = jadwal.kelas_id.includes(data.info.kelas.id_kelas) &&
-                        jadwal.id_mapel === data.info.mapel &&
-                        jadwal.sesi_id === sesi.id_sesi
+                    // By Kelas: Check if kelas_id array includes the selected kelas
+                    const kelasMatch = jadwal.kelas_id.some(kid => kid == data.info.kelas.id_kelas);
+                    const mapelMatch = jadwal.id_mapel == data.info.mapel;
+                    const sesiMatch = jadwal.sesi_id == sesi.id_sesi;
+                    
+                    console.log('By Kelas checks:', {kelasMatch, mapelMatch, sesiMatch});
+                    match = kelasMatch && mapelMatch && sesiMatch;
                 } else {
-                    match = jadwal.id_mapel === data.info.mapel &&
-                        jadwal.sesi_id === sesi.id_sesi &&
-                        jadwal.ruang_id === ruang.id_ruang
+                    // By Ruang
+                    const mapelMatch = jadwal.id_mapel == data.info.mapel;
+                    const sesiMatch = jadwal.sesi_id == sesi.id_sesi;
+                    const ruangMatch = jadwal.ruang_id == ruang.id_ruang;
+                    
+                    console.log('By Ruang checks:', {mapelMatch, sesiMatch, ruangMatch});
+                    match = mapelMatch && sesiMatch && ruangMatch;
                 }
 
+                console.log('Match result:', match);
+
                 if (match) {
-                    const found = currJadwal.find(e => e.id_mapel === jadwal.id_mapel &&
-                        e.sesi_id === jadwal.sesi_id && e.ruang_id === jadwal.ruang_id &&
+                    const found = currJadwal.find(e => e.id_mapel == jadwal.id_mapel &&
+                        e.sesi_id == jadwal.sesi_id && e.ruang_id == jadwal.ruang_id &&
                         e.jadwal.tgl_mulai === jadwal.jadwal.tgl_mulai)
                     if (!found) {
                         currJadwal.push(jadwal)
@@ -249,6 +287,8 @@
                 }
             }
         }
+        
+        console.log('currJadwal found:', currJadwal);
 
         var kelasTitle = printBy === 2 ? 'Kelas' : 'Ruang';
         var kelasVal = printBy === 2 ? data.info.kelas.nama_kelas : ruang.nama_ruang + ' (' + ruang.kode_ruang + ')';
@@ -379,11 +419,16 @@
                 var genap = (i + 1) % 2 === 0;
                 var forGenap = genap ? (i + 1) + '.' : '';
                 var forGanjil = genap ? '' : (i + 1) + '.';
+// Replaced optional chaining for compatibility
+                var namaSiswa = (jadwal.siswa && jadwal.siswa[i] && jadwal.siswa[i].nama) ? jadwal.siswa[i].nama : "";
+                var kodeKelas = (jadwal.siswa && jadwal.siswa[i] && jadwal.siswa[i].kode_kelas) ? jadwal.siswa[i].kode_kelas : "";
+                var noPeserta = (jadwal.siswa && jadwal.siswa[i] && jadwal.siswa[i].nomor_peserta) ? jadwal.siswa[i].nomor_peserta : "-";
+
                 card += '<tr style="font-family: \'Times New Roman\'; font-size: 10pt">' +
                     '<td class="ts" style="line-height: 1.1;border: 1px solid black; text-align: center">' + (i + 1) + '</td>' +
-                    '<td class="ts" style="line-height: 1.1;border: 1px solid black; text-align: center; padding-left: 5px">' + (jadwal.siswa[i].nomor_peserta || "-") + '</td>' +
-                    '<td class="ts" style="line-height: 1.1;border: 1px solid black; padding-left: 5px">' + jadwal.siswa[i]?.nama + '</td>' +
-                    '<td class="ts" style="line-height: 1.1;border: 1px solid black;text-align: center;">' + jadwal.siswa[i]?.kode_kelas + '</td>' +
+                    '<td class="ts" style="line-height: 1.1;border: 1px solid black; text-align: center; padding-left: 5px">' + noPeserta + '</td>' +
+                    '<td class="ts" style="line-height: 1.1;border: 1px solid black; padding-left: 5px">' + namaSiswa + '</td>' +
+                    '<td class="ts" style="line-height: 1.1;border: 1px solid black;text-align: center;">' + kodeKelas + '</td>' +
                     '<td class="ts" style="line-height: 1.1;border-bottom: 1px solid black;width:50px;padding-left: 5px">' + forGanjil + '</td>' +
                     '<td class="ts" style="line-height: 1.1;border-bottom: 1px solid black;width:100px;padding-left: 5px">' + forGenap + '</td>' +
                     '<td class="ts" style="line-height: 1.1;border: 1px solid black;"> </td>' +
@@ -848,14 +893,26 @@
         const allSesi = data.all_ruang || [];
         const jsonData = data.all_tgl || [];
         const grouped = {};
+        
+        console.log('processAndGroupData:', {
+            allSesi_count: allSesi.length,
+            jsonData_keys: Object.keys(jsonData),
+            siswa_count: data.siswa.length
+        });
 
         for (const tgl in jsonData) {
             const jadwals = jsonData[tgl];
+            console.log(`Processing tgl: ${tgl}, jadwals count: ${jadwals.length}`);
+            
             jadwals.forEach(jadwal => {
+                console.log('Processing jadwal:', jadwal.id_jadwal, jadwal.id_mapel, jadwal.bank_kelas);
+                
                 jadwal.bank_kelas = jadwal.bank_kelas.map(String)
                 const ruangFiltered = allSesi.filter(r =>
                     r.kelas_id.some(id => jadwal.bank_kelas.includes(id.toString()))
                 );
+                
+                console.log(`Ruang filtered for jadwal ${jadwal.id_jadwal}:`, ruangFiltered.length);
 
                 ruangFiltered.forEach(ruang => {
                     // siswa dalam sesi/ruang ini
@@ -875,6 +932,8 @@
                             }
                         }
                     })
+                    
+                    console.log(`Siswa in ruang ${ruang.ruang_id} sesi ${ruang.sesi_id}:`, siswaRuang.length);
 
                     const key = `${tgl}-${ruang.ruang_id}-${ruang.sesi_id}`;
                     if (!grouped[key]) {
@@ -896,6 +955,9 @@
                         p.id_ruang === ruang.ruang_id &&
                         p.id_sesi === ruang.sesi_id
                     ) || { guru: [], id_guru: '', jam_ke: '' };
+                    
+                    console.log(`Pengawas jam_ke for jadwal ${jadwal.id_jadwal}:`, pengawasJadwal.jam_ke);
+                    
                     if (!grouped[key].jam_ke.includes(pengawasJadwal.jam_ke)) {
                         grouped[key].jam_ke.push(pengawasJadwal.jam_ke)
                     }
@@ -907,6 +969,7 @@
                             pengawas: pengawasJadwal.pengawas,
                             jadwal: jadwal,
                         });
+                        console.log(`Added to alokasi: mapel ${jadwal.id_mapel}, jam_ke ${pengawasJadwal.jam_ke}`);
                     }
                 });
             });
@@ -983,7 +1046,7 @@
                 setTimeout(function () {
                     $.ajax({
                         type: "GET",
-                        url: base_url + "cbtcetak/getruang?ruang=" + ruang + '&sesi=' + sesi + '&mapel=' + jadwal,
+                        url: base_url + "cbtcetak/getRuang?ruang=" + ruang + '&sesi=' + sesi + '&mapel=' + jadwal,
                         success: function (response) {
                             createPrintPreview(response);
                         },
@@ -1004,7 +1067,7 @@
                 setTimeout(function () {
                     $.ajax({
                         type: "GET",
-                        url: base_url + "cbtcetak/getkelas?kelas=" + kelas + '&sesi=' + sesi + '&mapel=' + jadwal,
+                        url: base_url + "cbtcetak/getKelas?kelas=" + kelas + '&sesi=' + sesi + '&mapel=' + jadwal,
                         success: function (response) {
                             createPrintPreview(response);
                         },

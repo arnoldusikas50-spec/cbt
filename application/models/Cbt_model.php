@@ -741,7 +741,10 @@ class Cbt_model extends CI_Model {
         $this->db->join('buku_induk i', 'i.id_siswa=b.id_siswa AND i.status="1"');
 
 		$this->db->where('a.ruang_id', $id_ruang);
-		$this->db->where('a.sesi_id', $sesi);
+		// Make sesi optional - only filter by sesi if provided
+		if ($sesi !== null && $sesi !== 'null') {
+			$this->db->where('a.sesi_id', $sesi);
+		}
 		$this->db->order_by('b.nama');
 
 		return $this->db->get()->result();

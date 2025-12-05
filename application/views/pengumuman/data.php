@@ -49,6 +49,7 @@ $showRunningText = $is_admin && isset($setting->running_text) && $setting->runni
                         </div>
                     </div>
 
+                    <?php if (!isset($panitia)) : ?>
                     <div class="callout callout-info shadow-sm border border-info mb-4">
                         <h5 class="mb-2 font-weight-bold"><i class="fas fa-info-circle mr-2"></i>Panduan Pengelolaan Pengumuman</h5>
                         <ul class="pl-3 mb-0">
@@ -57,7 +58,9 @@ $showRunningText = $is_admin && isset($setting->running_text) && $setting->runni
                             <li>Running text muncul di layar siswa—isi maksimal lima baris agar pesan tetap terbaca.</li>
                         </ul>
                     </div>
+                    <?php endif; ?>
 
+                    <?php if (!isset($panitia)) : ?>
                     <div class="card my-shadow border">
                         <?= form_open('', array('id' => 'formpengumuman')) ?>
                         <div class="card-header alert alert-default-success">
@@ -83,8 +86,10 @@ $showRunningText = $is_admin && isset($setting->running_text) && $setting->runni
 
                             <?php if ($is_admin): ?>
                                 <input type="hidden" name="dari" value="0">
-                            <?php else: ?>
+                            <?php elseif (isset($guru)): ?>
                                 <input type="hidden" name="dari" value="<?= $guru->id_guru ?>">
+                            <?php elseif (isset($panitia)): ?>
+                                <input type="hidden" name="dari" value="<?= $panitia->id_panitia ?>">
                             <?php endif; ?>
 
                             <button type="submit" class="btn btn-primary float-right">
@@ -92,6 +97,8 @@ $showRunningText = $is_admin && isset($setting->running_text) && $setting->runni
                             </button>
                         </div>
                         <?= form_close(); ?>
+                    </div>
+                    <?php endif; ?>
                 <?php if ($showRunningText) : ?>
                     <div class="col-12 col-md-4 mb-4">
                         <?php $runningCount = count(array_filter($runningEntries, fn($t) => !empty($t->text ?? null))); ?>
@@ -312,7 +319,7 @@ $showRunningText = $is_admin && isset($setting->running_text) && $setting->runni
 </div>
 
 <script>
-    var guru = '<?=isset($guru) ? $guru->id_guru : ""?>';
+    var guru = '<?=isset($guru) ? $guru->id_guru : (isset($panitia) ? $panitia->id_panitia : "")?>';
 
     function createTime(d) {
         var date = new Date(d);

@@ -32,7 +32,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                            class="btn btn-sm btn-warning">
                             <i class="fa fa-sync"></i> <span class="d-none d-sm-inline-block ml-1">Reload</span>
                         </a>
-                        <?php if ($this->auth->is_admin() || $nselesai >= $nsekarang): ?>
+                        <?php if (!$this->auth->in_group('panitia') && ($this->auth->is_admin() || $nselesai >= $nsekarang)): ?>
                         <a href="<?= base_url('cbtbanksoal/addBank') ?>" type="button"
                            class="btn btn-primary btn-sm ml-1">
                             <i class="fas fa-plus-circle"></i> Tambah Bank Soal
@@ -53,6 +53,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                     </div>
                 </div>
                 <div class="card-body">
+                <?php if (!$this->auth->in_group('panitia')): ?>
                     <!-- BANK SOAL DEADLINE -->
                     <div class="alert alert-gradient alert-dismissible fade show" role="alert" 
                          style="background: linear-gradient(135deg, #1877f2 0%, #0c5bd5 100%); border: none; color: white;">
@@ -91,6 +92,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                         </div>
                     </div>
                     <!-- BANK SOAL DEADLINE -->  
+                <?php endif; ?>
 
                     <?php
                     $activeTp = $tp_active->id_tp ?? null;
@@ -176,6 +178,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                             </table>
                         </div>
                         <div class="col-12 col-md-6">
+                            <?php if (!$this->auth->in_group('panitia')): ?>
                             <?= form_open('', array('id' => 'hapus_semua')) ?>
                             <table class="table table-borderless table-sm">
                                 <tr>
@@ -191,6 +194,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                 </tr>
                             </table>
                             <?= form_close() ?>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="row" id="konten">
@@ -205,7 +209,9 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                         <th>Mapel</th>
                                         <th>Kelas</th>
                                         <th class="text-center align-middle p-0"><span>Aksi</span></th>
+                                        <?php if (!$this->auth->in_group('panitia')): ?>
                                         <th class="text-center align-middle p-0" style="width: 50px"></th>
+                                        <?php endif; ?>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -255,7 +261,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                                        style="<?= $disable_edit == '' ? '' : 'cursor: not-allowed' ?>">
                                                        <i class="fa fa-pencil-alt"></i></a>
                                                 </span>
-                                                <?php if ($this->auth->is_admin() || $nselesai >= $nsekarang): ?>
+                                                <?php if (!$this->auth->in_group('panitia') && ($this->auth->is_admin() || $nselesai >= $nsekarang)): ?>
                                                 <span data-toggle="tooltip" title="Import Soal">
                                                     <button data-total="<?= $bank->total_soal ?>"
                                                             data-id="<?= $bank->id_bank ?>" onclick="importSoal(this)"
@@ -274,6 +280,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                             <?php endif; ?>
                                         </a>
                                     </span>
+                                                <?php if (!$this->auth->in_group('panitia')): ?>
                                                 <button data-id="<?= $bank->id_bank ?>"
                                                         data-mapel="<?= $bank->nama_mapel ?>"
                                                         data-level="<?= $bank->bank_level ?>"
@@ -282,12 +289,15 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                                         class="btn btn-primary btn-sm mb-1">
                                                     <i class="fas fa-download"> </i>
                                                 </button>
+                                                <?php endif; ?>
                                             </td>
+                                            <?php if (!$this->auth->in_group('panitia')): ?>
                                             <td class="text-center align-middle">
                                                 <input name="checked[]" value="<?= $bank->id_bank ?>"
                                                        class="check-bank" type="checkbox"
                                                        style="width: 20px;height: 20px">
                                             </td>
+                                            <?php endif; ?>
                                         </tr>
                                         <?php
                                         $no++;
@@ -299,7 +309,9 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                        style="height: 300px">
                                     <thead>
                                     <tr>
+                                        <?php if (!$this->auth->in_group('panitia')): ?>
                                         <th class="text-center align-middle p-0" style="width: 50px"></th>
+                                        <?php endif; ?>
                                         <th class="text-center align-middle p-0">No.</th>
                                         <th>Kode</th>
                                         <th>Mapel</th>
@@ -336,12 +348,14 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                         }
                                         ?>
                                         <tr>
+                                            <?php if (!$this->auth->in_group('panitia')): ?>
                                             <td class="text-center align-middle">
                                                 <input name="checked[]" value="<?= $bank->id_bank ?>"
                                                        class="check-bank" type="checkbox"
                                                        style="width: 20px;height: 20px">
 
                                             </td>
+                                            <?php endif; ?>
                                             <td class="text-center align-middle"><?= $no ?></td>
                                             <td class="align-middle"><?= $bank->bank_kode ?></td>
                                             <td class="align-middle"><?= $bank->nama_mapel ?>
@@ -358,7 +372,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                                        style="<?= $disable_edit == '' ? '' : 'cursor: not-allowed' ?>">
                                                        <i class="fa fa-pencil-alt"></i></a>
                                                 </span>
-                                                <?php if ($this->auth->is_admin() || $nselesai >= $nsekarang): ?>
+                                                <?php if (!$this->auth->in_group('panitia') && ($this->auth->is_admin() || $nselesai >= $nsekarang)): ?>
                                                 <span data-toggle="tooltip" title="Import Soal">
                                                     <button data-total="<?= $bank->total_soal ?>"
                                                             data-id="<?= $bank->id_bank ?>" onclick="importSoal(this)"
@@ -379,6 +393,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                         </a>
                                     </span>
 
+                                                <?php if (!$this->auth->in_group('panitia')): ?>
                                                 <button data-id="<?= $bank->id_bank ?>"
                                                         data-mapel="<?= $bank->nama_mapel ?>"
                                                         data-level="<?= $bank->bank_level ?>"
@@ -387,6 +402,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                                         class="btn btn-primary">
                                                     <i class="fas fa-download mr-1"> </i><br>
                                                 </button>
+                                                <?php endif; ?>
 
                                             </td>
                                         </tr>
@@ -446,11 +462,13 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                                        style="<?= $disable_edit == '' ? '' : 'cursor: not-allowed' ?>">
                                                        <i class="fa fa-pencil-alt"></i></a>
                                                 </span>
+                                                    <?php if (!$this->auth->in_group('panitia')): ?>
                                                     <button class="btn btn-default">
                                                         <input name="checked[]" value="<?= $bank->id_bank ?>"
                                                                class="check-bank float-left" type="checkbox"
                                                                style="width: 20px;height: 20px">
                                                     </button>
+                                                    <?php endif; ?>
                                                 </div>
                                             </div>
                                             <div class="card-body pt-0">
@@ -503,7 +521,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                             <div class="card-footer">
                                                 <div class="row mb-2">
                                         <span class="col-6 text-left" data-toggle="tooltip" title="Buat Soal">
-                                                    <?php if ($this->auth->is_admin() || $nselesai >= $nsekarang): ?>
+                                                    <?php if (!$this->auth->in_group('panitia') && ($this->auth->is_admin() || $nselesai >= $nsekarang)): ?>
                                                     <button data-total="<?= $bank->total_soal ?>"
                                                             data-id="<?= $bank->id_bank ?>" onclick="importSoal(this)"
                                                             type="button" <?= $disable_edit == '' ? '' : 'disabled' ?>
@@ -525,6 +543,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                     </span>
                                                 </div>
                                                 <div class="row">
+                                                    <?php if (!$this->auth->in_group('panitia')): ?>
                                                     <button data-id="<?= $bank->id_bank ?>"
                                                             data-mapel="<?= $bank->nama_mapel ?>"
                                                             data-level="<?= $bank->bank_level ?>"
@@ -535,6 +554,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                                         Siswa<br>
                                                         <small><i>untuk keperluan ujian kertas</i></small>
                                                     </button>
+                                                    <?php endif; ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -553,11 +573,13 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                                        class="btn btn-warning btn-sm mr-1"><i
                                                                 class="fa fa-pencil-alt"></i></a>
                                                 </span>
+                                                    <?php if (!$this->auth->in_group('panitia')): ?>
                                                     <button class="btn btn-danger">
                                                         <input name="checked[]" value="<?= $bank->id_bank ?>"
                                                                class="check-bank float-left" type="checkbox"
                                                                style="width: 20px;height: 20px">
                                                     </button>
+                                                    <?php endif; ?>
                                                     <!--
                                                 <button onclick="hapus(<?= $bank->id_bank ?>)" type="button"
                                                         class="btn-sm btn btn-danger" data-toggle="tooltip"
@@ -617,7 +639,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                             <div class="card-footer">
                                                 <div class="row mb-2">
                                         <span class="col-6 text-left" data-toggle="tooltip" title="Buat Soal">
-											<?php if ($this->auth->is_admin() || $nselesai >= $nsekarang): ?>
+											<?php if (!$this->auth->in_group('panitia') && ($this->auth->is_admin() || $nselesai >= $nsekarang)): ?>
 											<a href="javascript:void(0)" data-total="<?= $bank->total_soal ?>"
                                                data-id="<?= $bank->id_bank ?>" onclick="importSoal(this)"
                                                type="button" class="btn btn-warning">
@@ -639,6 +661,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                     </span>
                                                 </div>
                                                 <div class="row">
+                                                    <?php if (!$this->auth->in_group('panitia')): ?>
                                                     <button data-id="<?= $bank->id_bank ?>"
                                                             data-mapel="<?= $bank->nama_mapel ?>"
                                                             data-level="<?= $bank->bank_level ?>"
@@ -649,6 +672,7 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                                         Siswa<br>
                                                         <small><i>untuk keperluan ujian kertas</i></small>
                                                     </button>
+                                                    <?php endif; ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -823,9 +847,11 @@ $dnone = (!$this->auth->is_admin() && $nselesai < $nsekarang) ? 'd-none' : '';
                                     <td><?= $ab->bank_level ?></td>
                                     <td><?= $allBank['tahun'] ?></td>
                                     <td>
+                                        <?php if (!$this->auth->in_group('panitia')): ?>
                                         <button onclick="copy(<?= $ab->id_bank ?>)" type="button"
                                                 class="btn btn-sm btn-success"><i class="fa fa-copy"></i> Copy
                                         </button>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                                 <?php

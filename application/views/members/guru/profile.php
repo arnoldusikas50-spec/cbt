@@ -1,3 +1,11 @@
+<style>
+    #sig-canvas {
+        border: 2px dotted #CCCCCC;
+        border-radius: 15px;
+        cursor: crosshair;
+        background-color: #ffffff;
+    }
+</style>
 <div class="content-wrapper bg-white pt-4">
 
 
@@ -26,6 +34,29 @@
                                                     onclick="deleteImage(true)"><i
                                                         class="fa fa-trash"></i> Hapus Foto
                                             </button>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-12">
+                                            <h6 class="text-muted text-left">Tanda Tangan</h6>
+                                            <div class="border rounded p-2" style="background: #f8f9fa;">
+                                                <div id="ttd-placeholder" class="d-flex align-items-center justify-content-center text-muted" style="height: 100px; border: 2px dashed #ccc; <?= !empty($guru->ttd) ? 'display:none !important;' : '' ?>">
+                                                    <small>Belum ada TTD</small>
+                                                </div>
+                                                <img src="<?= !empty($guru->ttd) ? base_url($guru->ttd) : '' ?>" 
+                                                     alt="TTD" 
+                                                     id="img-ttd-preview"
+                                                     class="img-fluid <?= empty($guru->ttd) ? 'd-none' : '' ?>" 
+                                                     style="max-height: 100px;">
+                                                <div class="mt-2 text-center">
+                                                    <button type="button" class="btn btn-sm btn-outline-success mb-0 ml-1" id="btn-create-ttd" title="Buat TTD Baru">
+                                                        <i class="fas fa-pen-nib"></i> Buat
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger mb-0 ml-1 <?= empty($guru->ttd) ? 'd-none' : '' ?>" id="btn-delete-ttd" title="Hapus TTD">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row mt-3">
@@ -228,6 +259,30 @@
     </div>
 </div>
 
+</div>
+
+<div class="modal fade" id="modal-signature" tabindex="-1" role="dialog" aria-labelledby="modalSignatureLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalSignatureLabel">Buat Tanda Tangan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <canvas id="sig-canvas" width="400" height="200">
+                    Browser Anda tidak mendukung Canvas.
+                </canvas>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="sig-clear">Bersihkan</button>
+                <button type="button" class="btn btn-primary" id="sig-submit">Simpan Tanda Tangan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?= form_open('', array('id' => 'updatelogin'), array('id_guru' => $guru->id_guru)) ?>
 <div class="modal fade" id="editLoginModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
      aria-hidden="true">
@@ -295,6 +350,193 @@
     var src = '<?=$guru->foto?>';
     var dokumen = JSON.parse('<?=json_encode(json_decode($guru->dokumen ?? '{}'))?>');
     $(document).ready(function () {
+
+    // --- Signature Pad Logic ---
+    var canvas = document.getElementById("sig-canvas");
+    var ctx = canvas.getContext("2d");
+    var drawing = false;
+    var mousePos = { x: 0, y: 0 };
+    var lastPos = mousePos;
+
+    $('#btn-create-ttd').click(function() {
+        $('#modal-signature').modal('show');
+    });
+
+    $('#modal-signature').on('shown.bs.modal', function () {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear on open
+    });
+
+    canvas.addEventListener("mousedown", function(e) {
+        drawing = true;
+        lastPos = getMousePos(canvas, e);
+    }, false);
+
+    canvas.addEventListener("mouseup", function() {
+        drawing = false;
+    }, false);
+
+    canvas.addEventListener("mousemove", function(e) {
+        mousePos = getMousePos(canvas, e);
+        renderCanvas();
+    }, false);
+
+    // Touch support for mobile
+    canvas.addEventListener("touchstart", function(e) {
+        mousePos = getTouchPos(canvas, e);
+        var touch = e.touches[0];
+        var mouseEvent = new MouseEvent("mousedown", {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+        e.preventDefault(); // Prevent scrolling
+    }, false);
+
+    canvas.addEventListener("touchend", function() {
+        var mouseEvent = new MouseEvent("mouseup", {});
+        canvas.dispatchEvent(mouseEvent);
+    }, false);
+
+    canvas.addEventListener("touchmove", function(e) {
+        var touch = e.touches[0];
+        var mouseEvent = new MouseEvent("mousemove", {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+        e.preventDefault(); // Prevent scrolling
+    }, false);
+
+    function getMousePos(canvasDom, mouseEvent) {
+        var rect = canvasDom.getBoundingClientRect();
+        return {
+            x: mouseEvent.clientX - rect.left,
+            y: mouseEvent.clientY - rect.top
+        };
+    }
+
+    function getTouchPos(canvasDom, touchEvent) {
+        var rect = canvasDom.getBoundingClientRect();
+        return {
+            x: touchEvent.touches[0].clientX - rect.left,
+            y: touchEvent.touches[0].clientY - rect.top
+        };
+    }
+
+    function renderCanvas() {
+        if (drawing) {
+            ctx.beginPath();
+            ctx.moveTo(lastPos.x, lastPos.y);
+            ctx.lineTo(mousePos.x, mousePos.y);
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#000000';
+            ctx.stroke();
+            lastPos = mousePos;
+        }
+    }
+
+    $('#sig-clear').click(function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    $('#sig-submit').click(function() {
+        var dataUrl = canvas.toDataURL("image/png");
+        
+        $.ajax({
+            url: base_url + 'guru/save_signature',
+            type: 'POST',
+            data: {
+                id_guru: idGuru,
+                image: dataUrl
+            },
+            dataType: 'json',
+            beforeSend: function() {
+                $('#sig-submit').attr('disabled', true).text('Menyimpan...');
+            },
+            success: function(response) {
+                if (response.status) {
+                    $('#img-ttd-preview').attr('src', response.src).removeClass('d-none');
+                    $('#ttd-placeholder').addClass('d-none');
+                    $('#btn-delete-ttd').removeClass('d-none');
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: response.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    $('#modal-signature').modal('hide');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: response.message
+                    });
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Gagal menyimpan signature'
+                });
+            },
+            complete: function() {
+                $('#sig-submit').attr('disabled', false).text('Simpan Tanda Tangan');
+            }
+        });
+    });
+
+    // Delete TTD
+    $('#btn-delete-ttd').click(function() {
+        Swal.fire({
+            title: 'Hapus Tanda Tangan?',
+            text: "File tanda tangan akan dihapus permanen!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Hapus!'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: base_url + 'guru/delete_ttd',
+                    type: 'POST',
+                    data: {id_guru: idGuru},
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status) {
+                            $('#img-ttd-preview').addClass('d-none').attr('src', '');
+                            $('#ttd-placeholder').removeClass('d-none');
+                            $('#btn-delete-ttd').addClass('d-none');
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Gagal menghapus tanda tangan'
+                        });
+                    }
+                });
+            }
+        });
+    });
+    // --- End Signature Pad Logic ---
         $('#tgl_lahir').datetimepicker({
             icons:
                 {

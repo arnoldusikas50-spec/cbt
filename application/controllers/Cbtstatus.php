@@ -7,7 +7,7 @@ class Cbtstatus extends MY_Controller {
 		parent::__construct();
 		if (!$this->auth->logged_in()) {
 			redirect('auth');
-		} else if (!$this->auth->is_admin() && !$this->auth->in_group('guru')) {
+		} else if (!$this->auth->is_admin() && !$this->auth->in_group('panitia') && !$this->auth->in_group('guru')) {
 			show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
 		}
 		$this->load->library(['datatables', 'form_validation','upload','user_agent']); // Load Library Ignited-Datatables
@@ -141,8 +141,9 @@ class Cbtstatus extends MY_Controller {
         $data['smt_active'] = $smt;
         $data['is_admin'] = $this->auth->is_admin();
 
-		if($this->auth->is_admin()){
-            $this->render_view(1, 'cbt/status/data_status', $data);
+		if($this->auth->is_admin() || $this->auth->in_group('panitia')){
+            $layout = $this->auth->is_admin() ? 1 : 4;
+            $this->render_view($layout, 'cbt/status/data_status', $data);
 		}else{
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $data['guru'] = $guru;
@@ -254,7 +255,7 @@ class Cbtstatus extends MY_Controller {
             ->as_array()
             ->get_all();
 
-        if($this->auth->is_admin()){
+        if($this->auth->is_admin() || $this->auth->in_group('panitia')){
             $tgl_jadwal = [];
             $kelases = [];
             $ruangs = [];
@@ -982,3 +983,4 @@ class Cbtstatus extends MY_Controller {
     }
 
 }
+

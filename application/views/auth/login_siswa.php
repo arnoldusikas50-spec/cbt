@@ -11,18 +11,29 @@
 	<div id="formContent" style="background-size: 300px;background-image: url('<?= base_url() ?>/assets/front_assets/images/logo-w.png');background-repeat: no-repeat;background-position: top right; ">
     <div class="fadeIn text-left p-5">
       <div><h3>Selamat Datang</h3></div>
-      <div><small>Silakan login dengan menggunakan username dan password yang anda miliki</small></div>
-     <div id="infoMessage"> <?php echo $message; ?> </div>
+      <div><small>Silakan login dengan menggunakan username dan password atau scan QR code</small></div>
+     
+     <!-- Login Tabs -->
+     <div class="btn-group mt-3" role="group" style="width: 100%;">
+         <button type="button" class="btn btn-info active" id="tab-username" onclick="showLoginTab('username')">
+             <i class="fa fa-user mr-1"></i> Username
+         </button>
+         <button type="button" class="btn btn-info" id="tab-qrcode" onclick="showLoginTab('qrcode')">
+             <i class="fa fa-qrcode mr-1"></i> QR Code
+         </button>
+     </div>
 
-	            <?= form_open("auth/login", array('id' => 'login', 'class' => 'login-form')); ?>
-	            <input type="hidden" name="login_variant" value="siswa">
-	            <input type="hidden" id="cbt-only" name="cbt-only" value="1">
+	 <div id="infoMessage"> <?php echo $message; ?> </div>
+     <!-- Username Login Form -->
+     <div id="login-username">
+            <?= form_open("auth/login", array('id' => 'login', 'class' => 'login-form')); ?>
+            <input type="hidden" name="login_variant" value="siswa">
+            <input type="hidden" id="cbt-only" name="cbt-only" value="1">
 
 							<div class="input-group mt-4 mb-3" style="padding-top:10px">
 								<div class="input-group-prepend">
 									<span class="input-group-text" style="border:0px;background:#fff"><i class="fa fa-user-circle"></i></span>
 								</div>
-							
 								<input type="text" class="form-control" placeholder="Username" style="border-radius:10px;" name="username" id="identity" autocomplete="off" required="true" value="" oninvalid="this.setCustomValidity('Silakan masukan username Anda')" oninput="setCustomValidity('')">
 							</div>
 							<div class="input-group mt-3 mb-3">
@@ -50,6 +61,37 @@
 				</div>
 				
 				<?= form_close(); ?>
+     </div>
+
+     <!-- QR Code Login Form -->
+     <div id="login-qrcode" style="display: none;">
+         <div class="text-center mb-3 mt-2">
+             <div id="qr-reader" style="width: 100%; height: 300px; border: 2px solid #ddd; border-radius: 10px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; position: relative;">
+                 <div id="qr-scanner-video" style="width: 100%; height: 100%; object-fit: cover;"></div>
+                 <div id="qr-placeholder" style="position: absolute; text-align: center; color: #666;">
+                     <i class="fa fa-qrcode" style="font-size: 48px; margin-bottom: 10px;"></i>
+                     <p>Klik tombol di bawah untuk memulai scan QR Code</p>
+                 </div>
+             </div>
+             <div class="mt-3">
+                 <button type="button" id="start-scan" class="btn btn-success btn-block" onclick="startQRScanner()">
+                     <i class="fa fa-camera mr-1"></i> Mulai Scan QR Code
+                 </button>
+                 <button type="button" id="stop-scan" class="btn btn-danger btn-block" onclick="stopQRScanner()" style="display: none;">
+                     <i class="fa fa-stop mr-1"></i> Stop Scan
+                 </button>
+             </div>
+             <div id="qr-result" class="mt-3" style="display: none;">
+                 <div class="alert alert-info">
+                     <strong>QR Code Terdeteksi:</strong><br>
+                     <span id="qr-data"></span>
+                 </div>
+                 <button type="button" class="btn btn-primary btn-block" onclick="loginWithQR()">
+                     <i class="fa fa-sign-in"></i> Login dengan QR Code
+                 </button>
+             </div>
+         </div>
+     </div>
 					<!--	<div class="row">
 							<div class="col-12" style="margin-top: 10px;">
 								<a href='../' class='btn-block btn btn-danger' style="font-size: 1rem"><i class='fa fa-back' ></i> Kembali </a>
@@ -206,9 +248,25 @@
 </style>
 
 <script src="<?= base_url() ?>/assets/app/js/jquery.backstretch.js"></script>
+<!-- Include QR Code Scanner Library -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
 <script type="text/javascript">
     let base_url = '<?=base_url();?>';
+    let csrf_token_name = '<?= $this->config->item('csrf_token_name'); ?>';
+    let csrf_cookie_name = '<?= $this->config->item('csrf_cookie_name'); ?>';
+
+    // Helper function to get CSRF cookie
+    function getCookie(name) {
+        let cookieArray = document.cookie.split(';');
+        for(let cookie of cookieArray) {
+            let [key, value] = cookie.trim().split('=');
+            if (key === name) {
+                return decodeURIComponent(value);
+            }
+        }
+        return null;
+    }
 
     $(document).ready(function(){
         $('#myCarousel').carousel({
@@ -292,6 +350,124 @@
 			$('.btn-eye').addClass('fa fa-eye');	
 			$('#password').attr('type','password');
 		}
+	}
+
+	// QR Code Scanner Functions
+	let html5QrCode = null;
+	let scannedData = '';
+
+	function showLoginTab(tab) {
+		if (tab === 'username') {
+			$('#login-username').show();
+			$('#login-qrcode').hide();
+			$('#tab-username').addClass('active');
+			$('#tab-qrcode').removeClass('active');
+			stopQRScanner();
+		} else {
+			$('#login-username').hide();
+			$('#login-qrcode').show();
+			$('#tab-username').removeClass('active');
+			$('#tab-qrcode').addClass('active');
+		}
+	}
+
+	function startQRScanner() {
+		const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+		
+		html5QrCode = new Html5Qrcode("qr-scanner-video");
+		
+		html5QrCode.start(
+			{ facingMode: "environment" },
+			config,
+			(decodedText, decodedResult) => {
+				scannedData = decodedText;
+				$('#qr-data').text(decodedText);
+				$('#qr-result').show();
+				$('#qr-placeholder').hide();
+				stopQRScanner();
+				// Auto login immediately after successful scan
+				loginWithQR();
+			}
+		).catch((err) => {
+			console.error('Unable to start scanning', err);
+			$('#infoMessage').addClass('alert alert-danger mt-3 text-center').text('Tidak dapat mengakses kamera. Pastikan kamera sudah diizinkan.');
+		});
+
+		$('#start-scan').hide();
+		$('#stop-scan').show();
+		$('#qr-placeholder').hide();
+	}
+
+	function stopQRScanner() {
+		if (html5QrCode && html5QrCode.isScanning) {
+			html5QrCode.stop().then(() => {
+				console.log('QR Code scanning stopped');
+			}).catch((err) => {
+				console.error('Failed to stop scanning', err);
+			});
+		}
+		$('#start-scan').show();
+		$('#stop-scan').hide();
+		$('#qr-placeholder').show();
+	}
+
+	function loginWithQR() {
+		if (!scannedData) {
+			$('#infoMessage').addClass('alert alert-danger mt-3 text-center').text('Tidak ada data QR code yang terdeteksi.');
+			return;
+		}
+
+		console.log('QR Data being sent:', scannedData);
+
+		var infobox = $('#infoMessage');
+		infobox.addClass('alert alert-info mt-3 text-center').text('Mengautentikasi QR code...');
+
+		// Get CSRF token if available
+		var csrfToken = $('input[name="' + csrf_token_name + '"]').val();
+		var csrfCookie = getCookie(csrf_cookie_name);
+		
+		var ajaxData = { qr_data: scannedData };
+		if (csrfToken) {
+			ajaxData[csrf_token_name] = csrfToken;
+		}
+
+		$.ajax({
+			url: base_url + 'auth/qrcode_login',
+			type: 'POST',
+			data: ajaxData,
+			dataType: 'json',
+			success: function(response) {
+				console.log('QR Login Response:', response);
+				infobox.removeAttr('class').text('');
+				if(response.status) {
+					infobox.addClass('alert alert-success mt-3 text-center').text(response.message || 'Login berhasil dengan QR code');
+					localStorage.setItem('garudaCBT.login', '1');
+					setTimeout(() => {
+						window.location.href = response.data.redirect || base_url + 'siswa/cbt';
+					}, 1000);
+				} else {
+					infobox.addClass('alert alert-danger mt-3 text-center').text(response.message || 'QR code tidak valid');
+					$('#qr-result').hide();
+					scannedData = '';
+				}
+			},
+			error: function(xhr, error, status) {
+				infobox.addClass('alert alert-danger mt-3 text-center').text('Terjadi kesalahan saat memproses QR code');
+				console.error('QR Login Error:', xhr.responseText);
+				console.error('Status:', status);
+				console.error('XHR Status:', xhr.status);
+				
+				// Try to show more detailed error
+				try {
+					const errorResponse = JSON.parse(xhr.responseText);
+					if (errorResponse.message) {
+						infobox.addClass('alert alert-danger mt-3 text-center').text(errorResponse.message);
+					}
+				} catch (e) {
+					infobox.addClass('alert alert-danger mt-3 text-center').text('Server error: ' + (xhr.status || 'Unknown'));
+				}
+			}
+		});
 	}
 </script>
   

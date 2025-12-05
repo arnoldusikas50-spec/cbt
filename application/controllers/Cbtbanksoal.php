@@ -14,7 +14,7 @@ class Cbtbanksoal extends MY_Controller
         parent::__construct();
         if (!$this->auth->logged_in()) {
             redirect('auth');
-        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru')) {
+        } else if (!$this->auth->is_admin() && !$this->auth->in_group('panitia') && !$this->auth->in_group('guru')) {
             show_error('Hanya Administrator dan guru yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
         }
         $this->load->library('upload');
@@ -74,7 +74,7 @@ class Cbtbanksoal extends MY_Controller
         $data['mode'] = $mode == null ? '1' : $mode;
         //$data['type'] = $type == null ? '0' : $mode;
 
-        if ($this->auth->is_admin()) {
+        if ($this->auth->is_admin() || $this->auth->in_group('panitia')) {
             $data['mapels'] = $this->dropdown->getAllMapel();
             $data['gurus'] = $this->dropdown->getAllGuru();
             $data['kelas'] = $this->cbt->getKelas($tp->id_tp, $smt->id_smt);
@@ -301,6 +301,9 @@ class Cbtbanksoal extends MY_Controller
 
     public function addBank()
     {
+        if ($this->auth->in_group('panitia')) {
+            show_error('Akses Terlarang', 403);
+        }
         $this->load->model('Dropdown_model', 'dropdown');
         $this->load->model('Master_model', 'master');
         $this->load->model('Dashboard_model', 'dashboard');
@@ -496,6 +499,11 @@ class Cbtbanksoal extends MY_Controller
         $this->load->model('Cbt_model', 'cbt');
 
         if ($this->input->post()) {
+            $id = $this->input->post('id_bank', true);
+            if (!$id && $this->auth->in_group('panitia')) {
+                 $this->output_json(['status' => false, 'message' => 'Panitia tidak boleh membuat Bank Soal baru']);
+                 return;
+            }
             $tp = $this->master->getTahunActive();
             $smt = $this->master->getSemesterActive();
             $old_kode = $this->input->post('old_kode', true);
@@ -536,6 +544,9 @@ class Cbtbanksoal extends MY_Controller
         $this->load->model('Cbt_model', 'cbt');
 
         $id = $this->input->get('id_bank', true);
+        if ($this->auth->in_group('panitia')) {
+             $this->output_json(['status' => false, 'message' => 'Akses Ditolak']); return;
+        }
         if ($this->cbt->cekJadwalBankSoal($id) > 0) {
             $this->output_json(['status' => false, 'message' => 'Ada jadwal ujian yang menggunakan bank soal ini']);
         } else {
@@ -555,6 +566,9 @@ class Cbtbanksoal extends MY_Controller
         $this->load->model('Cbt_model', 'cbt');
 
         $ids = json_decode($this->input->post('ids', true));
+        if ($this->auth->in_group('panitia')) {
+             $this->output_json(['status' => false, 'message' => 'Akses Ditolak']); return;
+        }
         if ($this->cbt->cekJadwalBankSoal($ids) > 0) {
             $this->output_json(['status' => false, 'message' => 'Ada jadwal ujian yang menggunakan bank soal ini']);
         } else {
@@ -689,6 +703,9 @@ class Cbtbanksoal extends MY_Controller
 
     public function copyBankSoal($id_bank)
     {
+        if ($this->auth->in_group('panitia')) {
+             $this->output_json(['status' => false, 'message' => 'Akses Ditolak']); return;
+        }
         $this->load->model('Master_model', 'master');
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Log_model', 'logging');
@@ -847,6 +864,9 @@ class Cbtbanksoal extends MY_Controller
 
     public function tambahSoal()
     {
+        if ($this->auth->in_group('panitia')) {
+             $this->output_json(['status' => false, 'message' => 'Akses Ditolak']); return;
+        }
         $this->load->model('Log_model', 'logging');
         $bank = $this->input->post('bank', true);
         $nomor = $this->input->post('nomor', true);
@@ -870,6 +890,9 @@ class Cbtbanksoal extends MY_Controller
 
     public function importsoal($id)
     {
+        if ($this->auth->in_group('panitia')) {
+            show_error('Akses Terlarang', 403);
+        }
         $this->load->model('Master_model', 'master');
         $this->load->model('Dropdown_model', 'dropdown');
         $this->load->model('Dashboard_model', 'dashboard');
@@ -971,6 +994,9 @@ class Cbtbanksoal extends MY_Controller
         $this->load->model('Log_model', 'logging');
 
         $method = $this->input->post('method', true);
+        if ($method == 'add' && $this->auth->in_group('panitia')) {
+             $this->output_json(['status' => 'error', 'error' => 'Panitia tidak boleh menambah soal']); return;
+        }
         $jenis = $this->input->post('jenis', true);
         $bank_id = $this->input->post('bank_id', true);
         $nomor_soal = $this->input->post('nomor_soal', true);
@@ -1077,6 +1103,9 @@ class Cbtbanksoal extends MY_Controller
 
     public function hapusSoal()
     {
+        if ($this->auth->in_group('panitia')) {
+             $this->output_json(['status' => false, 'message' => 'Akses Ditolak']); return;
+        }
         $this->load->model('Cbt_model', 'cbt');
         $this->load->model('Log_model', 'logging');
 
@@ -1250,6 +1279,9 @@ class Cbtbanksoal extends MY_Controller
 
     function uploadSoal()
     {
+        if ($this->auth->in_group('panitia')) {
+             $this->output_json(['status' => false, 'message' => 'Akses Ditolak']); return;
+        }
         $this->load->model('Cbt_model', 'cbt');
         $this->load->model('Log_model', 'logging');
         $bank_id = $this->input->post('id_bank', true);
@@ -1516,3 +1548,4 @@ class Cbtbanksoal extends MY_Controller
          */
     }
 }
+

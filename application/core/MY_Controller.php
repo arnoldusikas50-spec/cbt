@@ -719,11 +719,11 @@ class MY_Controller extends CI_Controller {
 
     private function createMenit($durasi)
     {
-        if (empty($waktu) || !is_string($waktu) || strpos($waktu, ':') == false) {
+        if (empty($durasi) || !is_string($durasi) || strpos($durasi, ':') == false) {
             return 0;
         }
 
-        $parts = explode(":", $waktu);
+        $parts = explode(":", $durasi);
         $jam   = isset($parts[0]) ? (int) $parts[0] : 0;
         $menit = isset($parts[1]) ? (int) $parts[1] : 0;
         $detik = isset($parts[2]) ? (int) $parts[2] : 0;

@@ -9,7 +9,7 @@ class Cbtnilai extends MY_Controller
         parent::__construct();
         if (!$this->auth->logged_in()) {
             redirect('auth');
-        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru')) {
+        } else if (!$this->auth->is_admin() && !$this->auth->in_group('panitia') && !$this->auth->in_group('guru')) {
             show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
         }
         $this->load->library(['form_validation']); // Load Library Ignited-Datatables
@@ -99,9 +99,10 @@ class Cbtnilai extends MY_Controller
         }
         $data['tp_jadwal'] = $tp->tahun;
 
-        if ($this->auth->is_admin()) {
+        if ($this->auth->is_admin() || $this->auth->in_group('panitia')) {
             $data['kelas'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
-            $this->render_view(1, 'cbt/nilai/data_nilai', $data);
+            $role = $this->auth->is_admin() ? 1 : 4;
+            $this->render_view($role, 'cbt/nilai/data_nilai', $data);
         } else {
             $jadwals = $this->cbt->getJadwalGuru($tp->id_tp, $smt->id_smt, $id_guru);
             $arrKls = [];
@@ -266,8 +267,9 @@ class Cbtnilai extends MY_Controller
         $data['soal_esai'] = array_values($soal_5);
         $data['is_rekap'] = 0;
 
-        if ($this->auth->is_admin()) {
-            $this->render_view(1, 'cbt/nilai/koreksi', $data);
+        if ($this->auth->is_admin() || $this->auth->in_group('panitia')) {
+            $role = $this->auth->is_admin() ? 1 : 4;
+            $this->render_view($role, 'cbt/nilai/koreksi', $data);
         } else {
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $data['guru'] = $guru;
@@ -311,8 +313,9 @@ class Cbtnilai extends MY_Controller
         $jadwals = $this->olah_nilai(1, $tp->id_tp, $smt->id_smt, $kelas_selected, $jadwal_selected);
         $data['jadwal'] = $jadwals;
 
-        if ($this->auth->is_admin()) {
-            $this->render_view(1, 'cbt/nilai/input_nilai', $data);
+        if ($this->auth->is_admin() || $this->auth->in_group('panitia')) {
+            $role = $this->auth->is_admin() ? 1 : 4;
+            $this->render_view($role, 'cbt/nilai/input_nilai', $data);
         } else {
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $data['guru'] = $guru;
@@ -320,3 +323,4 @@ class Cbtnilai extends MY_Controller
         }
     }
 }
+

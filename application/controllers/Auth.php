@@ -252,4 +252,76 @@ class Auth extends CI_Controller
         $this->session->sess_destroy();
         redirect('auth');
     }
+
+    public function qrcode_login() {
+        $qr_data = $this->input->post('qr_data', true);
+        
+        // Debug logging
+        error_log('QR Login Attempt - Data: ' . $qr_data);
+        
+        if (!$qr_data) {
+            $this->respond(false, 'QR code data is required');
+            return;
+        }
+
+        // QR code should contain student username or nomor_peserta
+        // Try username first, then nomor_peserta
+        $user = $this->auth->login($qr_data);
+        
+        error_log('User found by username: ' . ($user ? 'Yes' : 'No'));
+        
+        // If not found by username, try to find by nomor_peserta
+        if (!$user) {
+            $user = $this->db->select('a.*, b.user_id, b.group_id, c.id as role, c.name as role_name, c.description')
+                ->from('users a')
+                ->where(['a.nomor_peserta' => $qr_data])
+                ->join('users_groups b', 'a.id=b.user_id')
+                ->join('groups c', 'b.group_id=c.id')
+                ->get()->row();
+                
+            error_log('User found by nomor_peserta: ' . ($user ? 'Yes' : 'No'));
+        }
+        
+        if (!$user) {
+            error_log('User not found for QR data: ' . $qr_data);
+            $this->respond(false, 'QR code tidak valid atau siswa tidak ditemukan');
+            return;
+        }
+        
+        if (strtolower($user->role_name ?? '') !== 'siswa') {
+            error_log('User role is not siswa: ' . ($user->role_name ?? 'unknown'));
+            $this->respond(false, 'QR code tidak valid atau siswa tidak ditemukan');
+            return;
+        }
+
+        // Set session data
+        $session_data = [
+            'is_login' => true,
+            'user_id' => $user->id,
+            'username' => $user->username,
+            'nama' => $user->nama,
+            'email' => $user->email,
+            'role' => $user->role_name,
+            'foto' => $user->foto,
+            'login_variant' => 'siswa'
+        ];
+        
+        $this->session->set_userdata($session_data);
+        
+        // Log the login
+        $this->logging->saveLog(1, 'QR Code Login: ' . $qr_data);
+        
+        error_log('QR Login successful for: ' . $user->username);
+        
+        $this->respond(true, 'Login berhasil dengan QR code', [
+            'redirect' => site_url('cbtsiswa/cbt'),
+            'url' => 'siswa/cbt',
+            'user' => [
+                'id' => $user->id,
+                'username' => $user->username,
+                'nama' => $user->nama,
+                'role' => $user->role_name
+            ]
+        ]);
+    }
 }

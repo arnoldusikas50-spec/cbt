@@ -99,6 +99,7 @@
                         {'name': 'Hasil Ujian', 'link':"cbtnilai", 'icon': 'fa fa-file-alt'},
                         {'name': 'Rekap Nilai', 'link':"cbtrekap", 'icon': 'fas fa-trophy'},
                         {'name': 'Lulus/Remedial', 'link':"cbtrekap/export_all", 'icon': 'fas fa-users'},
+                        {'name': 'Arsip Laporan', 'link':"laporan", 'icon': 'fas fa-file-pdf'},
                     ]
                 },
             ]

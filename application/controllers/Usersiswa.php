@@ -7,8 +7,8 @@ class Usersiswa extends MY_Controller {
 		parent::__construct();
         if (!$this->auth->logged_in()) {
             redirect('auth');
-        }else if ( !$this->auth->is_admin()){
-            show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
+        }else if ( !$this->auth->is_admin() && !$this->auth->in_group('panitia')){
+            show_error('Hanya Administrator dan Panitia yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
         }
 		$this->load->model('Siswa_user_model', 'siswa_user');
 	}
@@ -39,7 +39,8 @@ class Usersiswa extends MY_Controller {
         $data['smt'] = $this->dashboard->getSemester();
         $data['smt_active'] = $this->dashboard->getSemesterActive();
 
-        $this->render_view(1, 'users/siswa/data', $data);
+        $role = $this->auth->is_admin() ? 1 : ($this->auth->in_group('panitia') ? 4 : 0);
+        $this->render_view($role, 'users/siswa/data', $data);
 	}
 
     public function list() {
@@ -130,13 +131,13 @@ class Usersiswa extends MY_Controller {
     }
 
     private function nonaktifkan($user, $nama) {
-        if (!$this->auth->logged_in() || !$this->auth->is_admin()) {
+        if (!$this->auth->logged_in() || (!$this->auth->is_admin() && !$this->auth->in_group('panitia'))) {
             $data = [
                 'status'	=> false,
-                'msg'		=> 'You must be an administrator to view this page.'
+                'msg'		=> 'You must be an administrator or panitia to view this page.'
             ];
         } else {
-            if ($this->auth->logged_in() && $this->auth->is_admin()) {
+            if ($this->auth->logged_in() && ($this->auth->is_admin() || $this->auth->in_group('panitia'))) {
                 $deleted = $this->auth->delete_user($user->id);
                 $data = [
                     'status'	=> $deleted,
@@ -155,10 +156,10 @@ class Usersiswa extends MY_Controller {
     public function reset_login() {
         $username = $this->input->post('username', true);
         $nama = $this->input->post('nama', true);
-        if (!$this->auth->logged_in() || !$this->auth->is_admin()) {
+        if (!$this->auth->logged_in() || (!$this->auth->is_admin() && !$this->auth->in_group('panitia'))) {
             $data = [
                 'status'	=> false,
-                'msg'		=> 'You must be an administrator to view this page.'
+                'msg'		=> 'You must be an administrator or panitia to view this page.'
             ];
         } else {
             $this->db->where('login', $username);

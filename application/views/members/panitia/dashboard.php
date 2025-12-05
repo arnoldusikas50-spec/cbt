@@ -1,249 +1,533 @@
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper bg-light">
-    <section class="content-header p-0 d-flex align-items-end fade-in-up" style="height: 200px; background: linear-gradient(135deg, #0066CC 0%, #004080 100%)">
-    <!--  <section class="content-header p-0 d-flex align-items-end" style="height: 200px; background: linear-gradient(45deg, #0066ffff 40%, #84b8f0ff 60%)"> -->
-    <div class="container-fluid pl-0 pr-0 pb-0 pt-4" style="background-color: rgba(255,255,255,0.7)">
-            <div class="row m-0">
-                 <?php foreach ($info_box as $info) : ?>
-                    <div class="col-md-2 col-4">
-                        <div class="shadow small-box bg-<?= $info->box ?>">
-                            <div class="inner">
-                                <h5 class="mb-0"><b><?= $info->total; ?></b></h5>
-                                <span><?= $info->title; ?></span>
-                            </div>
-                            <div class="icon">
-                                <i class="fa fa-<?= $info->icon ?>" style="top: -1px"></i>
+<div class="content-wrapper" style="background-color: #f5f7fa;">
+    <!-- Welcome Header Section -->
+
+
+    <section class="content" style="padding-top: 30px;">
+        <div class="container-fluid">
+            <!-- Statistik Utama 4 Kolom -->
+            <div class="row mb-4">
+                <!-- Total Siswa -->
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card border-0 rounded-15 shadow-sm card-stat hover-scale" style="transition: all 0.3s ease; overflow: hidden;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <p class="text-muted mb-2 font-weight-600" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Total Siswa</p>
+                                    <h2 class="mb-1 font-weight-bold" id="total-siswa" style="font-size: 2.2rem; color: #667eea;">0</h2>
+                                    <small class="text-success font-weight-500"><i class="fas fa-arrow-up"></i> Siswa Aktif</small>
+                                </div>
+                                <div class="text-center p-3 rounded-circle" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-users text-dark" style="font-size: 28px;"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                </div>
+
+                <!-- Total Rombel -->
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card border-0 rounded-15 shadow-sm card-stat hover-scale" style="transition: all 0.3s ease; overflow: hidden;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <p class="text-muted mb-2 font-weight-600" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Total Rombel</p>
+                                    <h2 class="mb-1 font-weight-bold" id="total-rombel" style="font-size: 2.2rem; color: #f5576c;">0</h2>
+                                    <small class="text-danger font-weight-500"><i class="fas fa-layer-group"></i> Kelas Aktif</small>
+                                </div>
+                                <div class="text-center p-3 rounded-circle" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-school text-dark" style="font-size: 28px;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Guru -->
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card border-0 rounded-15 shadow-sm card-stat hover-scale" style="transition: all 0.3s ease; overflow: hidden;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <p class="text-muted mb-2 font-weight-600" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Total Guru</p>
+                                    <h2 class="mb-1 font-weight-bold" id="total-guru" style="font-size: 2.2rem; color: #ffa502;">0</h2>
+                                    <small class="text-warning font-weight-500"><i class="fas fa-chalkboard-user"></i> Pendidik</small>
+                                </div>
+                                <div class="text-center p-3 rounded-circle" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-chalkboard-user text-dark" style="font-size: 28px;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jadwal Hari Ini -->
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card border-0 rounded-15 shadow-sm card-stat hover-scale" style="transition: all 0.3s ease; overflow: hidden;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <p class="text-muted mb-2 font-weight-600" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Jadwal Hari Ini</p>
+                                    <h2 class="mb-1 font-weight-bold" id="jadwal-hari-ini" style="font-size: 2.2rem; color: #00bcd4;">0</h2>
+                                    <small class="text-info font-weight-500"><i class="fas fa-calendar"></i> Ujian Berlangsung</small>
+                                </div>
+                                <div class="text-center p-3 rounded-circle" style="background: linear-gradient(135deg, #00bcd4 0%, #00acc1 100%); width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-calendar-alt text-dark" style="font-size: 28px;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Row -->
+            <div class="row mb-4">
+                <!-- Jadwal Ujian Hari Ini (8 kolom) -->
+                <div class="col-lg-8 mb-4">
+                    <div class="card border-0 rounded-15 shadow-sm">
+                        <div class="card-header border-0 pt-4 pb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px 15px 0 0;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="text-dark font-weight-bold mb-0">
+                                    <i class="fas fa-calendar-check"></i> Jadwal Ujian Hari Ini
+                                </h5>
+                                <span class="badge badge-light" style="font-size: 0.75rem; padding: 6px 12px;"><i class="fas fa-sync-alt"></i> Live</span>
+                            </div>
+                        </div>
+                        <div class="card-body pt-3">
+                            <div id="jadwal-ujian-container" class="table-responsive">
+                                <table class="table table-sm table-borderless table-hover mb-0">
+                                    <thead style="border-bottom: 2px solid #f0f0f0;">
+                                        <tr>
+                                            <th class="text-center" style="color: #667eea; font-weight: 600;">Jam</th>
+                                            <th style="color: #667eea; font-weight: 600;">Bank Soal</th>
+                                            <th class="text-center" style="color: #667eea; font-weight: 600;">Ruang</th>
+                                            <th class="text-center" style="color: #667eea; font-weight: 600;">Peserta</th>
+                                            <th class="text-center" style="color: #667eea; font-weight: 600;">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="jadwal-tbody">
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted py-4">
+                                                <i class="fas fa-info-circle"></i> Tidak ada jadwal ujian hari ini
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Kanan (4 kolom) -->
+                <div class="col-lg-4 mb-4">
+                    <!-- Token CBT -->
+                    <div class="card border-0 rounded-15 shadow-sm mb-3">
+                        <div class="card-header border-0 pt-4 pb-3" style="background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%); border-radius: 15px 15px 0 0;">
+                            <h5 class="text-dark font-weight-bold mb-0">
+                                <i class="fas fa-key"></i> Token CBT
+                            </h5>
+                        </div>
+                        <div class="card-body text-center pt-4 pb-4">
+                            <div class="display-4 font-weight-bold mb-3" id="token-display" style="letter-spacing: 3px; font-family: 'Courier New'; color: #f5576c;">
+                                <?= isset($token->token) && $token->token ? $token->token : '------' ?>
+                            </div>
+                            <small class="text-muted d-block mb-3">Token berlaku untuk sistem penilaian</small>
+                            <button class="btn btn-sm" style="background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%); color: white; border: none; font-weight: 600;" onclick="refreshToken()">
+                                <i class="fas fa-redo"></i> Refresh Token
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Pengumuman & Aktivitas -->
+            <div class="row">
+                <div class="col-lg-8 mb-4">
+                    <div class="card border-0 rounded-15 shadow-sm">
+                        <div class="card-header border-0 pt-4 pb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px 15px 0 0;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="text-dark font-weight-bold mb-0">
+                                    <i class="fas fa-bullhorn"></i> Pengumuman Terbaru
+                                </h5>
+                                <a href="<?= base_url('pengumuman') ?>" class="text-dark small" style="opacity: 0.9;">Lihat Semua →</a>
+                            </div>
+                        </div>
+                        <div class="card-body pt-4" id="pengumuman-container">
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="card border-0 rounded-15 shadow-sm">
+                        <div class="card-header border-0 pt-4 pb-3" style="background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%); border-radius: 15px 15px 0 0;">
+                            <h5 class="text-dark font-weight-bold mb-0">
+                                <i class="fas fa-history"></i> Aktivitas Terbaru
+                            </h5>
+                        </div>
+                        <div class="card-body pt-4" id="aktivitas-container">
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
+</div>
 
-    <section class="content mt-4">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card card-primary my-shadow">
-                       <!-- <div class="card-header">
-                            <h5 class="text-center">Penilaian</h5>
-                        </div> -->
-                        <div class="card-body">
-                            <div class="row">
-                                <?php foreach ($ujian_box as $info) : ?>
-                                    <div class="col-6 col-md-3 col-lg-2" style="min-height: 60px">
-                                        <div class="info-box border p-1" style="min-height: 60px">
-                                            <div class="info-box-content p-1 text-danger">
-                                                <span class="info-box-text text-sm"><?= $info->title; ?></span>
-                                                <h5 class="info-box-number m-0"><?= $info->total; ?></h5>
-                                            </div>
-                                        </div>
+<style>
+/* Rounded Cards */
+.rounded-15 {
+    border-radius: 15px !important;
+    overflow: hidden;
+}
+
+/* Card Stats */
+.card-stat {
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+}
+
+.card-stat:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1) !important;
+}
+
+.hover-scale {
+    transform: translateY(0);
+    transition: all 0.3s ease;
+}
+
+.hover-scale:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Card Header */
+.card-header {
+    background-attachment: fixed;
+}
+
+/* Task Items */
+.task-item {
+    transition: all 0.2s ease;
+}
+
+.task-item:hover {
+    background-color: #f9f9f9;
+    padding-left: 10px;
+    border-radius: 5px;
+}
+
+/* Header Text */
+.text-dark-80 {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Table Enhancement */
+.table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Badge Styling */
+.badge {
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 20px;
+}
+
+/* Pengumuman & Aktivitas Items */
+.pengumuman-item, .aktivitas-item {
+    padding: 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+}
+
+.pengumuman-item:hover, .aktivitas-item:hover {
+    padding-left: 10px;
+    background-color: #f9f9f9;
+}
+
+.pengumuman-item:last-child, .aktivitas-item:last-child {
+    border-bottom: none;
+}
+
+/* Button Styling */
+.btn-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .content-header {
+        height: auto !important;
+    }
+    
+    .card-stat {
+        margin-bottom: 15px;
+    }
+}
+</style>
+
+<script>
+const base_url = "<?= base_url() ?>";
+let idpanitia = "<?= isset($panitia->id_panitia) ? $panitia->id_panitia : '0' ?>";
+
+// Update jam dan tanggal
+function updateTime() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('id-ID');
+    const dateStr = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    
+    document.getElementById('current-time').textContent = timeStr;
+    document.getElementById('current-date').textContent = dateStr;
+}
+
+// Global var for initial data
+const initialInfoBox = <?= isset($info_box) ? json_encode($info_box) : '[]' ?>;
+const initialUjianBox = <?= isset($ujian_box) ? json_encode($ujian_box) : '[]' ?>;
+
+// Populate stat boxes
+function populateStats(infoBox, ujianBox) {
+    const stats = infoBox || [];
+    const ujianStats = ujianBox || [];
+
+    if (stats.length > 0) {
+        stats.forEach(stat => {
+            if (stat.title.includes('Siswa')) {
+                const el = document.getElementById('total-siswa');
+                if(el) el.textContent = stat.total;
+            }
+            if (stat.title.includes('Rombel')) {
+                const el = document.getElementById('total-rombel');
+                if(el) el.textContent = stat.total;
+            }
+            if (stat.title.includes('Guru')) {
+                 const el = document.getElementById('total-guru');
+                 if(el) el.textContent = stat.total;
+            }
+        });
+    }
+
+    if (ujianStats.length > 0) {
+        ujianStats.forEach(stat => {
+            if (stat.title.includes('Ruang')) {
+                const el = document.getElementById('stat-ruang');
+                if(el) el.textContent = stat.total;
+            }
+            if (stat.title.includes('Sesi')) {
+                const el = document.getElementById('stat-sesi');
+                if(el) el.textContent = stat.total;
+            }
+            if (stat.title.includes('Bank')) {
+                const el = document.getElementById('stat-bank');
+                if(el) el.textContent = stat.total;
+            }
+            if (stat.title.includes('Jadwal')) {
+                const el = document.getElementById('stat-jadwal');
+                if(el) el.textContent = stat.total;
+            }
+        });
+    }
+}
+
+function loadRealtimeStats() {
+    $.ajax({
+        url: base_url + 'dashboard/get_realtime_stats',
+        method: 'GET',
+        dataType: 'JSON',
+        success: function(response) {
+            populateStats(response.info_box, response.ujian_box);
+        }
+    });
+}
+
+// Load jadwal ujian hari ini
+function loadJadwalUjian() {
+    $.ajax({
+        url: base_url + 'dashboard/get_status_siswa',
+        method: 'GET',
+        dataType: 'JSON',
+        success: function(response) {
+            const jadwals = response.jadwals_ujian || [];
+            const tbody = document.getElementById('jadwal-tbody');
+            
+            if (jadwals.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4"><i class="fas fa-info-circle"></i> Tidak ada jadwal ujian hari ini</td></tr>';
+                document.getElementById('jadwal-hari-ini').textContent = '0';
+                return;
+            }
+
+            document.getElementById('jadwal-hari-ini').textContent = jadwals.length;
+            let html = '';
+
+            jadwals.forEach((jadwal, idx) => {
+                const mapel = jadwal.bank?.mapel?.nama_mapel || 'N/A';
+                const bankKode = jadwal.bank?.bank_kode || 'N/A';
+                html += `
+                    <tr>
+                        <td class="text-center"><small class="badge badge-info">${jadwal.jam_ke || '-'}</small></td>
+                        <td>
+                            <strong>${mapel}</strong>
+                            <br><small class="text-muted">${bankKode}</small>
+                        </td>
+                        <td class="text-center">-</td>
+                        <td class="text-center"><span class="badge badge-warning">-</span></td>
+                        <td class="text-center"><span class="badge badge-secondary">Terjadwal</span></td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        },
+        error: function() {
+            document.getElementById('jadwal-tbody').innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4"><i class="fas fa-exclamation-circle"></i> Gagal memuat data</td></tr>';
+        }
+    });
+}
+
+    // Load pengumuman
+    function loadPengumuman() {
+        $.ajax({
+            url: base_url + 'dashboard/getPengumuman/2', // Fixed: loadPengumuman -> getPengumuman
+            method: 'GET',
+            dataType: 'JSON',
+            success: function(response) {
+                const container = document.getElementById('pengumuman-container');
+                if (!response || response.length === 0) {
+                    container.innerHTML = '<div class="text-center text-muted py-5"><i class="fas fa-inbox" style="font-size: 2rem; opacity: 0.5;"></i><p class="mt-3">Tidak ada pengumuman</p></div>';
+                    return;
+                }
+
+                let html = '';
+                response.slice(0, 3).forEach((post, idx) => {
+                    const tanggal = new Date(post.tanggal).toLocaleDateString('id-ID');
+                    const teks = post.text.substring(0, 80);
+                    html += `
+                        <div class="pengumuman-item">
+                            <div class="d-flex">
+                                <div class="mr-3">
+                                    <div class="badge" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border-radius: 50%;">
+                                        <i class="fas fa-bullhorn"></i>
                                     </div>
-                                <?php endforeach; ?>
-                                <div class="col-6 col-md-3 col-lg-2" style="min-height: 60px">
-                                    <div class="info-box border p-1" style="min-height: 60px">
-                                        <div class="info-box-content p-1 text-primary">
-                                            <span class="info-box-text">Token
-                                                <small class="float-right d-none" id="interval">-- : -- : --</small></span>
-                                            <div>
-                                                <h5 class="info-box-number m-0"
-                                                    id="token-view"><?= $token->token != null ? $token->token : '- - - - - -' ?></h5>
-                                            </div>
-                                        </div>
-                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 font-weight-bold" style="color: #333;">${teks}${post.text.length > 80 ? '...' : ''}</h6>
+                                    <small class="text-muted"><i class="fas fa-calendar-alt"></i> ${tanggal}</small>
                                 </div>
                             </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-12">
-                                    <h6 class="text-center alert alert-default-danger"><b>JADWAL PENILAIAN HARI INI</b></h6>
-                                    <div class="col-12 table-responsive" id="table-container"></div>
-                                </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            },
+            error: function() {
+                document.getElementById('pengumuman-container').innerHTML = '<div class="text-center text-danger py-5"><i class="fas fa-exclamation-circle" style="font-size: 2rem; opacity: 0.5;"></i><p class="mt-3">Gagal memuat pengumuman</p></div>';
+            }
+        });
+    }
+
+    // Load aktivitas
+    function loadAktivitas() {
+        $.ajax({
+            url: base_url + 'dashboard/getlog',
+            method: 'GET',
+            data: { page: 1, limit: 5 }, // Removed filter to show all activities
+            dataType: 'JSON',
+        success: function(response) {
+            const container = document.getElementById('aktivitas-container');
+            if (!response.logs || response.logs.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted py-5"><i class="fas fa-inbox" style="font-size: 2rem; opacity: 0.5;"></i><p class="mt-3">Tidak ada aktivitas</p></div>';
+                return;
+            }
+
+            let html = '';
+            response.logs.slice(0, 5).forEach(log => {
+                const tanggal = new Date(log.log_time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                const jam = new Date(log.log_time).toLocaleDateString('id-ID');
+                html += `
+                    <div class="aktivitas-item">
+                        <div class="d-flex">
+                            <div class="mr-2">
+                                <i class="fas fa-circle" style="color: #00bcd4; font-size: 0.5rem; margin-top: 5px;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <p class="mb-1" style="color: #555; font-size: 0.95rem;">${log.log_desc}</p>
+                                <small class="text-muted"><i class="fas fa-clock"></i> ${tanggal}</small>
                             </div>
                         </div>
                     </div>
-                </div>
+                `;
+            });
 
-                <div class="col-md-4">
-                    <div class="card card-primary my-shadow">
-                        <div class="card-header">
-                            <div class="card-title">
-                                ELEARNING HARI INI
-                            </div>
-                            <div class="card-tools">
-                                <a href="<?= base_url('elearning/jadwal') ?>" type="button" onclick="" class="btn btn-sm">
-                                    <i class="fa fa-arrow-circle-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                        <?php if (count($jadwal_kbm) > 0):?>
-                            <div class="card-body p-2">
-                                <div class="row">
-                                    <span class="ml-3 text-bold">Kelas</span>
-                                </div>
-                                <hr class="m-0" />
-                                <div class="row">
-                                    <div class="col-5 col-sm-3">
-                                        <div class="nav flex-column nav-tabs h-100">
-                                            <?php
-                                            $no = 1;
-                                            foreach ($kelases as $ky => $kelas) :
-                                                $active = $no == 1 ? 'active' : '';
-                                                ?>
-                                                <a class="nav-link <?= $active ?>"
-                                                   href="#tab_<?= $ky ?>"
-                                                   data-toggle="tab"><?= $kelas ?></a>
-                                                <?php $no++; endforeach; ?>
-                                        </div>
-                                    </div>
-                                    <div class="col-7 col-sm-9">
-                                        <div class="tab-content">
-                                            <div class="tab-content">
-                                                <?php
-                                                $no = 1;
-                                                foreach ($kelases as $ky => $kelas) :
-                                                    $active = $no == 1 ? 'active' : '';
-                                                    ?>
-                                                    <div class="tab-pane fade show <?= $active ?>" id="tab_<?= $ky ?>">
-                                                        <div class="table-responsive">
-                                                            <?php
-                                                            $jadwalKbm = $jadwal_kbm[$ky] ?? [];
-                                                            $table = "<table class='my-timetable w-100 border-bottom' id='tbl'>";
-                                                            $tbody = "";
-                                                            $idRow = 0;
-                                                            $jadwalRows = 0;
-                                                            $arrStart = [];
+            container.innerHTML = html;
+        },
+        error: function() {
+            document.getElementById('aktivitas-container').innerHTML = '<div class="text-center text-danger py-5"><i class="fas fa-exclamation-circle" style="font-size: 2rem; opacity: 0.5;"></i><p class="mt-3">Gagal memuat aktivitas</p></div>';
+        }
+    });
+}
 
-                                                            foreach ($times as $jam) {
-                                                                $startTime = isset($jam['start']) ? $jam['start'] : '';
-                                                                $arrStart[] = $startTime;
-                                                                $rowSpanJam = isset($jam['span']) ? $jam['span'] : 12;
 
-                                                                if ($idRow === 0) {
-                                                                    $firstRow = "<tr class='row$idRow'>";
+// Refresh token
+function refreshToken() {
+    $.ajax({
+        url: base_url + 'dashboard/checkTokenJadwal',
+        method: 'GET',
+        dataType: 'JSON',
+        success: function(response) {
+            if (response.token && response.token.token) {
+                document.getElementById('token-display').textContent = response.token.token;
+                showSuccessToast('Token berhasil diperbarui');
+            }
+        },
+        error: function() {
+            showDangerToast('Gagal memperbarui token');
+        }
+    });
+}
 
-                                                                    $td0 = "<td class='column-time text-center align-top text-xs text-bold times p-0 frozen-column' rowspan='$rowSpanJam'>$startTime</td>";
-                                                                    $td1 = "<td class='frozen-column-2' style='width: 30px; height: 10px;'></td>";
-                                                                    $td2 = "<td class='row0'></td>";
+// Initialize
+$(document).ready(function() {
+    updateTime();
+    setInterval(updateTime, 1000);
+    
+    populateStats(initialInfoBox, initialUjianBox);
+    loadJadwalUjian();
+    loadPengumuman();
+    loadAktivitas();
+    
+    // Refresh data stats setiap 30 detik
+    setInterval(loadRealtimeStats, 30 * 1000);
 
-                                                                    $firstRow .= $td0 . $td1 . $td2;
-                                                                    $firstRow .= "</tr>";
-                                                                    $tbody .= $firstRow;
-                                                                } else {
-                                                                    $minute = explode(':', $startTime)[1];
-                                                                    $row = "<tr class='row$idRow'>";
+    // Refresh data setiap 5 menit
+    setInterval(loadJadwalUjian, 5 * 60 * 1000);
+    setInterval(loadPengumuman, 10 * 60 * 1000);
+    setInterval(loadAktivitas, 10 * 60 * 1000);
+});
+</script>
 
-                                                                    if ($idRow % 2 !== 0) {
-                                                                        $row = "<tr class='row$idRow' data-time='$startTime'>";
-                                                                    }
 
-                                                                    if ($minute % 30 === 0) {
-                                                                        $td0 = "<td class='column-time text-center align-top text-xs text-bold times p-0 frozen-column' rowspan='$rowSpanJam'>$startTime</td>";
-                                                                        $row .= $td0;
-                                                                    }
-
-                                                                    $td1 = "<td class='frozen-column-2' style='width: 30px; height: 6px;'></td>";
-                                                                    $row .= $td1;
-
-                                                                    $tbody .= $row . "</tr>";
-                                                                }
-
-                                                                $scheduleRow = "<tr class='row" . ($idRow + 1) . "'>";
-
-                                                                if ($idRow % 2 !== 0) {
-                                                                    $scheduleRow = "<tr class='row" . ($idRow + 1) . "' data-time='$startTime'>";
-                                                                }
-
-                                                                $td1 = "<td class='frozen-column-3' style='width: 30px; height: 6px;'></td>";
-                                                                $scheduleRow .= $td1;
-
-                                                                $arr = isset($jadwalKbm->detail[$startTime]) ? $jadwalKbm->detail[$startTime] : null;
-                                                                $rowSpan = $arr ? $arr['rows'] * 2 : 2;
-                                                                $jadwalRows = $rowSpan;
-
-                                                                $td = "<td class='align-middle row" . ($idRow + 1) . " text-xs' rowspan='$rowSpan'>";
-
-                                                                $div = "<div class='h-100 pb-1' style='padding: 0 .1rem;'>";
-
-                                                                if ($arr) {
-                                                                    $flex = $rowSpan > 6 ? 'flex-column justify-content-center' : 'flex-row justify-content-between';
-                                                                    $alertDivClass = 'alert alert-default-' . (isset($arr['id_mapel']) && $arr['id_mapel'] === '-1'
-                                                                            ? 'warning' : (isset($arr['id_mapel']) && $arr['id_mapel'] === '-2' ? 'success'
-                                                                                : (isset($arr['kode']) && $arr['kode'] ? 'info' : 'secondary'))) . " p-1 h-100 m-0 d-flex $flex";
-                                                                    $alertDiv = "<div class='$alertDivClass'>";
-
-                                                                    if (isset($arr['id_mapel']) && $arr['id_mapel'] === '-1') {
-                                                                        $alertDiv .= "<div class='text-xs ml-1'>Istirahat</div>";
-                                                                        $alertDiv .= "<div class='d-inline-block mx-1 text-nowrap'>{$arr['dari']} - {$arr['sampai']}</div>";
-                                                                    } elseif (isset($arr['id_mapel']) && $arr['id_mapel'] === '-2') {
-                                                                        $alertDiv .= "<div class='text-xs ml-1'>Upacara Bendera</div>";
-                                                                        $alertDiv .= "<div class='d-inline-block mx-1 text-nowrap'>{$arr['dari']} - {$arr['sampai']}</div>";
-                                                                    } else {
-                                                                        if (isset($arr['kode']) && $arr['kode']) {
-                                                                            $alertDiv .= "<div class='text-bold ml-1'>{$arr['kode']}</div>";
-                                                                            $alertDiv .= "<div class='d-inline-block mx-1 text-nowrap'>{$arr['dari']} - {$arr['sampai']}</div>";
-                                                                        }
-                                                                    }
-                                                                    $alertDiv .= "</div>";
-                                                                    $div .= $alertDiv;
-                                                                    $div .= "</div>";
-                                                                    $td .= $div;
-                                                                }
-                                                                $scheduleRow .= $td;
-                                                                $scheduleRow .= "</tr>";
-                                                                $tbody .= $scheduleRow;
-                                                                $jadwalRows -= 2;
-                                                                $idRow += 2;
-                                                            }
-                                                            $table .= $tbody . "</table>";
-                                                            echo $table;
-                                                            ?>
-                                                        </div>
-                                                    </div>
-                                                    <?php $no++; endforeach; ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php else:?>
-                            <div class="card-body alert alert-default-warning">
-                                Tidak ada jadwal hari ini
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                    <div class="card card-success my-shadow">
-                        <div class="card-header">
-                            <div class="card-title">Aktifitas</div>
-                        </div>
-                        <div class="card-body">
-                            <div id="log-list">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-8">
-                    <div class="card card-danger my-shadow mb-3">
-                        <div class="card-header"><b>INFO/PENGUMUMAN</b></div>
-                        <div class="card-body">
-                            <div class="konten-pengumuman">
-                                <div id="pengumuman">
-                                </div>
-                                <p id="loading-post" class="text-center d-none">
-                                    <br/><i class="fa fa-spin fa-circle-o-notch"></i> Loading....
-                                </p>
-                                <div id="loadmore-post"
-                                     onclick="getPosts()"
-                                     class="text-center mt-4 loadmore d-none">
-                                    <div class="btn btn-default">Muat Pengumuman lainnya ...</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    </section>
 </div>
 
 <div class="modal fade" id="komentarModal" tabindex="-1" role="dialog" aria-labelledby="komentarLabel">

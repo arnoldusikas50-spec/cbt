@@ -158,6 +158,17 @@ class Dashboard_model extends CI_Model {
         return $this->db->get()->row();
     }
 
+    public function getDataPanitiaByUserId($id_user, $id_tp, $id_smt) {
+        if (!$this->db->table_exists('master_panitia')) {
+            return null;
+        }
+        
+        $this->db->select('a.id_panitia, a.nama_panitia, a.nama_panitia as nama_lengkap, a.username, a.id_user, a.foto, a.ttd, a.jabatan, a.no_hp, a.email');
+        $this->db->from('master_panitia a');
+        $this->db->where('a.id_user', $id_user);
+        return $this->db->get()->row();
+    }
+
 	public function getDetailGuruByUserId($id_user, $id_tp, $id_smt) {
         $this->db->query('SET SQL_BIG_SELECTS=1');
 		$this->db->select('a.*,b.id_jabatan, b.id_kelas, b.mapel_kelas, b.ekstra_kelas, b.id_tp, b.id_smt,'.

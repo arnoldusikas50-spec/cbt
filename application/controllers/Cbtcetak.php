@@ -7,7 +7,7 @@ class Cbtcetak extends MY_Controller {
 		parent::__construct();
 		if (!$this->auth->logged_in()) {
 			redirect('auth');
-        } else if ( !$this->auth->is_admin() && !$this->auth->in_group('guru')){
+        } else if ( !$this->auth->is_admin() && !$this->auth->in_group('panitia') && !$this->auth->in_group('guru')){
 			show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
 		}
 		$this->load->library(['datatables', 'form_validation']); // Load Library Ignited-Datatables
@@ -60,11 +60,14 @@ class Cbtcetak extends MY_Controller {
 		$data['smt'] = $this->dashboard->getSemester();
 		$data['smt_active'] = $smt;
         $data['kop'] = $this->cbt->getSettingKopAbsensi();
-        $data['is_admin'] = $this->auth->is_admin();
+        $data['is_admin'] = $this->auth->is_admin() || $this->auth->in_group('panitia');
 
         if($this->auth->is_admin()){
             $this->render_view(1, 'cbt/cetak/data', $data);
-        }else{
+        } elseif ($this->auth->in_group('panitia')) {
+            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(4, 'cbt/cetak/data', $data);
+        } else {
             $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             //$this->dashboard->getDataGuruByUsername($user->username, $tp->id_tp, $smt->id_smt);
             $pengawas = $this->cbt->getPengawasHariIni(date('Y-m-d'));
@@ -111,10 +114,49 @@ class Cbtcetak extends MY_Controller {
 
         if ($this->auth->is_admin()) {
             $this->render_view(1, 'cbt/cetak/kartu', $data);
+        } elseif ($this->auth->in_group('panitia')) {
+            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(4, 'cbt/cetak/kartu', $data);
         } else {
             $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
-            //$this->dashboard->getDataGuruByUsername($user->username, $tp->id_tp, $smt->id_smt);
             $this->render_view(2, 'cbt/cetak/kartu', $data);
+        }
+	}
+
+	public function kartuMeja() {
+        $this->load->model('Dashboard_model', 'dashboard');
+        $this->load->model('Cbt_model', 'cbt');
+        $this->load->model('Dropdown_model', 'dropdown');
+        $this->load->model('Rapor_model', 'rapor');
+
+		$user = $this->auth->user();
+		$data = [
+			'user' 			=> $user,
+			'judul' => 'Cetak Kartu Meja',
+			'subjudul' => 'Cetak',
+			'profile'		=> null,
+			'setting'		=> $this->dashboard->getSetting()
+		];
+
+        $tp = $this->dashboard->getTahunActive();
+        $smt = $this->dashboard->getSemesterActive();
+		$data['tp'] = $this->dashboard->getTahun();
+		$data['tp_active'] = $tp;
+		$data['smt'] = $this->dashboard->getSemester();
+		$data['smt_active'] = $smt;
+		$data['kartu_meja'] = $this->cbt->getSettingKartu();
+		$data['kelas'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
+		$data['ruang'] = $this->dropdown->getAllRuang();
+        $data['setting_rapor'] = $this->rapor->getRaporSetting($tp->id_tp, $smt->id_smt);
+
+        if ($this->auth->is_admin()) {
+            $this->render_view(1, 'cbt/cetak/kartumeja', $data);
+        } elseif ($this->auth->in_group('panitia')) {
+            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(4, 'cbt/cetak/kartumeja', $data);
+        } else {
+            $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(2, 'cbt/cetak/kartumeja', $data);
         }
 	}
 
@@ -154,6 +196,26 @@ class Cbtcetak extends MY_Controller {
 	}
 
 	public function saveKartu() {
+		$header_1 = $this->input->post('header_1', true);
+		$header_2 = $this->input->post('header_2', true);
+		$header_3 = $this->input->post('header_3', true);
+		$header_4 = $this->input->post('header_4', true);
+		$tanggal = $this->input->post('tanggal', true);
+
+		$insert = [
+			'id_set_kartu' => 123456,
+			'header_1' => $header_1,
+			'header_2' => $header_2,
+			'header_3' => $header_3,
+			'header_4' => $header_4,
+			'tanggal' => $tanggal,
+		];
+
+		$update = $this->db->replace('cbt_kop_kartu', $insert);
+		$this->output_json($update);
+	}
+
+	public function saveKartuMeja() {
 		$header_1 = $this->input->post('header_1', true);
 		$header_2 = $this->input->post('header_2', true);
 		$header_3 = $this->input->post('header_3', true);
@@ -297,7 +359,14 @@ class Cbtcetak extends MY_Controller {
         $data['all_pengawas'] = $this->cbt->getAllPengawas($tp->id_tp, $smt->id_smt, null, null);
         $data['all_guru'] = $this->dropdown->getAllGuru();
 
-        $data['siswa'] = $this->cbt->getSiswaByRuang($tp->id_tp, $smt->id_smt, $ruang, $s);
+        $siswa_data = $this->cbt->getSiswaByRuang($tp->id_tp, $smt->id_smt, $ruang, $s);
+        
+        // Fix foto path
+        foreach ($siswa_data as $siswa) {
+            $siswa->foto = file_exists($siswa->foto) ? $siswa->foto : 'assets/img/siswa.png';
+        }
+        
+        $data['siswa'] = $siswa_data;
         $data['info'] = [
             'ruang'=>$iruang,
             'sesi'=>$isesi,
@@ -361,9 +430,11 @@ class Cbtcetak extends MY_Controller {
 
         if ($this->auth->is_admin()) {
             $this->render_view(1, 'cbt/cetak/absen', $data);
+        } elseif ($this->auth->in_group('panitia')) {
+            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(4, 'cbt/cetak/absen', $data);
         } else {
             $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
-            //$this->dashboard->getDataGuruByUsername($user->username, $tp->id_tp, $smt->id_smt);
             $this->render_view(2, 'cbt/cetak/absen', $data);
         }
 	}
@@ -524,6 +595,9 @@ class Cbtcetak extends MY_Controller {
 
         if ($this->auth->is_admin()) {
             $this->render_view(1, 'cbt/cetak/beritaacara', $data);
+        } elseif ($this->auth->in_group('panitia')) {
+            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(4, 'cbt/cetak/beritaacara', $data);
         } else {
             $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             //$this->dashboard->getDataGuruByUsername($user->username, $tp->id_tp, $smt->id_smt);
@@ -548,6 +622,46 @@ class Cbtcetak extends MY_Controller {
 		$update = $this->db->replace('cbt_kop_berita', $insert);
 		$this->output_json($update);
 	}
+
+    public function paktaIntegritas() {
+        $this->load->model('Dashboard_model', 'dashboard');
+        $this->load->model('Cbt_model', 'cbt');
+        $this->load->model('Dropdown_model', 'dropdown');
+
+        $user = $this->auth->user();
+        $data = [
+            'user' 			=> $user,
+            'judul' => 'Cetak Pakta Integritas',
+            'subjudul' => 'Cetak',
+            'profile'		=> null,
+            'setting'		=> $this->dashboard->getSetting()
+        ];
+
+        $tp = $this->dashboard->getTahunActive();
+        $smt = $this->dashboard->getSemesterActive();
+        $data['tp'] = $this->dashboard->getTahun();
+        $data['tp_active'] = $tp;
+        $data['smt'] = $this->dashboard->getSemester();
+        $data['smt_active'] = $smt;
+
+        $data['jadwal'] = $this->dropdown->getAllJadwal($tp->id_tp, $smt->id_smt);
+        $data['mapel'] = $this->dropdown->getAllJadwalMapel($tp->id_tp, $smt->id_smt);
+        $data['mapel_jadwal'] = $this->dropdown->getAllMapelJadwal($tp->id_tp, $smt->id_smt);
+        $data['kelas'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
+        $data['ruang'] = $this->dropdown->getAllRuang();
+        $data['sesi'] = $this->dropdown->getAllSesi();
+        $data['kop'] = $this->cbt->getSettingKopBeritaAcara();
+
+        if ($this->auth->is_admin()) {
+            $this->render_view(1, 'cbt/cetak/paktaintegritas', $data);
+        } elseif ($this->auth->in_group('panitia')) {
+            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(4, 'cbt/cetak/paktaintegritas', $data);
+        } else {
+            $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(2, 'cbt/cetak/paktaintegritas', $data);
+        }
+    }
 
 	public function pesertaUjian($mode = null) {
         $this->load->model('Dashboard_model', 'dashboard');
@@ -584,6 +698,9 @@ class Cbtcetak extends MY_Controller {
 
         if ($this->auth->is_admin()) {
             $this->render_view(1, 'cbt/cetak/pesertaujian', $data);
+        } elseif ($this->auth->in_group('panitia')) {
+            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(4, 'cbt/cetak/pesertaujian', $data);
         } else {
             $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             //$this->dashboard->getDataGuruByUsername($user->username, $tp->id_tp, $smt->id_smt);
@@ -706,6 +823,9 @@ class Cbtcetak extends MY_Controller {
 
         if ($this->auth->is_admin()) {
             $this->render_view(1, 'cbt/cetak/pengawas', $data);
+        } elseif ($this->auth->in_group('panitia')) {
+            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(4, 'cbt/cetak/pengawas', $data);
         } else {
             $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $this->render_view(2, 'cbt/cetak/pengawas', $data);
@@ -752,9 +872,10 @@ class Cbtcetak extends MY_Controller {
             }
         }
 
-        $s = !$sesi ? null : $sesi;
+        // Handle sesi parameter properly
+        $s = (!$sesi || $sesi === '' || $sesi === 'null') ? null : $sesi;
         $isesi = null;
-        if ($s!=null) {
+        if ($s != null) {
             $isesi = $this->cbt->getSesiById($s);
         }
         $ikelas = $this->master->getKelasById($kelas);
@@ -819,9 +940,10 @@ class Cbtcetak extends MY_Controller {
         $data['all_tgl'] = $group_jadwal;
 
         $iruang = $this->cbt->getRuangById($ruang);
-        $s = $sesi == "null" ? null : $sesi;
+        // Handle sesi parameter properly
+        $s = (!$sesi || $sesi === '' || $sesi === 'null' || $sesi === "null") ? null : $sesi;
         $isesi = null;
-        if ($s!=null) {
+        if ($s != null) {
             $isesi = $this->cbt->getSesiById($s);
         }
         $data['siswa'] = $this->cbt->getRuangSiswaByKelas($tp->id_tp, $smt->id_smt, $arr_id_kelas);
@@ -835,3 +957,5 @@ class Cbtcetak extends MY_Controller {
     }
 
 }
+
+

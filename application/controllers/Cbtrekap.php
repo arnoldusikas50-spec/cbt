@@ -7,7 +7,7 @@ class Cbtrekap extends MY_Controller {
 		parent::__construct();
 		if (!$this->auth->logged_in()) {
 			redirect('auth');
-        } else if ( !$this->auth->is_admin() && !$this->auth->in_group('guru')){
+        } else if ( !$this->auth->is_admin() && !$this->auth->in_group('panitia') && !$this->auth->in_group('guru')){
 			show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
 		}
 		$this->load->library(['datatables', 'form_validation']); // Load Library Ignited-Datatables
@@ -68,7 +68,7 @@ class Cbtrekap extends MY_Controller {
         $this->load->model('Guru_model', 'guru_model');
 
         $bank_where = [];
-        if(!$this->auth->is_admin()){
+        if(!$this->auth->is_admin() && !$this->auth->in_group('panitia')){
             $this->load->model('Users_model', 'users');
             $user = $this->auth->user();
             $guru = $this->users->getDataGuruByUsername($user->username);
@@ -202,7 +202,7 @@ class Cbtrekap extends MY_Controller {
         $this->load->model('Rekap_jadwal_model', 'rekap_jadwal');
         $this->load->model('Master_kelas_model', 'master_kelas_model');
         $rekap_where = [];
-        if(!$this->auth->is_admin()){
+        if(!$this->auth->is_admin() && !$this->auth->in_group('panitia')){
             $this->load->model('Users_model', 'users');
             $user = $this->auth->user();
             $guru = $this->users->getDataGuruByUsername($user->username);
@@ -1408,3 +1408,4 @@ class Cbtrekap extends MY_Controller {
     }
 
 }
+

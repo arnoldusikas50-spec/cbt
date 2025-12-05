@@ -49,16 +49,38 @@ foreach ($soal_ada as $key => $value) {
         <div class="container-fluid">
             <div class="card my-shadow">
                 <div class="card-body">
-                    <div class="row">
-                        <h6 class="col-md-6"><b>Bank
-                                Soal:</b> <?= $bank->bank_kode . ' | PG: ' . $bank->tampil_pg . ', Essai: ' . $bank->tampil_esai ?>
-                        </h6>
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h6><b>Bank Soal:</b> <?= $bank->bank_kode . ' | PG: ' . $bank->tampil_pg . ', Essai: ' . $bank->tampil_esai ?></h6>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <button onclick="window.history.back();" type="button" class="btn btn-sm btn-danger">
+                                <i class="fas fa-arrow-circle-left"></i>
+                                <span class="d-none d-sm-inline-block ml-1">Kembali</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
             <?= form_open('create', array('id' => 'create')) ?>
             <div class="card my-shadow">
                 <div class="card-header p-2">
+                    <style>
+                        /* Tab Active Highlight */
+                        .nav-pills .nav-link.active {
+                            font-weight: bold !important;
+                            box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+                            transform: translateY(-2px);
+                            transition: all 0.3s ease;
+                        }
+                        .nav-pills .nav-link {
+                            transition: all 0.3s ease;
+                        }
+                        .nav-pills .nav-link:hover {
+                            transform: translateY(-1px);
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        }
+                    </style>
                     <ul class="nav nav-pills">
                         <li class="nav-item"><a class="nav-link <?= $tab_active == '1' ? 'active' : '' ?> alert-default-primary"
                                                 href="<?= base_url('cbtbanksoal/buatsoal/' . $bank->id_bank . '?tab=1') ?>">Pilihan
@@ -103,10 +125,12 @@ foreach ($soal_ada as $key => $value) {
                                 <?php
                                 $no++;
                             endfor; ?>
+                            <?php if (!$this->auth->in_group('panitia')): ?>
                             <a href="javascript:void(0)" class="pt-1 btn btn-oval-sm btn-outline-success"
                                data-mapel="<?= $bank->bank_mapel_id ?>" data-bank="<?= $bank->id_bank ?>"
                                data-nomor="<?= $no ?>" onclick="tambahSoalPg(this)" id="btn-add-new-pg"><i
                                         class="fa fa-plus"></i> Tambah PG</a>
+                            <?php endif; ?>
                         </div>
                         <div class="tab-pane <?= $tab_active == '2' ? 'active' : '' ?>" id="kompleks">
                             <div class="alert alert-default-success align-content-center" role="alert">
@@ -126,10 +150,12 @@ foreach ($soal_ada as $key => $value) {
                                 <?php
                                 $no2++;
                             endfor; ?>
+                            <?php if (!$this->auth->in_group('panitia')): ?>
                             <a href="javascript:void(0)" class="pt-1 btn btn-oval-sm btn-outline-success"
                                data-mapel="<?= $bank->bank_mapel_id ?>" data-bank="<?= $bank->id_bank ?>"
                                data-nomor="<?= $no2 ?>" onclick="tambahSoalPg2(this)" id="btn-add-new-pg"><i
                                         class="fa fa-plus"></i> Tambah PG Kompleks</a>
+                            <?php endif; ?>
                         </div>
                         <div class="tab-pane <?= $tab_active == '3' ? 'active' : '' ?>" id="jodoh">
                             <div class="alert alert-default-success align-content-center" role="alert">
@@ -145,10 +171,12 @@ foreach ($soal_ada as $key => $value) {
                                    id="btn-<?= '3' . $noj ?>"><?= $noj ?>
                                 </a>
                                 <?php $noj++; endfor; ?>
+                            <?php if (!$this->auth->in_group('panitia')): ?>
                             <a href="javascript:void(0)" class="pt-1 btn btn-oval-sm btn-outline-primary"
                                data-mapel="<?= $bank->bank_mapel_id ?>" data-bank="<?= $bank->id_bank ?>"
                                data-nomor="<?= $noj ?>" onclick="tambahSoalJodohkan(this)" id="btn-add-new-essai"><i
                                         class="fa fa-plus"></i> Tambah Soal Menjodohkan</a>
+                            <?php endif; ?>
                         </div>
                         <div class="tab-pane <?= $tab_active == '4' ? 'active' : '' ?>" id="isian">
                             <div class="alert alert-default-success align-content-center" role="alert">
@@ -164,10 +192,12 @@ foreach ($soal_ada as $key => $value) {
                                    id="btn-<?= '4' . $noi ?>"><?= $noi ?>
                                 </a>
                                 <?php $noi++; endfor; ?>
+                            <?php if (!$this->auth->in_group('panitia')): ?>
                             <a href="javascript:void(0)" class="pt-1 btn btn-oval-sm btn-outline-primary"
                                data-mapel="<?= $bank->bank_mapel_id ?>" data-bank="<?= $bank->id_bank ?>"
                                data-nomor="<?= $noi ?>" onclick="tambahSoalIsian(this)" id="btn-add-new-essai"><i
                                         class="fa fa-plus"></i> Tambah Soal Isian</a>
+                            <?php endif; ?>
                         </div>
                         <div class="tab-pane <?= $tab_active == '5' ? 'active' : '' ?>" id="essai">
                             <div class="alert alert-default-success align-content-center" role="alert">
@@ -183,10 +213,12 @@ foreach ($soal_ada as $key => $value) {
                                    id="btn-<?= '5' . $noe ?>"><?= $noe ?>
                                 </a>
                                 <?php $noe++; endfor; ?>
+                            <?php if (!$this->auth->in_group('panitia')): ?>
                             <a href="javascript:void(0)" class="pt-1 btn btn-oval-sm btn-outline-primary"
                                data-mapel="<?= $bank->bank_mapel_id ?>" data-bank="<?= $bank->id_bank ?>"
                                data-nomor="<?= $noe ?>" onclick="tambahSoalEssai(this)" id="btn-add-new-essai"><i
                                         class="fa fa-plus"></i> Tambah Essai</a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

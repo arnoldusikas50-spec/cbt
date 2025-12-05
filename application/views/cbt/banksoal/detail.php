@@ -1,6 +1,11 @@
 <?php
 
 ?>
+<?php if ($this->auth->in_group('panitia')): ?>
+    <style>
+        button[onclick="hapusSoal(this)"] { display: none !important; }
+    </style>
+<?php endif; ?>
 
 <div class="content-wrapper bg-white pt-4">
 
@@ -638,6 +643,13 @@
 
         // Refresh tabs after content is populated
         $('a[data-toggle="tab"]').tab('show');
+        
+        // Restore active tab from localStorage if exists
+        const savedTab = localStorage.getItem('banksoal_active_tab');
+        if (savedTab) {
+            $(`a[href="${savedTab}"]`).tab('show');
+            localStorage.removeItem('banksoal_active_tab'); // Clear after use
+        }
         
         allListener()
     }
@@ -1471,6 +1483,11 @@
                         confirmButtonText: "OK"
                     }).then(result => {
                         if (result.value) {
+                            // Save current active tab before reload
+                            const activeTab = $('.tab-pane.active').attr('id');
+                            if (activeTab) {
+                                localStorage.setItem('banksoal_active_tab', '#' + activeTab);
+                            }
                             window.location.reload();
                         }
                     });

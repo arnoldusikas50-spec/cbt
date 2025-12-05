@@ -38,6 +38,22 @@
                             </a>
                         </div>
                         <div class="col-lg-3 col-md-6 mb-4">
+                            <a href="<?= base_url('cbtcetak/kartumeja') ?>" class="text-decoration-none">
+                                <div class="info-box-modern">
+                                    <div class="info-box-icon-modern">
+                                        <i class="fa fa-table"></i>
+                                    </div>
+                                    <div class="info-box-content-modern">
+                                        <h6 class="info-box-title">Kartu Meja</h6>
+                                        <p class="info-box-desc">Cetak kartu meja dengan barcode</p>
+                                    </div>
+                                    <div class="info-box-arrow">
+                                        <i class="fa fa-arrow-right"></i>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-4">
                             <a href="<?= base_url('cbtcetak/absenpeserta') ?>" class="text-decoration-none">
                                 <div class="info-box-modern">
                                     <div class="info-box-icon-modern">

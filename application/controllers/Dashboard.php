@@ -368,6 +368,26 @@ class Dashboard extends MY_Controller {
                 $data['ujian_box'] = $this->ujian_box($tp->id_tp, $smt->id_smt);
                 $this->render_view(2, 'members/guru/dashboard', $data);
             }
+            return;
+        }
+
+        // Role: Panitia
+        if ($this->auth->in_group('panitia')) {
+            if (!$user) {
+                $this->load->view('disable_login', $data);
+                return;
+            }
+            $panitia = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            if (!$panitia) {
+                $this->load->view('disable_login', $data);
+                return;
+            } else {
+                $data['panitia'] = $panitia;
+                $data['info_box'] = $this->admin_box($setting, $tp->id_tp, $smt->id_smt);
+                $data['ujian_box'] = $this->ujian_box($tp->id_tp, $smt->id_smt);
+                $this->render_view(4, 'members/panitia/dashboard', $data);
+            }
+            return;
         }
     }
 
@@ -383,17 +403,49 @@ class Dashboard extends MY_Controller {
         $tp = $tp_smt->tp_active;
         $smt = $tp_smt->smt_active;
 
-        $jadwals = $this->cbt_jadwal_model
-            ->fields('id_jadwal,id_tp,id_smt,id_bank,id_jenis,tgl_mulai,tgl_selesai,status,jam_ke')
-            ->where(['id_tp'=>$tp->id_tp, 'id_smt'=>$smt->id_smt, 'tgl_mulai'=>date('Y-m-d')])
-            ->with_bank([
-                'fields'=> 'bank_kode,bank_kelas,soal_agama',
-                'where'=> ['id_tp' => $tp->id_tp, 'id_smt'=>$smt->id_smt],
-                'with' => [
-                    ['relation' => 'mapel', 'fields'=>'kode,nama_mapel'],
-                ]
-            ])
-            ->get_all();
+        $this->db->select('a.id_jadwal, a.id_tp, a.id_smt, a.id_bank, a.id_jenis, a.tgl_mulai, a.tgl_selesai, a.status, a.jam_ke');
+        $this->db->select('b.bank_kode, b.bank_kelas, b.soal_agama, b.bank_guru_id');
+        $this->db->select('c.kode as mapel_kode, c.nama_mapel');
+        $this->db->from('cbt_jadwal a');
+        $this->db->join('cbt_bank_soal b', 'b.id_bank = a.id_bank', 'left');
+        $this->db->join('master_mapel c', 'c.id_mapel = b.bank_mapel_id', 'left');
+        $this->db->where('a.id_tp', $tp->id_tp);
+        $this->db->where('a.id_smt', $smt->id_smt);
+        $today = date('Y-m-d');
+        $this->db->where('a.tgl_mulai <=', $today);
+        $this->db->where('a.tgl_selesai >=', $today);
+        $jadwals_query = $this->db->get();
+        $jadwals = $jadwals_query->result();
+
+        if ($jadwals && count($jadwals) > 0) {
+            foreach ($jadwals as $jdwl) {
+                // Unserialize bank_kelas
+                $bank_kelas_unserialized = $this->maybe_unserialize($jdwl->bank_kelas ?? '');
+                if (!is_array($bank_kelas_unserialized)) {
+                    $bank_kelas_unserialized = [];
+                }
+                
+                // Create bank object
+                $jdwl->bank = (object)[
+                    'bank_kode' => $jdwl->bank_kode ?? '',
+                    'bank_kelas' => array_map('strval', array_column($bank_kelas_unserialized, 'kelas_id')),
+                    'soal_agama' => $jdwl->soal_agama ?? '',
+                    'bank_guru_id' => $jdwl->bank_guru_id ?? '',
+                    'mapel' => (object)[
+                        'kode' => $jdwl->mapel_kode ?? '',
+                        'nama_mapel' => $jdwl->nama_mapel ?? ''
+                    ]
+                ];
+                
+                // Clean up duplicate properties
+                unset($jdwl->bank_kode);
+                unset($jdwl->bank_kelas);
+                unset($jdwl->soal_agama);
+                unset($jdwl->bank_guru_id);
+                unset($jdwl->mapel_kode);
+                unset($jdwl->nama_mapel);
+            }
+        }
 
         $arrKelas = [];
         $result = [];
@@ -401,9 +453,34 @@ class Dashboard extends MY_Controller {
         $cbt_siswa = [];
 
         $data['today'] = date('Y-m-d');
-        $data['pengawas'] = $this->cbt->getAllPengawas($tp->id_tp, $smt->id_smt, null, null);
-        $data['gurus'] = $this->dropdown->getAllGuru();
-        $data['kelases'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
+        
+        // Add error handling for model calls
+        try {
+            $data['pengawas'] = $this->cbt->getAllPengawas($tp->id_tp, $smt->id_smt, null, null);
+            if (!is_array($data['pengawas'])) {
+                $data['pengawas'] = [];
+            }
+        } catch (Exception $e) {
+            $data['pengawas'] = [];
+        }
+        
+        try {
+            $data['gurus'] = $this->dropdown->getAllGuru();
+            if (!is_array($data['gurus'])) {
+                $data['gurus'] = [];
+            }
+        } catch (Exception $e) {
+            $data['gurus'] = [];
+        }
+        
+        try {
+            $data['kelases'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
+            if (!is_array($data['kelases'])) {
+                $data['kelases'] = [];
+            }
+        } catch (Exception $e) {
+            $data['kelases'] = [];
+        }
 
         if (!$jadwals) {
             $data['sesisiswa'] = $all_siswa;
@@ -430,6 +507,16 @@ class Dashboard extends MY_Controller {
                 }
                 $result[] = $jadwal;
             }
+        }
+
+        if (empty($arrKelas)) {
+            $data['sesisiswa'] = $all_siswa;
+            $data['cbtsiswa'] = $cbt_siswa;
+            $data['ruangs'] = [];
+            $data['arr_kelas'] = $arrKelas;
+            $data['jadwals_ujian'] = $result;
+            $this->output_json($data);
+            return;
         }
 
         $ruangs = $this->cbt->getDistinctSesi($tp->id_tp, $smt->id_smt, $arrKelas);
@@ -704,5 +791,22 @@ class Dashboard extends MY_Controller {
         $istirahat = $jadwal->istirahat ?? [];
 
         $this->output_json(array('jadwal' => $jadwal, 'istirahat' => $istirahat));
+    }
+
+    public function get_realtime_stats() {
+        $this->load->model('Dashboard_model', 'dashboard');
+        $this->load->model('Master_model', 'master');
+        
+        $setting = $this->dashboard->getSetting();
+        $tp = $this->dashboard->getTahunActive();
+        $smt = $this->dashboard->getSemesterActive();
+
+        $info_box = $this->admin_box($setting, $tp->id_tp, $smt->id_smt);
+        $ujian_box = $this->ujian_box($tp->id_tp, $smt->id_smt);
+
+        $this->output_json([
+            'info_box' => $info_box,
+            'ujian_box' => $ujian_box
+        ]);
     }
 }

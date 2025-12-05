@@ -9,7 +9,7 @@ class Cbtanalisis extends MY_Controller
         parent::__construct();
         if (!$this->auth->logged_in()) {
             redirect('auth');
-        } else if ( !$this->auth->is_admin() && !$this->auth->in_group('guru')){
+        } else if ( !$this->auth->is_admin() && !$this->auth->in_group('panitia') && !$this->auth->in_group('guru')){
             show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
         }
         $this->load->library(['datatables', 'form_validation']); // Load Library Ignited-Datatables
@@ -20,6 +20,42 @@ class Cbtanalisis extends MY_Controller
 
     public function index()
     {
+        $this->load->model('Dashboard_model', 'dashboard');
+        $this->load->model('Cbt_model', 'cbt');
+        $this->load->model('Dropdown_model', 'dropdown');
+
+        $user = $this->auth->user();
+        $data = [
+            'user' 			=> $user,
+            'judul' => 'Analisis Hasil Ujian',
+            'subjudul' => 'Analisis',
+            'profile'		=> null,
+            'setting'		=> $this->dashboard->getSetting()
+        ];
+
+        $tp_smt = $this->getTpSmt();
+        $tp = $tp_smt->tp_active;
+        $smt = $tp_smt->smt_active;
+        $data['tp'] = $tp_smt->tp;
+        $data['smt'] = $tp_smt->smt;
+        $data['tp_active'] = $tp;
+        $data['smt_active'] = $smt;
+
+        $data['jadwal'] = $this->cbt->getAllJadwalByJenis($tp->id_tp, $smt->id_smt);
+        $data['jenis_ujian'] = $this->cbt->getAllJenisUjian();
+        $data['mapel'] = $this->dropdown->getAllMapel();
+        $data['kelas'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
+        $data['guru'] = $this->dropdown->getAllGuru();
+
+        if ($this->auth->is_admin()) {
+            $this->render_view(1, 'cbt/analisis/data', $data);
+        } elseif ($this->auth->in_group('panitia')) {
+            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(4, 'cbt/analisis/data', $data);
+        } else {
+            $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(2, 'cbt/analisis/data', $data);
+        }
     }
 
     public function analisis()
@@ -52,6 +88,10 @@ class Cbtanalisis extends MY_Controller
         $rekap = $this->rekap_jadwal
             ->where(['id_jadwal'=>$jadwal])
             ->get();
+
+        if (!$rekap) {
+            redirect('cbtanalisis');
+        }
 
         $rekap_siswa = $this->rekap_siswa
             ->where(['id_jadwal'=>$jadwal])
@@ -112,8 +152,10 @@ class Cbtanalisis extends MY_Controller
         $data['siswa'] = count((array)$rekap_siswa);
 
         $kunci = [];
-        foreach ($rekap->soal_pg as $soal_pg) {
-            $kunci[$soal_pg->id_soal] = $soal_pg->jawaban;
+        if (isset($rekap->soal_pg)) {
+            foreach ($rekap->soal_pg as $soal_pg) {
+                $kunci[$soal_pg->id_soal] = $soal_pg->jawaban;
+            }
         }
 
         $normalizedSiswa = $this->normalizeData($jawabanSiswa, $kunci);
@@ -148,6 +190,9 @@ class Cbtanalisis extends MY_Controller
 
         if ($this->auth->is_admin()) {
             $this->render_view(1, 'cbt/analisis/data_analisis', $data);
+        } elseif ($this->auth->in_group('panitia')) {
+            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(4, 'cbt/analisis/data_analisis', $data);
         } else {
             //$guru = $this->dashboard->getDataGuruByUsername($user->username, $tp->id_tp, $smt->id_smt);
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
@@ -241,3 +286,4 @@ class Cbtanalisis extends MY_Controller
     }
 
 }
+
