@@ -150,10 +150,10 @@
 </script>
 <script src="<?= base_url() ?>/assets/app/js/generate.js"></script>
 <script type="text/javascript">
-    let tp_active = '<?= $tp_active->tahun ?>';
-    let smt_active = '<?= $smt_active->smt ?>';
-    let id_tp_active = '<?= $tp_active->id_tp ?>';
-    let id_smt_active = '<?= $smt_active->id_smt ?>';
+    let tp_active = '<?= isset($tp_active) ? $tp_active->tahun : "" ?>';
+    let smt_active = '<?= isset($smt_active) ? $smt_active->smt : "" ?>';
+    let id_tp_active = '<?= isset($tp_active) ? $tp_active->id_tp : "" ?>';
+    let id_smt_active = '<?= isset($smt_active) ? $smt_active->id_smt : "" ?>';
 
     function startTime() {
         var today = new Date();
@@ -282,7 +282,7 @@ function singkat_tanggal($str)
 <?php
 $tp_skrg = $tp_sekarang ?? '-';
 $smt_skrg = $smt_sekarang ?? '-';
-if ($tp_skrg != $tp_active->tahun || $smt_skrg != $smt_active->id_smt): ?>
+if (isset($tp_active) && isset($smt_active) && ($tp_skrg != $tp_active->tahun || $smt_skrg != $smt_active->id_smt)): ?>
 <div class="alert alert-default-danger alert-dismissible fade show fixed-top shadow-sm text-center mb-0 rounded-0" role="alert" style="z-index: 1050;">
     <strong>Perhatian!</strong> Tahun ajaran telah berganti ke <?= $tp_sekarang ?? '-' ?>, Semester <?= $smt_sekarang ?? '-' ?>.
     <a href="<?= base_url('datatahun')?>" class="alert-link">Atur Tahun Pelajaran dan Semester</a>

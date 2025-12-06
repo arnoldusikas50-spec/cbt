@@ -1,8 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-date_default_timezone_set('Asia/Jakarta');
-//date_default_timezone_set('Asia/Makassar');
+//date_default_timezone_set('Asia/Jakarta');
+date_default_timezone_set('Asia/Makassar');
 //date_default_timezone_set('Asia/Jayapura');
 
 // $config['base_url'] = '';
@@ -12,7 +12,7 @@ date_default_timezone_set('Asia/Jakarta');
 // Deteksi apakah localhost atau development
 $is_localhost = ($_SERVER['HTTP_HOST'] == 'localhost' || 
                  strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false || 
-                 strpos($_SERVER['HTTP_HOST'], '192.168.10.9') !== false ||
+                 strpos($_SERVER['HTTP_HOST'], '192.168.') !== false ||
                  strpos($_SERVER['HTTP_HOST'], '.local') !== false ||
                  strpos($_SERVER['HTTP_HOST'], '.dev') !== false);
 
@@ -25,7 +25,7 @@ if ($is_localhost) {
 }
 
 $config['base_url'] = "$scheme://".$_SERVER['HTTP_HOST'];
-//$config['base_url'] .= preg_replace('@/+$@','',dirname($_SERVER['SCRIPT_NAME'])).'/'; //  ikasmedia
+$config['base_url'] .= preg_replace('@/+$@','',dirname($_SERVER['SCRIPT_NAME'])).'/';
 
 $config['index_page'] = '';
 

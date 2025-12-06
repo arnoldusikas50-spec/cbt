@@ -372,7 +372,7 @@ class Cbt_model extends CI_Model {
     }
 
     public function getAllJadwalByJenis($tp, $smt, $jenis = null) {
-        $this->db->select('a.id_jadwal, a.id_jenis, a.tgl_mulai, '.
+        $this->db->select('a.id_jadwal, a.id_jenis, a.tgl_mulai, a.tgl_selesai, '.
             'c.bank_kode, c.bank_level, c.bank_kelas, c.soal_agama, b.kode_jenis, b.nama_jenis, d.id_mapel, d.kode, d.nama_mapel');
         $this->db->from('cbt_jadwal a');
         $this->db->join('cbt_jenis b', 'b.id_jenis=a.id_jenis');

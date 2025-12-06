@@ -43,11 +43,12 @@
                     'submenu': [
                         {'name': 'Bank Soal', 'link': 'cbtbanksoal', 'icon': 'fas fa-folder-open'},
                         {'name': 'Jadwal', 'link': 'cbtjadwal', 'icon': 'fas fa-calendar-alt'},
+                        {'name': 'Atur Ruang/Sesi', 'link': 'cbtsesisiswa', 'icon': 'fa fa-user-clock'},
                         {'name': 'Status Peserta', 'link': 'cbtstatus', 'icon': 'fas fa-user-clock'},
                     ]
                 },
                 {
-                    'name': 'Administrasi', 'icon': 'fas fa-file-alt', 'cbt': '1',
+                    'name': 'Administrasi Ujian', 'icon': 'fas fa-file-alt', 'cbt': '1',
                     'submenu': [
                         {'name': 'Berita Acara', 'link': 'cbtcetak/beritaAcara', 'icon': 'fas fa-file-signature'},
                         {'name': 'Pakta Integritas', 'link': 'cbtcetak/paktaIntegritas', 'icon': 'fas fa-file-contract'},
@@ -116,4 +117,7 @@
         }
     })
     $('#tree-menus').html(htmlMenu)
+    
+    // Initialize TreeView for sidebar menu
+    // $('#tree-menus').Treeview('init')
 </script>

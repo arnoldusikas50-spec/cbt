@@ -86,7 +86,7 @@
       <div>
           <p>Mohon maaf, untuk sementara aplikasi tidak dapat dibuka. Jika ada yang perlu disampaikan silahkan hubungi Admin Sekolah</p>
           <p>&mdash; Admin Sekolah &mdash;</p>
-          <p>[087812345678]</p>
+          <p>[ RANDY - 085339035155 ]</p>
           <button class="btn" onclick="confirm()">Logout</button>
           
       </div>

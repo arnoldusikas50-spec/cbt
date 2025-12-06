@@ -41,7 +41,15 @@ class Cbtanalisis extends MY_Controller
         $data['tp_active'] = $tp;
         $data['smt_active'] = $smt;
 
-        $data['jadwal'] = $this->cbt->getAllJadwalByJenis($tp->id_tp, $smt->id_smt);
+        $jadwals = $this->cbt->getAllJadwalByJenis($tp->id_tp, $smt->id_smt);
+        foreach ($jadwals as $tgl => $mapels) {
+            foreach ($mapels as $id_mapel => $jdwls) {
+                foreach ($jdwls as $index => $jdwl) {
+                    $jdwl->bank_kelas = $this->maybe_unserialize($jdwl->bank_kelas);
+                }
+            }
+        }
+        $data['jadwal'] = $jadwals;
         $data['jenis_ujian'] = $this->cbt->getAllJenisUjian();
         $data['mapel'] = $this->dropdown->getAllMapel();
         $data['kelas'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);

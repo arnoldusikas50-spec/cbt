@@ -41,6 +41,8 @@ class Laporan extends MY_Controller {
             'judul' => 'Laporan',
             'subjudul' => 'Arsip Laporan',
             'setting' => $this->dashboard->getSetting(),
+            'tp_active' => $this->dashboard->getTahunActive(),
+            'smt_active' => $this->dashboard->getSemesterActive(),
         ];
         
         $this->db->select('a.*, b.first_name, b.last_name');

@@ -131,6 +131,7 @@
                         {'name': 'Backup', 'link':"dbmanager", 'icon': 'fas fa-database'},
                         {'name': 'Data Manager', 'link':"dbclear", 'icon': 'fas fa-database'},
                         {'name': 'Image Converter', 'link':"dbconvert", 'icon': 'fas fa-image'},
+                        {'name': 'Cleanup Images', 'link':"cbtbanksoal/cleanup_images", 'icon': 'fas fa-trash-alt'},
                     ]
                 },
 

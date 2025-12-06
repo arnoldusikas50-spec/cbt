@@ -32,7 +32,8 @@ class Cbtsesi extends MY_Controller {
 		$data['smt'] = $this->dashboard->getSemester();
 		$data['smt_active'] = $this->dashboard->getSemesterActive();
 
-		$this->render_view(1, 'cbt/sesi/data', $data);
+        $role_id = $this->auth->is_admin() ? 1 : 4;
+		$this->render_view($role_id, 'cbt/sesi/data', $data);
 	}
 
     public function data() {
@@ -73,7 +74,8 @@ class Cbtsesi extends MY_Controller {
 			'sesi'		=> $this->cbt->getSesiById($id),
 		];
 
-		$this->render_view(1, 'cbt/sesi/edit', $data);
+        $role_id = $this->auth->is_admin() ? 1 : 4;
+		$this->render_view($role_id, 'cbt/sesi/edit', $data);
 	}
 
 	public function delete() {
@@ -99,7 +101,8 @@ class Cbtsesi extends MY_Controller {
 		$data['smt'] = $this->dashboard->getSemester();
 		$data['smt_active'] = $this->dashboard->getSemesterActive();
 
-		$this->render_view(1, 'cbt/sesisiswa/data', $data);
+        $role_id = $this->auth->is_admin() ? 1 : 4;
+		$this->render_view($role_id, 'cbt/sesisiswa/data', $data);
 	}
 }
 

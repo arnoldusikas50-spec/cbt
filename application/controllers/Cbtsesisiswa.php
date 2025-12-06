@@ -49,12 +49,17 @@ class Cbtsesisiswa extends MY_Controller {
         $is_admin = $this->auth->is_admin();
         $data['is_admin'] = $is_admin;
 
-        if ($is_admin) {
+        $is_panitia = $this->auth->in_group('panitia');
+
+        if ($is_admin || $is_panitia) {
             $data['kelas']		= $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
-            $this->render_view(1, 'cbt/sesisiswa/data', $data);
+            $role_id = $is_admin ? 1 : 4;
+            $this->render_view($role_id, 'cbt/sesisiswa/data', $data);
         } else {
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $data['guru'] = $guru;
+            
+            // For teachers, get their assigned classes
             $mapel_guru = $this->kelas->getGuruMapelKelas($guru->id_guru, $tp->id_tp, $smt->id_smt);
             $mapel = $this->maybe_unserialize($mapel_guru->mapel_kelas ?? '[]');
 

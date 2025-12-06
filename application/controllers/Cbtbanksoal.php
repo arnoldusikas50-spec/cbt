@@ -138,7 +138,8 @@ class Cbtbanksoal extends MY_Controller
                 $data['total_siswa'] = $jadwal_terpakai;
             }
 
-            $this->render_view(1, 'cbt/banksoal/data', $data);
+            $role_id = $this->auth->is_admin() ? 1 : 4;
+            $this->render_view($role_id, 'cbt/banksoal/data', $data);
         } else {
             $this->load->model('Kelas_model', 'kelas');
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
@@ -638,8 +639,9 @@ class Cbtbanksoal extends MY_Controller
         $data['smt_active'] = $smt;
         $data['id_bank'] = $id;
 
-        if ($this->auth->is_admin()) {
-            $this->render_view(1, 'cbt/banksoal/detail', $data);
+        if ($this->auth->is_admin() || $this->auth->in_group('panitia')) {
+            $role_id = $this->auth->is_admin() ? 1 : 4;
+            $this->render_view($role_id, 'cbt/banksoal/detail', $data);
         } else {
             $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $this->render_view(2, 'cbt/banksoal/detail', $data);
@@ -1546,6 +1548,84 @@ class Cbtbanksoal extends MY_Controller
             echo "ID 3 (lebih aman): " . $id3 . "\n";
             echo "ID 4 (lebih aman): " . $id4 . "\n";
          */
+    }
+    public function cleanup_images()
+    {
+        $this->load->helper('file');
+        $this->load->helper('number'); // For byte_format
+        $this->load->model('Dashboard_model', 'dashboard');
+        
+        $user = $this->auth->user();
+        $setting = $this->dashboard->getSetting();
+        
+        $path = FCPATH . 'uploads/bank_soal/';
+        $files = get_filenames($path); // Uses CI file helper
+        
+        if ($files === false) {
+             $files = [];
+        }
+
+        // Get all content from cbt_soal
+        $this->db->select('soal, opsi_a, opsi_b, opsi_c, opsi_d, opsi_e, jawaban');
+        $query = $this->db->get('cbt_soal');
+        
+        $used_files = [];
+        foreach ($query->result() as $row) {
+            $content = $row->soal . $row->opsi_a . $row->opsi_b . $row->opsi_c . $row->opsi_d . $row->opsi_e . $row->jawaban;
+            // Match filenames stored in uploads/bank_soal/
+            // Matches: any character that is alphanumeric, underscore, dot, hyphen, parentheses, percent (url encoded)
+            preg_match_all('/uploads\/bank_soal\/([a-zA-Z0-9_.\-\(\)\%]+)/', $content, $matches);
+            if (!empty($matches[1])) {
+                foreach ($matches[1] as $file) {
+                    $used_files[] = urldecode($file);
+                }
+            }
+        }
+        $used_files = array_unique($used_files);
+        
+        $unused_files = [];
+        $total_size = 0;
+        
+        foreach ($files as $file) {
+            // Skip system or known safe files
+            if ($file == 'index.html' || $file == 'index.php') continue;
+            
+            if (!in_array($file, $used_files)) {
+                 $size = filesize($path . $file);
+                 $unused_files[] = [
+                     'name' => $file,
+                     'size' => $size,
+                     'date' => date("Y-m-d H:i:s", filemtime($path . $file))
+                 ];
+                 $total_size += $size;
+            }
+        }
+        
+        // Handle deletion
+        if ($this->input->post('delete')) {
+            $count = 0;
+            foreach ($unused_files as $f) {
+                if (unlink($path . $f['name'])) {
+                    $count++;
+                }
+            }
+            $this->session->set_flashdata('message', $count . ' file berhasil dihapus.');
+            redirect('cbtbanksoal/cleanup_images');
+        }
+
+        $data = [
+            'user' => $user,
+            'judul' => 'Cleanup Images',
+            'subjudul' => 'Hapus Gambar Tak Terpakai',
+            'setting' => $setting,
+            'unused' => $unused_files,
+            'total_size' => $total_size,
+            'path' => $path
+        ];
+
+        
+        $role_id = $this->auth->is_admin() ? '1' : ($this->auth->in_group('guru') ? '2' : ($this->auth->in_group('siswa') ? '3' : '4'));
+        $this->render_view($role_id, 'cbt/banksoal/cleanup', $data);
     }
 }
 

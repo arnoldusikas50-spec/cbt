@@ -77,7 +77,7 @@ class Cbtjadwal extends MY_Controller {
         $data['kelas'] = $this->cbt->getKelas($tp->id_tp, $smt->id_smt);
         $data['rekaps'] = $this->cekRekapSiswa();
 
-        if($this->auth->is_admin()){
+        if($this->auth->is_admin() || $this->auth->in_group('panitia')){
             $data['gurus'] = $this->dropdown->getAllGuru();
             $data['mapels'] = $this->dropdown->getAllMapel();
 
@@ -125,7 +125,8 @@ class Cbtjadwal extends MY_Controller {
                 }
             }
             $data['jadwals'] = $jadwals;
-            $this->render_view(1, 'cbt/jadwal/data', $data);
+            $role_id = $this->auth->is_admin() ? 1 : 4;
+            $this->render_view($role_id, 'cbt/jadwal/data', $data);
 		} else {
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
 			$data['guru'] = $guru;
@@ -218,10 +219,11 @@ class Cbtjadwal extends MY_Controller {
 		$data['kelas'] = $this->cbt->getKelas($tp->id_tp, $smt->id_smt);
 		$data['disable_opsi'] = $enable != null && $enable == 1;
 
-		if($this->auth->is_admin()){
+		if($this->auth->is_admin() || $this->auth->in_group('panitia')){
             $data['guru'] = $gurus;
             $data['mapel'] = $this->dropdown->getAllMapel();
-			$this->render_view(1, 'cbt/jadwal/add', $data);
+            $role_id = $this->auth->is_admin() ? 1 : 4;
+            $this->render_view($role_id, 'cbt/jadwal/add', $data);
 		}else{
 			$guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             //$this->dashboard->getDataGuruByUsername($user->username, $tp->id_tp, $smt->id_smt);
@@ -243,7 +245,7 @@ class Cbtjadwal extends MY_Controller {
 
         $tp = $this->dashboard->getTahunActive();
         $smt = $this->dashboard->getSemesterActive();
-        if($this->auth->is_admin()){
+        if($this->auth->is_admin() || $this->auth->in_group('panitia')){
             $banks = $this->cbt->getAllBankSoalByMapel($tp->id_tp, $smt->id_smt, $id_mapel);
         } else {
             $user = $this->auth->user();

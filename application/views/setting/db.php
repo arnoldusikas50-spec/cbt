@@ -20,12 +20,16 @@
                 </div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-2">
-                        <button class="btn btn-primary" onclick="processBackup()">BACKUP SEMUA DATA</button>
+                        <div>
+                            <button class="btn btn-primary mr-2" onclick="processBackup()">BACKUP SEMUA</button>
+                            <button class="btn btn-info mr-2" onclick="processBackupDb()">BACKUP DB SAJA</button>
+                            <button class="btn btn-success" onclick="processBackupFile()">BACKUP FILE SAJA</button>
+                        </div>
                         <button class="btn btn-danger" onclick="hapusBackup()" <?= count($list) == 0 ? 'disabled' : '' ?>>HAPUS SEMUA</button>
                     </div>
                     <div class="progress" style="height: 30px">
                         <div class="progress-bar progress-bar-striped progress-bar-animated"
-                             aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width:10%; height: 30px">
+                             aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width:0%; height: 30px">
                         </div>
                     </div>
                    <p>1. Jangan merefresh/menutup halaman ini atau ke halaman lain selama proses backup berlangsung
@@ -118,6 +122,68 @@
         console.log(count, message);
         var progress = $('.progress-bar');
         progress.css('width', `${Number(count)}%`).attr('aria-valuenow', `${count}`).text(`${count}%  ${message}`);
+    }
+
+    function processBackupDb() {
+        swal.fire({
+            title: "Backup Database",
+            text: "Silahkan tunggu....",
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            onOpen: () => {
+                swal.showLoading();
+            }
+        });
+
+        updateProgress(10, 'Memulai Backup Database...');
+        $.ajax({
+            type: "GET",
+            url: base_url + 'dbmanager/backupdb',
+            success: function (response) {
+                console.log(response);
+                updateProgress(100, response.message);
+                swal.fire({
+                    title: "Berhasil",
+                    text: "Database berhasil dibackup",
+                    icon: "success"
+                }).then(result => {
+                    if (result.value) {
+                        window.location.reload();
+                    }
+                })
+            }
+        });
+    }
+
+    function processBackupFile() {
+        swal.fire({
+            title: "Backup File Uploads",
+            text: "Silahkan tunggu....",
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            onOpen: () => {
+                swal.showLoading();
+            }
+        });
+
+        updateProgress(10, 'Memulai Backup File...');
+        $.ajax({
+            type: "GET",
+            url: base_url + 'dbmanager/backupdata',
+            success: function (response) {
+                console.log(response);
+                updateProgress(100, response.message);
+                swal.fire({
+                    title: "Berhasil",
+                    text: "File Uploads berhasil dibackup",
+                    icon: "success"
+                }).then(result => {
+                    if (result.value) {
+                        window.location.reload();
+                    }
+                })
+            }
+        });
     }
 
     function processBackup() {

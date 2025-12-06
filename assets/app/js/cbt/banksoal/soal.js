@@ -3,16 +3,18 @@ var fieldLinks;
 
 let dataJodohkan;
 let adaJawaban = false;
+// let adaPg = [1, 2, 3, 4, 5]; // Available question types: PG, PG Kompleks, Menjodohkan, Isian, Essai
 
-$(document).ready(function() {
+$(document).ready(function () {
     ajaxcsrf();
     $('.textsoal').summernote({
         placeholder: 'Tulis Soal disini',
         tabsize: 2,
+        dialogsInBody: true,
         minHeight: 100,
         toolbar: [
             ['style', ['style']],
-            ['font', ['bold', 'underline', 'clear']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
             ['fontname', ['fontname']],
             ['fontsize', ['fontsize']],
             ['color', ['color']],
@@ -20,18 +22,18 @@ $(document).ready(function() {
             ['table', ['table']],
             ['insert', ['link', 'picture', 'video', 'file', 'math']],
             ['view', ['fullscreen', 'codeview', 'help']],
-            ['cleaner',['cleaner']],
+            ['cleaner', ['cleaner']],
         ],
         callbacks: {
-            onFileUpload: function(file) {
+            onFileUpload: function (file) {
                 var idtextarea = $(this);
                 myOwnCallBack(file[0], idtextarea);
             },
-            onImageUpload: function(images) {
+            onImageUpload: function (images) {
                 var idtextarea = $(this);
                 myOwnCallBack(images[0], idtextarea);
             },
-            onMediaDelete : function(target) {
+            onMediaDelete: function (target) {
                 deleteImage(target[0].src);
             }
         },
@@ -40,6 +42,7 @@ $(document).ready(function() {
     $('.textjawaban').summernote({
         placeholder: 'Tulis Jawaban disini',
         tabsize: 2,
+        dialogsInBody: true,
         minHeight: 50,
         toolbar: [
             ['font', ['bold', 'italic', 'underline', 'clear']],
@@ -51,11 +54,11 @@ $(document).ready(function() {
             ['insert', ['picture', 'math']],
         ],
         callbacks: {
-            onImageUpload: function(images) {
+            onImageUpload: function (images) {
                 var idtextarea = $(this);
                 myOwnCallBack(images[0], idtextarea);
             },
-            onMediaDelete : function(target) {
+            onMediaDelete: function (target) {
                 deleteImage(target[0].src);
             }
         },
@@ -64,9 +67,10 @@ $(document).ready(function() {
     $('.textjawaban-essai').summernote({
         placeholder: 'Tulis Jawaban disini',
         tabsize: 2,
+        dialogsInBody: true,
         toolbar: [
             //['style', ['style']],
-            ['font', ['bold', 'underline', 'clear']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
             //['fontname', ['fontname']],
             //['fontsize', ['fontsize']],
             //['color', ['color']],
@@ -82,7 +86,7 @@ $(document).ready(function() {
         var form = new FormData($("#addfile")[0]);
         //console.log('nama file', names_files);
         //bank_id: id_bank, nomor: number, jenis: jenis_soal
-        uploadAttach(base_url + 'cbtbanksoal/uploadfile?id_soal='+idSoal, form);
+        uploadAttach(base_url + 'cbtbanksoal/uploadfile?id_soal=' + idSoal, form);
     });
 
     $('#create').submit('click', function (e) {
@@ -103,11 +107,11 @@ $(document).ready(function() {
                 });
                 return
             }
-            $.each(dataJodohkan, function( key, value ) {
+            $.each(dataJodohkan, function (key, value) {
                 if (key === "jawaban") {
                     $.each(value, function (ks, vs) {
                         $.each(vs, function (k, v) {
-                            formData.append('jawaban['+ks+']['+k+']',  v)
+                            formData.append('jawaban[' + ks + '][' + k + ']', v)
                         })
                     })
                 } else {
@@ -126,7 +130,7 @@ $(document).ready(function() {
             });
         } else {
             $('#loading').removeClass('d-none');
-            setTimeout(function() {
+            setTimeout(function () {
                 $.ajax({
                     url: base_url + "cbtbanksoal/saveSoal",
                     type: "POST",
@@ -145,12 +149,12 @@ $(document).ready(function() {
                             });
                         } else {
                             showSuccessToast("Soal nomor" + nomor_soal + " berhasil disimpan");
-                            if (jenis==='1' || jenis==='2') {
-                                $('#btn-'+jenis+nomor_soal).removeClass('btn-outline-danger');
-                                $('#btn-'+jenis+nomor_soal).addClass('btn-success');
+                            if (jenis === '1' || jenis === '2') {
+                                $('#btn-' + jenis + nomor_soal).removeClass('btn-outline-danger');
+                                $('#btn-' + jenis + nomor_soal).addClass('btn-success');
                             } else {
-                                $('#btn-'+jenis+nomor_soal).removeClass('btn-outline-danger');
-                                $('#btn-'+jenis+nomor_soal).addClass('btn-primary');
+                                $('#btn-' + jenis + nomor_soal).removeClass('btn-outline-danger');
+                                $('#btn-' + jenis + nomor_soal).addClass('btn-primary');
                             }
                         }
                     }, error: function (xhr, status, error) {
@@ -179,11 +183,11 @@ $(document).ready(function() {
             '<span class="abjad-pg2"><b>Jawaban ' + alphaCaps + '</b></span></div>' +
             '       <div class="col-6 text-right d-flex justify-content-end">' +
             '          <b>Pilih Jawaban</b>' +
-            '          <input class="check-pg2" type="checkbox" style="width: 24px; height: 24px; margin-left: 8px;" name="jawaban_benar_pg2[]" value="'+lower+'">' +
+            '          <input class="check-pg2" type="checkbox" style="width: 24px; height: 24px; margin-left: 8px;" name="jawaban_benar_pg2[]" value="' + lower + '">' +
             '       </div>' +
             '    </div>' +
-            '    <textarea class="textjawaban2" id="textjawaban2_'+lower+'" name="jawaban2_'+lower+'" placeholder="Buat jawaban" style="width:100%;"></textarea>' +
-            '</div>' );
+            '    <textarea class="textjawaban2" id="textjawaban2_' + lower + '" name="jawaban2_' + lower + '" placeholder="Buat jawaban" style="width:100%;"></textarea>' +
+            '</div>');
 
         initTextArea();
     });
@@ -218,14 +222,14 @@ $(document).ready(function() {
     $('#hapus-soal').on('click', function () {
         swal.fire({
             title: "HAPUS ?",
-            html: "Soal berikut akan dihapus<br>Nomor: <b>" +nomor_soal+"</b><br>Jenis: <b>"+arrJenis[jenis]+"</b>",
+            html: "Soal berikut akan dihapus<br>Nomor: <b>" + nomor_soal + "</b><br>Jenis: <b>" + arrJenis[jenis] + "</b>",
             icon: "error",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
             confirmButtonText: "Hapus!"
         }).then(result => {
-            if(result.value){
+            if (result.value) {
                 console.log($('#create').serialize());
                 $.ajax({
                     url: base_url + "cbtbanksoal/hapussoal",
@@ -260,13 +264,14 @@ $(document).ready(function() {
     if (inArray(1, adaPg)) {
 
     }
-    getSoalById(idBank, nomor_soal, jenis+''+nomor_soal, jenis);
+    getSoalById(idBank, nomor_soal, jenis + '' + nomor_soal, jenis);
 });
 
 function initTextArea() {
     $('.textjawaban2').summernote({
         placeholder: 'Tulis Jawaban disini',
         tabsize: 2,
+        dialogsInBody: true,
         minHeight: 50,
         toolbar: [
             ['font', ['bold', 'italic', 'underline', 'clear']],
@@ -279,61 +284,104 @@ function initTextArea() {
     });
 }
 
+
+function compressImage(file, maxWidth, quality, callback) {
+    if (!file.type.match(/image.*/) || file.type === 'image/gif' || file.type === 'image/svg+xml') {
+        callback(file);
+        return;
+    }
+
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function (e) {
+        var img = new Image();
+        img.src = e.target.result;
+        img.onload = function () {
+            var width = img.width;
+            var height = img.height;
+
+            if (width > maxWidth) {
+                height = Math.round(height * maxWidth / width);
+                width = maxWidth;
+            }
+
+            var canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+
+            ctx.canvas.toBlob(function (blob) {
+                var newName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                var newFile = new File([blob], newName, {
+                    type: 'image/jpeg',
+                    lastModified: Date.now()
+                });
+                console.log('Compressed: ' + (blob.size / 1024).toFixed(2) + 'KB');
+                callback(newFile);
+            }, 'image/jpeg', quality);
+        };
+    };
+    reader.onerror = function () { callback(file); };
+}
+
 function myOwnCallBack(file, idtextarea) {
-    var name = $('#textsoal').attr('data-name');
-    var hash = $('#textsoal').attr('data-id');
-    let data = new FormData();
-    data.append("file", file);
-    data.append(name, hash);
+    compressImage(file, 1000, 0.75, function (fileToUpload) {
+        var name = $('#textsoal').attr('data-name');
+        var hash = $('#textsoal').attr('data-id');
+        let data = new FormData();
+        data.append("file", fileToUpload);
+        data.append(name, hash);
 
-    $.ajax({
-        data: data,
-        type: "POST",
-        url: base_url + "cbtbanksoal/upload_image",
-        //url: "file-uploader.php", //Your own back-end uploader
-        cache: false,
-        contentType: false,
-        processData: false,
-        xhr: function() { //Handle progress upload
-            let myXhr = $.ajaxSettings.xhr();
-            if (myXhr.upload) myXhr.upload.addEventListener('progress', progressHandlingFunction, false);
-            return myXhr;
-        },
-        success: function(reponse) {
-            if(reponse.status === true) {
-                let listMimeImg = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/svg'];
-                let listMimeAudio = ['audio/mpeg', 'audio/ogg', 'udio/mp3'];
-                let listMimeVideo = ['video/mpeg', 'video/mp4', 'video/webm'];
-                let elem;
+        $.ajax({
+            data: data,
+            type: "POST",
+            url: base_url + "cbtbanksoal/upload_image",
+            //url: "file-uploader.php", //Your own back-end uploader
+            cache: false,
+            contentType: false,
+            processData: false,
+            xhr: function () { //Handle progress upload
+                let myXhr = $.ajaxSettings.xhr();
+                if (myXhr.upload) myXhr.upload.addEventListener('progress', progressHandlingFunction, false);
+                return myXhr;
+            },
+            success: function (reponse) {
+                if (reponse.status === true) {
+                    let listMimeImg = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/svg'];
+                    let listMimeAudio = ['audio/mpeg', 'audio/ogg', 'udio/mp3'];
+                    let listMimeVideo = ['video/mpeg', 'video/mp4', 'video/webm'];
+                    let elem;
 
-                if (listMimeImg.indexOf(file.type) > -1) {
-                    //Picture
-                    $(idtextarea).summernote('editor.insertImage', base_url + reponse.filename);
-                } else if (listMimeAudio.indexOf(file.type) > -1) {
-                    //Audio
-                    elem = document.createElement("audio");
-                    elem.setAttribute("src", base_url + reponse.filename);
-                    elem.setAttribute("controls", "controls");
-                    elem.setAttribute("preload", "metadata");
-                    $(idtextarea).summernote('editor.insertNode', elem);
-                } else if (listMimeVideo.indexOf(file.type) > -1) {
-                    //Video
-                    elem = document.createElement("video");
-                    elem.setAttribute("src", base_url + reponse.filename);
-                    elem.setAttribute("controls", "controls");
-                    elem.setAttribute("preload", "metadata");
-                    $(idtextarea).summernote('editor.insertNode', elem);
-                } else {
-                    //Other file type
-                    elem = document.createElement("a");
-                    let linkText = document.createTextNode(file.name);
-                    elem.appendChild(linkText);
-                    elem.title = file.name;
-                    elem.href = base_url + reponse.filename;
-                    $(idtextarea).summernote('editor.insertNode', elem);
+                    if (fileToUpload.type.match(/image.*/)) {
+                        //Picture
+                        $(idtextarea).summernote('editor.insertImage', base_url + reponse.filename);
+                    } else if (listMimeAudio.indexOf(fileToUpload.type) > -1) {
+                        //Audio
+                        elem = document.createElement("audio");
+                        elem.setAttribute("src", base_url + reponse.filename);
+                        elem.setAttribute("controls", "controls");
+                        elem.setAttribute("preload", "metadata");
+                        $(idtextarea).summernote('editor.insertNode', elem);
+                    } else if (listMimeVideo.indexOf(fileToUpload.type) > -1) {
+                        //Video
+                        elem = document.createElement("video");
+                        elem.setAttribute("src", base_url + reponse.filename);
+                        elem.setAttribute("controls", "controls");
+                        elem.setAttribute("preload", "metadata");
+                        $(idtextarea).summernote('editor.insertNode', elem);
+                    } else {
+                        //Other file type
+                        elem = document.createElement("a");
+                        let linkText = document.createTextNode(fileToUpload.name);
+                        elem.appendChild(linkText);
+                        elem.title = fileToUpload.name;
+                        elem.href = base_url + reponse.filename;
+                        $(idtextarea).summernote('editor.insertNode', elem);
+                    }
                 }
             }
-        }
+        });
     });
 }
 
@@ -364,10 +412,10 @@ function uploadImage(image, editor, editable) {
         processData: false,
         data: data,
         type: "POST",
-        success: function(data) {
+        success: function (data) {
             $(idtextarea).summernote("insertImage", data);
         },
-        error: function(data) {
+        error: function (data) {
             console.log(data);
         }
     });
@@ -381,11 +429,11 @@ function deleteImage(src) {
     data.append(name, hash);
 
     $.ajax({
-        data: {src : src},
+        data: { src: src },
         type: "POST",
         url: base_url + "cbtbanksoal/delete_image",
         cache: false,
-        success: function(response) {
+        success: function (response) {
             console.log(response);
         }
     });
@@ -432,10 +480,10 @@ function getSoalById(id_bank, number, id, jenis_soal) {
     $('#empty-soal').addClass('d-none');
     $('#not-empty-soal').addClass('d-none');
 
-    $('#btn-'+old_id).removeClass('active');
-	$('#btn-'+id).addClass('active');
-	$('#jenis-id').val(jenis_soal);
-	if (jenis_soal === '1') {
+    $('#btn-' + old_id).removeClass('active');
+    $('#btn-' + id).addClass('active');
+    $('#jenis-id').val(jenis_soal);
+    if (jenis_soal === '1') {
         $('#nomor-soal').html('<b>Soal PG Nomor: ' + number + '</b>');
 
         $('#soal-area').removeClass('col-md-12');
@@ -469,7 +517,7 @@ function getSoalById(id_bank, number, id, jenis_soal) {
         $('#root-jawaban-essai').addClass('d-none');
         $('#jawaban-essai').attr('disabled', 'disabled');
     } else if (jenis_soal === '2') {
-        $('#nomor-soal').html('<b>Soal Kompleks Nomor: '+number + '</b>');
+        $('#nomor-soal').html('<b>Soal Kompleks Nomor: ' + number + '</b>');
 
         $('#soal-area').removeClass('col-md-12');
         $('#soal-area').addClass('col-md-6');
@@ -502,7 +550,7 @@ function getSoalById(id_bank, number, id, jenis_soal) {
         $('#root-jawaban-essai').addClass('d-none');
         $('#jawaban-essai').attr('disabled', 'disabled');
     } else if (jenis_soal === '3') {
-        $('#nomor-soal').html('<b>Soal Menjodohkan Nomor: '+number + '</b>');
+        $('#nomor-soal').html('<b>Soal Menjodohkan Nomor: ' + number + '</b>');
 
         $('#soal-area').removeClass('col-md-6');
         $('#soal-area').addClass('col-md-12');
@@ -535,7 +583,7 @@ function getSoalById(id_bank, number, id, jenis_soal) {
         $('#root-jawaban-essai').addClass('d-none');
         $('#jawaban-essai').attr('disabled', 'disabled');
     } else if (jenis_soal === '4') {
-        $('#nomor-soal').html('<b>Soal Isian Nomor: '+number + '</b>');
+        $('#nomor-soal').html('<b>Soal Isian Nomor: ' + number + '</b>');
 
         $('#soal-area').removeClass('col-md-12');
         $('#soal-area').addClass('col-md-6');
@@ -567,8 +615,8 @@ function getSoalById(id_bank, number, id, jenis_soal) {
         // 5 disable
         $('#root-jawaban-essai').addClass('d-none');
         $('#jawaban-essai').attr('disabled', 'disabled');
-	} else {
-		$('#nomor-soal').html('<b>Soal Essai Nomor: '+number + '</b>');
+    } else {
+        $('#nomor-soal').html('<b>Soal Essai Nomor: ' + number + '</b>');
 
         $('#soal-area').removeClass('col-md-12');
         $('#soal-area').addClass('col-md-6');
@@ -576,10 +624,10 @@ function getSoalById(id_bank, number, id, jenis_soal) {
         $('#jawaban-area').addClass('col-md-6');
 
         // 1 disable
-		$('#root-opsi-pg').addClass('d-none');
+        $('#root-opsi-pg').addClass('d-none');
         $('.textjawaban').attr('disabled', 'disabled');
         $('#root-jawaban-pg').addClass('d-none');
-        $('#jawaban').prop('required',false);
+        $('#jawaban').prop('required', false);
         $('#jawaban').attr('disabled', 'disabled');
 
         // 2 disable
@@ -596,43 +644,43 @@ function getSoalById(id_bank, number, id, jenis_soal) {
 
         // 5 enable
         $('#jawaban-benar').removeClass('d-none');
-		$('#root-jawaban-essai').removeClass('d-none');
+        $('#root-jawaban-essai').removeClass('d-none');
         $('#jawaban-essai').removeAttr('disabled');
-	}
+    }
 
-	$('#loading').removeClass('d-none');
-	setTimeout(function() {
-		old_id = id;
-		nomor_soal = number;
-		jenis = jenis_soal;
-		//console.log("data", bank_soal);
-		$.ajax({
-			type: "GET",
-			url: base_url + "cbtbanksoal/getSoalByNomor",
-			dataType: "JSON",
-			data: {bank_id: id_bank, nomor: number, jenis: jenis_soal},
+    $('#loading').removeClass('d-none');
+    setTimeout(function () {
+        old_id = id;
+        nomor_soal = number;
+        jenis = jenis_soal;
+        //console.log("data", bank_soal);
+        $.ajax({
+            type: "GET",
+            url: base_url + "cbtbanksoal/getSoalByNomor",
+            dataType: "JSON",
+            data: { bank_id: id_bank, nomor: number, jenis: jenis_soal },
             //responseType: "blob",
-			success: function (data) {
-				$('#loading').addClass('d-none');
-				console.log('soal', data);
-				if (data == null) {
+            success: function (data) {
+                $('#loading').addClass('d-none');
+                console.log('soal', data);
+                if (data == null) {
                     $('#empty-soal').removeClass('d-none');
                     $('#not-empty-soal').addClass('d-none');
-					$('#soal-id').val('0');
-					$('#method').val('add');
-					$('#textsoal').summernote('code', '');
-					$(".textjawaban").each(function(){
-						$(this).summernote('code', '');
-					});
-					$('#jawaban').prop('selectedIndex', 0).change();
-					$('#jawaban-essai').summernote('code', '');
-				} else {
+                    $('#soal-id').val('0');
+                    $('#method').val('add');
+                    $('#textsoal').summernote('code', '');
+                    $(".textjawaban").each(function () {
+                        $(this).summernote('code', '');
+                    });
+                    $('#jawaban').prop('selectedIndex', 0).change();
+                    $('#jawaban-essai').summernote('code', '');
+                } else {
                     $('#empty-soal').addClass('d-none');
                     $('#not-empty-soal').removeClass('d-none');
-					$('#soal-id').val(data.id_soal);
-					$('#method').val('edit');
+                    $('#soal-id').val(data.id_soal);
+                    $('#method').val('edit');
 
-					var checkSoal = data.soal == null ? '' : data.soal;
+                    var checkSoal = data.soal == null ? '' : data.soal;
                     var sSoal = $($.parseHTML(checkSoal));
                     sSoal.find(`img`).each(function () {
                         var curSrc = $(this).attr('src');
@@ -642,7 +690,7 @@ function getSoalById(id_bank, number, id, jenis_soal) {
                             var forReplace = curSrc.split(pathUpload);
                             $(this).attr('src', base_url + pathUpload + forReplace[1]);
                         }
-						$(this).removeAttr('alt');
+                        $(this).removeAttr('alt');
                     });
 
                     sSoal.find(`video`).each(function () {
@@ -665,9 +713,9 @@ function getSoalById(id_bank, number, id, jenis_soal) {
                         }
                     });
 
-					$('#textsoal').summernote('code', sSoal);
+                    $('#textsoal').summernote('code', sSoal);
 
-					if (jenis_soal === '1') {
+                    if (jenis_soal === '1') {
                         let arrJawaban = [data.opsi_a, data.opsi_b, data.opsi_c, data.opsi_d, data.opsi_e];
                         let arrAbjad = ['a', 'b', 'c', 'd', 'e'];
 
@@ -675,7 +723,7 @@ function getSoalById(id_bank, number, id, jenis_soal) {
                             var chekJawaban = arrJawaban[i] == null ? '' : arrJawaban[i];
                             var sJawabPg = $($.parseHTML(chekJawaban));
                             sJawabPg.find(`img`).each(function () {
-								$(this).removeAttr('alt');
+                                $(this).removeAttr('alt');
                                 var curSrc = $(this).attr('src');
                                 if (curSrc.indexOf("base64") > 0 || !curSrc.includes("uploads")) {
                                 } else {
@@ -766,8 +814,8 @@ function getSoalById(id_bank, number, id, jenis_soal) {
                         $('#jawaban-isian').val($.trim(data.jawaban));
                     } else {
                         var sJawabEssai = $($.parseHTML(`<div>${data.jawaban}</div>`));
-						$('#jawaban-essai').summernote('code', sJawabEssai);
-					}
+                        $('#jawaban-essai').summernote('code', sJawabEssai);
+                    }
 
                     let listMimeAudio = ['audio/mpeg', 'audio/ogg'];
                     let listMimeVideo = ['video/mpeg', 'video/mp4', 'video/webm'];
@@ -778,28 +826,28 @@ function getSoalById(id_bank, number, id, jenis_soal) {
 
                     $.each(data.file, function (i, v) {
                         if (listMimeAudio.indexOf(v.type) > -1) {
-                        	audioPendukung += '<audio id="audio-att">' +
-                                '    <source src="'+base_url + v.src+'" type="'+v.type+'" />' +
+                            audioPendukung += '<audio id="audio-att">' +
+                                '    <source src="' + base_url + v.src + '" type="' + v.type + '" />' +
                                 '  </audio>' +
-                            '        <span>'+v.src+'</span>';
+                                '        <span>' + v.src + '</span>';
                         } else {
-                            videoPendukung += '    <span>' +v.file_name+
-								'</span><br><video id="video-att" width="100" height="auto" src="'+base_url + v.src+'" controls></video>' +
+                            videoPendukung += '    <span>' + v.file_name +
+                                '</span><br><video id="video-att" width="100" height="auto" src="' + base_url + v.src + '" controls></video>' +
                                 '        <span>3 x</span>';
-						}
+                        }
                     });
 
                     $('#audios').html(audioPendukung);
                     $('#videos').html(videoPendukung);
 
                     $('#audio-att, #video-att').stylise({
-						//enableSeeking: false,
-						enableRestart: false
-					});
-				}
+                        //enableSeeking: false,
+                        enableRestart: false
+                    });
+                }
                 $('[data-toggle="tooltip"]').tooltip();
 
-				/*
+                /*
                 $('.note-editable').find('p').each(function () {
                     if(HasArabicCharacters($(this))){
                         $(this).removeAttr('style');
@@ -816,17 +864,17 @@ function getSoalById(id_bank, number, id, jenis_soal) {
                 });
                 */
             },
-			error: function (e) {
-				$('#loading').addClass('d-none');
-				console.log("error", e.responseText);
-				showDangerToast(e.responseText);
-			}
-		});
-		}, 500);
+            error: function (e) {
+                $('#loading').addClass('d-none');
+                console.log("error", e.responseText);
+                showDangerToast(e.responseText);
+            }
+        });
+    }, 500);
 }
 
 function tambahSoalPg(e) {
-	var nomor = $(e).data('nomor');
+    var nomor = $(e).data('nomor');
     var bank = $(e).data('bank');
     var mapel = $(e).data('mapel');
 
@@ -835,13 +883,13 @@ function tambahSoalPg(e) {
         type: "POST",
         dataType: "JSON",
         data: {
-        	nomor: nomor,
-			jenis: 1,
-			bank: bank
-		},
+            nomor: nomor,
+            jenis: 1,
+            bank: bank
+        },
         success: function (data) {
             console.log(data);
-            window.location.href = base_url + 'cbtbanksoal/buatsoal/'+bank+'?tab=1';
+            window.location.href = base_url + 'cbtbanksoal/buatsoal/' + bank + '?tab=1';
         }, error: function (xhr, status, error) {
             console.log("error", xhr.responseText);
             showDangerToast('Gagal menambah soal');
@@ -865,7 +913,7 @@ function tambahSoalPg2(e) {
         },
         success: function (data) {
             console.log(data);
-            window.location.href = base_url + 'cbtbanksoal/buatsoal/'+bank+'?tab=2';
+            window.location.href = base_url + 'cbtbanksoal/buatsoal/' + bank + '?tab=2';
         }, error: function (xhr, status, error) {
             console.log("error", xhr.responseText);
             showDangerToast('Gagal menambah soal');
@@ -889,7 +937,7 @@ function tambahSoalJodohkan(e) {
         },
         success: function (data) {
             console.log(data);
-            window.location.href = base_url + 'cbtbanksoal/buatsoal/'+bank+'?tab=3';
+            window.location.href = base_url + 'cbtbanksoal/buatsoal/' + bank + '?tab=3';
         }, error: function (xhr, status, error) {
             console.log("error", xhr.responseText);
             showDangerToast('Gagal menambah soal');
@@ -913,7 +961,7 @@ function tambahSoalIsian(e) {
         },
         success: function (data) {
             console.log(data);
-            window.location.href = base_url + 'cbtbanksoal/buatsoal/'+bank+'?tab=4';
+            window.location.href = base_url + 'cbtbanksoal/buatsoal/' + bank + '?tab=4';
         }, error: function (xhr, status, error) {
             console.log("error", xhr.responseText);
             showDangerToast('Gagal menambah soal');
@@ -937,7 +985,7 @@ function tambahSoalEssai(e) {
         },
         success: function (data) {
             console.log(data);
-            window.location.href = base_url + 'cbtbanksoal/buatsoal/'+bank+'?tab=5';
+            window.location.href = base_url + 'cbtbanksoal/buatsoal/' + bank + '?tab=5';
         }, error: function (xhr, status, error) {
             console.log("error", xhr.responseText);
             showDangerToast('Gagal menambah soal');
@@ -969,18 +1017,19 @@ function uploadAttach(action, data) {
                 console.log(data.type);
                 */
                 createPreviewFile();
-			} else {
+            } else {
                 swal.fire({
                     title: "ERROR",
                     html: data.src,
                     icon: "error",
                     showCancelButton: false
                 });
-			}
+            }
         },
         error: function (e) {
             console.log("error", e.responseText);
-            showDangerToast("file tidak terbaca");}
+            showDangerToast("file tidak terbaca");
+        }
     });
 }
 
@@ -1028,7 +1077,7 @@ function createPreviewFile(/*elem, event*/) {
     console.log(dataFiles);
 }
 
-$('body').on('click', '.remove-pic', function() {
+$('body').on('click', '.remove-pic', function () {
     $(this).parent().parent().parent().remove();
     var removeItem = $(this).attr('data-id');
 
@@ -1045,7 +1094,7 @@ $('body').on('click', '.remove-pic', function() {
 
 function deleteImage(src) {
     $.ajax({
-        data: {src: src},
+        data: { src: src },
         type: "POST",
         url: base_url + "cbtbanksoal/deletefile",
         cache: false,
@@ -1055,7 +1104,7 @@ function deleteImage(src) {
     });
 }
 
-function HasArabicCharacters(text){
+function HasArabicCharacters(text) {
     var arregex = /[\u0600-\u06FF]/;
     return arregex.test(text);
 }
@@ -1067,13 +1116,13 @@ function deleteOpsiPg2(e) {
     const $abjads = opsi2.find('.abjad-pg2')
 
     $abjads.each(function (index, sp) {
-        $(sp).html('<b>Jawaban '+(index + 10).toString(36).toUpperCase()+'</b>')
+        $(sp).html('<b>Jawaban ' + (index + 10).toString(36).toUpperCase() + '</b>')
     })
 
     const $teks = opsi2.find('.textjawaban2');
     $teks.each(function (index, area) {
         const abc = (index + 10).toString(36).toLowerCase();
-        $(area).prop('id', 'textjawaban2_'+abc).prop('name', 'jawaban2_'+abc)
+        $(area).prop('id', 'textjawaban2_' + abc).prop('name', 'jawaban2_' + abc)
     })
 }
 
@@ -1098,13 +1147,13 @@ function deleteOpsiPg2(e) {
     const $abjads = opsi2.find('.abjad-pg2')
 
     $abjads.each(function (index, sp) {
-        $(sp).html('<b>Jawaban '+(index + 10).toString(36).toUpperCase()+'</b>')
+        $(sp).html('<b>Jawaban ' + (index + 10).toString(36).toUpperCase() + '</b>')
     })
 
     const $teks = opsi2.find('.textjawaban2');
     $teks.each(function (index, area) {
         const abc = (index + 10).toString(36).toLowerCase();
-        $(area).prop('id', 'textjawaban2_'+abc).prop('name', 'jawaban2_'+abc)
+        $(area).prop('id', 'textjawaban2_' + abc).prop('name', 'jawaban2_' + abc)
     })
 }
 

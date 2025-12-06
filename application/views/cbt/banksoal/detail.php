@@ -654,6 +654,51 @@
         allListener()
     }
 
+    function fixImagePaths(htmlContent) {
+        if (!htmlContent) return '';
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+
+        const images = tempDiv.getElementsByTagName('img');
+        for (let img of images) {
+            const curSrc = img.getAttribute('src');
+            if (curSrc && !curSrc.includes('base64') && curSrc.includes('uploads')) {
+                const pathUpload = 'uploads';
+                const forReplace = curSrc.split(pathUpload);
+                if (forReplace.length > 1) {
+                    img.setAttribute('src', base_url + pathUpload + forReplace[1]);
+                }
+            }
+            img.removeAttribute('alt');
+        }
+
+        const videos = tempDiv.getElementsByTagName('video');
+        for (let vid of videos) {
+            const curSrc = vid.getAttribute('src');
+            if (curSrc && !curSrc.includes('base64') && curSrc.includes('uploads')) {
+                const pathUpload = 'uploads';
+                const forReplace = curSrc.split(pathUpload);
+                if (forReplace.length > 1) {
+                    vid.setAttribute('src', base_url + pathUpload + forReplace[1]);
+                }
+            }
+        }
+
+        const audios = tempDiv.getElementsByTagName('audio');
+        for (let aud of audios) {
+            const curSrc = aud.getAttribute('src');
+            if (curSrc && !curSrc.includes('base64') && curSrc.includes('uploads')) {
+                const pathUpload = 'uploads';
+                const forReplace = curSrc.split(pathUpload);
+                if (forReplace.length > 1) {
+                    aud.setAttribute('src', base_url + pathUpload + forReplace[1]);
+                }
+            }
+        }
+
+        return tempDiv.innerHTML;
+    }
+
     function populateSoalPg(bank, soals_pg, total_siswa) {
         const countDisplayed = (arr) => arr.filter(s => s.tampilkan === '1').length;
 
@@ -701,11 +746,11 @@
             const tbody = document.querySelector('#tbody-pg');
             soals_pg.forEach(s => {
                 const checked = s.tampilkan === "1" ? 'checked' : '';
-                const opsiA = (s.opsi_a || '').replace(/<p>|<\/p>/g, '');
-                const opsiB = (s.opsi_b || '').replace(/<p>|<\/p>/g, '');
-                const opsiC = (s.opsi_c || '').replace(/<p>|<\/p>/g, '');
-                const opsiD = (s.opsi_d || '').replace(/<p>|<\/p>/g, '');
-                const opsiE = (s.opsi_e || '').replace(/<p>|<\/p>/g, '');
+                const opsiA = fixImagePaths(s.opsi_a || '').replace(/<p>|<\/p>/g, '');
+                const opsiB = fixImagePaths(s.opsi_b || '').replace(/<p>|<\/p>/g, '');
+                const opsiC = fixImagePaths(s.opsi_c || '').replace(/<p>|<\/p>/g, '');
+                const opsiD = fixImagePaths(s.opsi_d || '').replace(/<p>|<\/p>/g, '');
+                const opsiE = fixImagePaths(s.opsi_e || '').replace(/<p>|<\/p>/g, '');
 
                 let opsiList = `
         <li>${opsiA}</li>
@@ -727,7 +772,7 @@
         </td>
         <td style="text-align: center;">${s.nomor_soal}.</td>
         <td class="question" data-id="${s.id_soal}">
-            ${s.soal}
+            ${fixImagePaths(s.soal)}
             <br />
             <ul style="list-style-type: upper-alpha; padding-left: 20px;">
                 ${opsiList}
@@ -813,7 +858,7 @@
 
                 for (let i = abjadStart; i < abjadEnd; i++) {
                     const abjad = String.fromCharCode(i);
-                    const teks = opsi[abjad] ? opsi[abjad].replace(/<p>|<\/p>/g, '') : 'null';
+                    const teks = opsi[abjad] ? fixImagePaths(opsi[abjad]).replace(/<p>|<\/p>/g, '') : 'null';
                     opsiList += `<li>${teks}</li>`;
                 }
 
@@ -826,7 +871,7 @@
         </td>
         <td style="text-align: center;">${s.nomor_soal}.</td>
         <td class="question" data-id="${s.id_soal}">
-            ${s.soal}
+            ${fixImagePaths(s.soal)}
             <br />
             <ul class="pl-3" style="list-style-type: upper-alpha">
                 ${opsiList}
@@ -915,7 +960,7 @@
         </td>
         <td style="text-align: center;">${s.nomor_soal}.</td>
         <td class="question" data-id="${s.id_soal}">
-            ${s.soal}
+            ${fixImagePaths(s.soal)}
             <br />
             <div class="mb-2 mt-2"><b>Jawaban:</b></div>
             <div class="list-jodohkan" id="linker_${s.id_soal}" data-nomor="${s.nomor_soal}" data-id="${s.id_soal}">
@@ -1000,7 +1045,7 @@
         </td>
         <td style="text-align: center;">${s.nomor_soal}.</td>
         <td class="question" data-id="${s.id_soal}">
-            ${s.soal}
+            ${fixImagePaths(s.soal)}
             <br />
             <p>Jawaban: <b>${s.jawaban}</b></p>
         </td>
@@ -1085,9 +1130,9 @@
         </td>
         <td style="text-align: center;">${s.nomor_soal}.</td>
         <td class="question" data-id="${s.id_soal}">
-            ${s.soal}
+            ${fixImagePaths(s.soal)}
             <br />
-            <p>Jawaban: <b>${s.jawaban}</b></p>
+            <p>Jawaban: <b>${fixImagePaths(s.jawaban)}</b></p>
         </td>
         <td style="text-align: right; width: 60px">
             <a href="${base_url}cbtbanksoal/buatsoal/${bank.id_bank}?no=${s.nomor_soal}&jns=5"

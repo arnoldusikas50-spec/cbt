@@ -263,36 +263,57 @@ class Cbtstatus extends MY_Controller {
 
             $dropJadwal = [];
             if ($jadwals !== false) {
-                foreach ($jadwals as $k_jad=>$jad) {
-                    $jad['bank']->bank_kelas = $this->maybe_unserialize($jad['bank']->bank_kelas ?? []);
-                    $kls = $jad['bank']->bank_kelas;
+                foreach ($jadwals as $k_jad => $jad) {
+                    $bank = $jad['bank'] ?? null;
+                    // Handle if bank is object
+                    if (is_object($bank)) {
+                        $bank = (array)$bank;
+                    }
+
+                    if (isset($bank['bank_kelas'])) {
+                        $bank['bank_kelas'] = $this->maybe_unserialize($bank['bank_kelas'] ?? []);
+                    }
+                    $kls = $bank['bank_kelas'] ?? [];
                     $arrKls = [];
-                    foreach ($kls as $kl) {
-                        if (!in_array($kl->kelas_id, $arrKls)) {
-                            $arrKls[] = $kl->kelas_id;
+                    if ($kls) {
+                        foreach ($kls as $kl) {
+                            // Normalize $kl to array or object to handle both
+                            if (is_array($kl)) {
+                                if (isset($kl['kelas_id']) && !in_array($kl['kelas_id'], $arrKls)) {
+                                    $arrKls[] = $kl['kelas_id'];
+                                }
+                            } elseif (is_object($kl)) {
+                                if (isset($kl->kelas_id) && !in_array($kl->kelas_id, $arrKls)) {
+                                    $arrKls[] = $kl->kelas_id;
+                                }
+                            }
                         }
                     }
-                    $timestamp = strtotime($jad['tgl_mulai'] ?? '');
-                    $hari = $this->namaHari[date('l', $timestamp)];
-                    $tanggal = date('d', $timestamp);
-                    $bulan = $this->namaBulan[date('F', $timestamp)];
-                    $tahun = date('Y', $timestamp);
+                    
+                    if (isset($jad['tgl_mulai'])) {
+                        $timestamp = strtotime($jad['tgl_mulai']);
+                        $hari = $this->namaHari[date('l', $timestamp)];
+                        $tanggal = date('d', $timestamp);
+                        $bulan = $this->namaBulan[date('F', $timestamp)];
+                        $tahun = date('Y', $timestamp);
 
-                    $tgl_jadwal[$jad['tgl_mulai']] = "$hari, $tanggal $bulan $tahun";
-                    $ruang_sesi = $this->getDistinctRuang($tp->id_tp, $smt->id_smt, $arrKls);
+                        $tgl_jadwal[$jad['tgl_mulai']] = "$hari, $tanggal $bulan $tahun";
+                        $ruang_sesi = $this->getDistinctRuang($tp->id_tp, $smt->id_smt, $arrKls);
 
-                    foreach ($ruang_sesi['ruang'] as $id_ruang=>$ruang) {
-                        $ruangs[$jad['tgl_mulai']][$id_ruang] = $ruang;
+                        foreach ($ruang_sesi['ruang'] as $id_ruang => $ruang) {
+                            $ruangs[$jad['tgl_mulai']][$id_ruang] = $ruang;
+                        }
+                        foreach ($ruang_sesi['sesi'] as $id_sesi => $sesi) {
+                            $sesis[$jad['tgl_mulai']][$id_sesi] = $sesi;
+                        }
+                        $kelases[$jad['tgl_mulai']][] = $this->getNamaKelasByArrId($tp->id_tp, $smt->id_smt, $arrKls);
+
+                        $dropJadwal[$jad['tgl_mulai']][$jad['id_jadwal']] = $bank['bank_kode'] ?? '';
                     }
-                    foreach ($ruang_sesi['sesi'] as $id_sesi=>$sesi) {
-                        $sesis[$jad['tgl_mulai']][$id_sesi] = $sesi;
-                    }
-                    $kelases[$jad['tgl_mulai']][] = $this->getNamaKelasByArrId($tp->id_tp, $smt->id_smt, $arrKls);
-
-                    $dropJadwal[$jad['tgl_mulai']][$jad['id_jadwal']] = $jad['bank']->bank_kode;
                     unset($jadwals[$k_jad]['bank']);
                 }
             }
+
             $data['kelas'] = $kelases;
             $data['jadwal'] = $tgl_jadwal;
             $data['ruang'] = $ruangs;
