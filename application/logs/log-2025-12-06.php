@@ -240,3 +240,8 @@ ERROR - 2025-12-06 18:17:42 --> Severity: Warning --> unlink(): http does not al
 ERROR - 2025-12-06 18:19:32 --> Severity: Warning --> unlink(): http does not allow unlinking C:\Users\Administrator\Documents\GitHub\cbt\application\controllers\Cbtbanksoal.php 1277
 ERROR - 2025-12-06 18:20:39 --> Severity: Warning --> unlink(): http does not allow unlinking C:\Users\Administrator\Documents\GitHub\cbt\application\controllers\Cbtbanksoal.php 1277
 ERROR - 2025-12-06 18:23:13 --> Severity: error --> Exception: Call to undefined method Auth_model::role_id() C:\Users\Administrator\Documents\GitHub\cbt\application\controllers\Cbtbanksoal.php 1626
+ERROR - 2025-12-06 19:27:54 --> Severity: Compile Error --> Access level to Cbt_soal_model::$fillable must be public (as in class MY_Model) C:\Users\Administrator\Documents\GitHub\cbt\application\models\Cbt_soal_model.php 2
+ERROR - 2025-12-06 19:27:59 --> Severity: Compile Error --> Access level to Cbt_soal_model::$fillable must be public (as in class MY_Model) C:\Users\Administrator\Documents\GitHub\cbt\application\models\Cbt_soal_model.php 2
+ERROR - 2025-12-06 19:28:06 --> Severity: Compile Error --> Access level to Cbt_soal_model::$fillable must be public (as in class MY_Model) C:\Users\Administrator\Documents\GitHub\cbt\application\models\Cbt_soal_model.php 2
+ERROR - 2025-12-06 19:28:16 --> Severity: Compile Error --> Access level to Cbt_soal_model::$fillable must be public (as in class MY_Model) C:\Users\Administrator\Documents\GitHub\cbt\application\models\Cbt_soal_model.php 2
+ERROR - 2025-12-06 19:28:18 --> Severity: Compile Error --> Access level to Cbt_soal_model::$fillable must be public (as in class MY_Model) C:\Users\Administrator\Documents\GitHub\cbt\application\models\Cbt_soal_model.php 2

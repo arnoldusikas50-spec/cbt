@@ -3,75 +3,7 @@
 
     <section class="content">
         <div class="container-fluid">
-            <?= form_open('', array('id' => 'set-kop')) ?>
-            <div class="card my-shadow">
-                <div class="card-header">
-                    <h6 class="card-title">Setting Kop Daftar Kehadiran</h6>
-                    <button type="submit" class="card-tools btn btn-sm bg-primary text-white">
-                        <i class="fas fa-save mr-1"></i> Simpan
-                    </button>
-                    <a href="<?= base_url('cbtcetak') ?>" type="button" class="btn btn-sm btn-danger float-right mr-2">
-                        <i class="fas fa-arrow-circle-left"></i><span
-                            class="d-none d-sm-inline-block ml-1">Kembali</span>
-                    </a>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Header 1</label>
-                                <input class="form-control" name="header_1" placeholder="Header 1"
-                                       value="<?= isset($kop->header_1) ? $kop->header_1 : '' ?>" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Header 2</label>
-                                <input class="form-control" name="header_2" placeholder="Header 2"
-                                       value="<?= isset($kop->header_2) ? $kop->header_2 : '' ?>" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Header 3</label>
-                                <input class="form-control" name="header_3" placeholder="Header 3"
-                                       value="<?= isset($kop->header_3) ? $kop->header_3 : '' ?>" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Header 4</label>
-                                <input class="form-control" name="header_4" placeholder="Header 4"
-                                       value="<?= isset($kop->header_4) ? $kop->header_4 : '' ?>" required>
-                            </div>
-                        </div>
-                        <div class="col-md-4 d-none">
-                            <div class="form-group">
-                                <label>Proktor</label>
-                                <input id="input-proktor" class="form-control" name="proktor" placeholder="Proktor"
-                                       value="<?= isset($kop->proktor) ? $kop->proktor : '' ?>">
-                            </div>
-                        </div>
-                        <div class="col-md-4 d-none">
-                            <div class="form-group">
-                                <label>Pengawas</label>
-                                <input id="input-pengawas-1" class="form-control" name="pengawas_1"
-                                       placeholder="Pengawas 1"
-                                       value="<?= isset($kop->pengawas_1) ? $kop->pengawas_1 : '' ?>">
-                            </div>
-                        </div>
-                        <div class="col-md-4 d-none">
-                            <div class="form-group">
-                                <label>Pengawas 2</label>
-                                <input id="input-pengawas-2" class="form-control" name="pengawas_2"
-                                       placeholder="Pengawas 2"
-                                       value="<?= isset($kop->pengawas_2) ? $kop->pengawas_2 : '' ?>">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <?= form_close() ?>
+            <!-- Setting Kop Removed -->
 
             <div class="card my-shadow">
                 <div class="card-header">
@@ -163,16 +95,15 @@
 
 <script src="<?= base_url() ?>/assets/app/js/print-area.js"></script>
 <script>
-    var oldVal1 = "<?=isset($kop->header_1) ? $kop->header_1 : ""?>";
-    var oldVal2 = "<?=isset($kop->header_2) ? $kop->header_2 : ""?>";
-    var oldVal3 = "<?=isset($kop->header_3) ? $kop->header_3 : ""?>";
-    var oldVal4 = "<?=isset($kop->header_4) ? $kop->header_4 : ""?>";
-    var logoKanan = "<?=isset($kop->logo_kanan) ? base_url() . $kop->logo_kanan : ""?>";
-    var logoKiri = "<?=isset($kop->logo_kiri) ? base_url() . $kop->logo_kiri : ""?>";
-    var tandatangan = "<?= isset($kop->tanda_tangan) ? base_url() . $kop->tanda_tangan : ""?>";
-    var proktor = "<?=isset($kop->proktor) ? $kop->proktor : ""?>";
-    //var pengawas1 = "<?=isset($kop->pengawas_1) ? $kop->pengawas_1 : ""?>";
-    //var pengawas2 = "<?=isset($kop->pengawas_2) ? $kop->pengawas_2 : ""?>";
+    var kopImage = "<?= isset($setting->kopsekolah) && $setting->kopsekolah ? base_url() . $setting->kopsekolah : "" ?>";
+    var oldVal1 = "<?= isset($setting->header_1) ? $setting->header_1 : strtoupper($setting->sekolah) ?>";
+    var oldVal2 = "<?= isset($setting->header_2) ? $setting->header_2 : strtoupper($setting->kota) ?>";
+    var oldVal3 = "<?= isset($setting->header_3) ? $setting->header_3 : $setting->alamat . ' ' . $setting->kecamatan ?>";
+    var oldVal4 = "<?= isset($setting->header_4) ? $setting->header_4 : 'Telp: ' . $setting->telp ?>";
+    var logoKanan = "<?=isset($setting->logo_kanan) ? base_url() . $setting->logo_kanan : ""?>";
+    var logoKiri = "<?=isset($setting->logo_kiri) ? base_url() . $setting->logo_kiri : ""?>";
+    var tandatangan = "<?= isset($setting->tanda_tangan) ? base_url() . $setting->tanda_tangan : ""?>";
+    var proktor = "<?=isset($setting->proktor) ? $setting->proktor : ""?>";
     var printBy = 1;
 
     function handleNull(value) {
@@ -358,7 +289,10 @@
             card += '<div class="border my-shadow mb-3 p-4 bg-white">' +
                 '<div style="-webkit-justify-content: center;justify-content: center;width: 200mm; height: 290mm;padding: 15px">';
 
-            card += '<table style="width: 100%; border: 0;">' +
+            if (kopImage) {
+                 card += '<img src="' + kopImage + '" style="width: 100%; margin-bottom: 2px;">';
+            } else {
+                 card += '<table style="width: 100%; border: 0;">' +
                 '<tr>' +
                 '<td style="width:15%;">' +
                 '<img src="' + logoKiri + '" style="width:85px; height:85px; margin: 6px;">' +
@@ -373,7 +307,8 @@
                 '<img src="' + logoKanan + '" style="width:85px; height:85px; margin: 6px; border-style: none">' +
                 '</td>' +
                 '</tr>' +
-                '</table>' +
+                '</table>';
+            }
                 '<hr style="border: 1px solid; margin-bottom: 6px">' +
                 '<div style="display: flex;align-items: stretch;">' +
                 '<div style="flex: 50%">' +
@@ -568,40 +503,48 @@
                     card.className = 'mb-3 bg-white page-print';
                     card.style.cssText = "width: 210mm; height: 290mm;";
 
-                    const table = document.createElement('table');
-                    table.style.width = '100%';
-                    table.style.border = '0';
+                    if (kopImage) {
+                         const img = document.createElement('img');
+                         img.src = kopImage;
+                         img.style.width = '100%';
+                         img.style.marginBottom = '2px';
+                         card.appendChild(img);
+                    } else {
+                        const table = document.createElement('table');
+                        table.style.width = '100%';
+                        table.style.border = '0';
 
-                    const row = document.createElement('tr');
-                    const leftCell = document.createElement('td');
-                    leftCell.style.width = '15%';
+                        const row = document.createElement('tr');
+                        const leftCell = document.createElement('td');
+                        leftCell.style.width = '15%';
 
-                    const leftImg = document.createElement('img');
-                    leftImg.src = logoKiri;
-                    leftImg.style.cssText = 'width: 85px; height: 85px; margin: 6px;';
-                    leftCell.appendChild(leftImg);
+                        const leftImg = document.createElement('img');
+                        leftImg.src = logoKiri;
+                        leftImg.style.cssText = 'width: 85px; height: 85px; margin: 6px;';
+                        leftCell.appendChild(leftImg);
 
-                    const centerCell = document.createElement('td');
-                    centerCell.style.cssText = 'width: 70%; text-align: center;';
-                    centerCell.innerHTML = `
-            <div style="line-height: 1.1; font-family: 'Times New Roman'; font-size: 14pt">${kop?.header_1 || 'Header 1'}</div>
-            <div style="line-height: 1.1; font-family: 'Times New Roman'; font-size: 16pt"><b>${kop?.header_2 || 'Header 2'}</b></div>
-            <div style="line-height: 1.2; font-family: 'Times New Roman'; font-size: 13pt">${kop?.header_3 || 'Header 3'}</div>
-            <div style="line-height: 1.2; font-family: 'Times New Roman'; font-size: 12pt">${kop?.header_4 || 'Header 4'}</div>`;
+                        const centerCell = document.createElement('td');
+                        centerCell.style.cssText = 'width: 70%; text-align: center;';
+                        centerCell.innerHTML = `
+                <div style="line-height: 1.1; font-family: 'Times New Roman'; font-size: 14pt">${oldVal1}</div>
+                <div style="line-height: 1.1; font-family: 'Times New Roman'; font-size: 16pt"><b>${oldVal2}</b></div>
+                <div style="line-height: 1.2; font-family: 'Times New Roman'; font-size: 13pt">${oldVal3}</div>
+                <div style="line-height: 1.2; font-family: 'Times New Roman'; font-size: 12pt">${oldVal4}</div>`;
 
-                    const rightCell = document.createElement('td');
-                    rightCell.style.width = '15%';
+                        const rightCell = document.createElement('td');
+                        rightCell.style.width = '15%';
 
-                    const rightImg = document.createElement('img');
-                    rightImg.src = logoKanan;
-                    rightImg.style.cssText = 'width: 85px; height: 85px; margin: 6px; border-style: none;';
-                    rightCell.appendChild(rightImg);
+                        const rightImg = document.createElement('img');
+                        rightImg.src = logoKanan;
+                        rightImg.style.cssText = 'width: 85px; height: 85px; margin: 6px; border-style: none;';
+                        rightCell.appendChild(rightImg);
 
-                    row.appendChild(leftCell);
-                    row.appendChild(centerCell);
-                    row.appendChild(rightCell);
-                    table.appendChild(row);
-                    card.appendChild(table);
+                        row.appendChild(leftCell);
+                        row.appendChild(centerCell);
+                        row.appendChild(rightCell);
+                        table.appendChild(row);
+                        card.appendChild(table);
+                    }
 
                     const hr = document.createElement('hr');
                     hr.style.border = '1px solid'

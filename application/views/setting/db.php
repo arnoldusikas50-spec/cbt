@@ -75,6 +75,9 @@
                                     <a href="<?= base_url('./backups/' . $value['src']) ?>"
                                        download="<?= $value['src'] ?>" type="button"
                                        class="btn btn-xs btn-warning btn-download">Download</a>
+                                    <button onclick="restore('<?= $value['src'] ?>')" type="button"
+                                            class="btn btn-xs btn-success btn-restore">Restore
+                                    </button>
                                     <button onclick="hapus('<?= $value['src'] ?>')" type="button"
                                             class="btn btn-xs btn-danger btn-hapus">Hapus
                                     </button>
@@ -336,6 +339,63 @@
                         swal.fire({
                             title: "Error",
                             text: err.Message,
+                            icon: "error"
+                        });
+                    }
+                });
+            }
+        })
+    }
+
+    function restore(src) {
+        swal.fire({
+            title: "RESTORE BACKUP",
+            html: "Anda yakin ingin merestore file <b>" + src + "</b>?<br><br><span class='text-danger'><b>PERINGATAN:</b><br>1. Data aplikasi saat ini akan DITIMPA/DIHAPUS.<br>2. Pastikan Anda sudah melakukan BACKUP terlebih dahulu.<br>3. Proses ini tidak dapat dibatalkan.</span>",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "YA, Restore Data!"
+        }).then(result => {
+            if (result.value) {
+                swal.fire({
+                    title: "Memproses Restore",
+                    text: "Mohon tunggu, jangan tutup halaman ini...",
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                    onOpen: () => {
+                        swal.showLoading();
+                    }
+                });
+                
+                $.ajax({
+                    url: base_url + 'dbmanager/restore/' + src,
+                    type: "GET",
+                    success: function (respon) {
+                        console.log(respon);
+                        if (respon.status) {
+                            swal.fire({
+                                title: "Berhasil",
+                                text: respon.message,
+                                icon: "success"
+                            }).then(result => {
+                                if (result.value) {
+                                    window.location.reload();
+                                }
+                            })
+                        } else {
+                            swal.fire({
+                                title: "Gagal",
+                                text: respon.message,
+                                icon: "error"
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                        swal.fire({
+                            title: "Error",
+                            text: "Terjadi kesalahan server saat proses restore.",
                             icon: "error"
                         });
                     }

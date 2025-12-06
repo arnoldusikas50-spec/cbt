@@ -141,6 +141,86 @@ class Dbmanager extends MY_Controller
         $this->output_json(['status' => true, 'list'=>$list]);
     }
 
+    public function restore($src)
+    {
+        $this->load->helper('file');
+        
+        $file_path = './backups/' . $src;
+        if (!file_exists($file_path)) {
+            $this->output_json(['status' => false, 'message' => 'File tidak ditemukan']);
+            return;
+        }
+
+        // Detect type based on filename prefix defined in backup methods
+        // backupDb uses: backup-db-...
+        // backupData uses: backup-file-...
+        $is_db = strpos($src, 'backup-db') !== false;
+        $is_data = strpos($src, 'backup-file') !== false;
+
+        if ($is_db) {
+            $this->restore_db($file_path);
+        } elseif ($is_data) {
+            $this->restore_data($file_path);
+        } else {
+             $this->output_json(['status' => false, 'message' => 'Tipe backup tidak dikenali']);
+        }
+    }
+
+    private function restore_db($file_path) {
+        $zip = new ZipArchive;
+        if ($zip->open($file_path) === TRUE) {
+            // Assume the first file in zip is the sql file
+            $sql_content = $zip->getFromIndex(0);
+            $zip->close();
+            
+            if (!$sql_content) {
+                $this->output_json(['status' => false, 'message' => 'Gagal membaca isi backup database']);
+                return;
+            }
+            
+            // Execute SQL using mysqli multi_query for better performance and robust parsing
+            $mysqli = $this->db->conn_id;
+            
+            // Disable FK checks to prevent errors during drop/create
+            $mysqli->query("SET FOREIGN_KEY_CHECKS = 0");
+            
+            if ($mysqli->multi_query($sql_content)) {
+                do {
+                    // Consume all results to clear the stack
+                    if ($result = $mysqli->store_result()) {
+                        $result->free();
+                    }
+                } while ($mysqli->more_results() && $mysqli->next_result());
+            } else {
+                 $this->output_json(['status' => false, 'message' => 'Gagal mengeksekusi restore: ' . $mysqli->error]);
+                 return;
+            }
+            
+            $mysqli->query("SET FOREIGN_KEY_CHECKS = 1");
+             
+            $this->output_json(['status' => true, 'message' => 'Database berhasil direstore. Silakan relogin jika session terputus.']);
+
+        } else {
+             $this->output_json(['status' => false, 'message' => 'Gagal membuka file backup']);
+        }
+    }
+
+    private function restore_data($file_path) {
+        $zip = new ZipArchive;
+        if ($zip->open($file_path) === TRUE) {
+            // Extract to root directory (because zip was created with 'uploads/' structure)
+            if ($zip->extractTo('./')) {
+                $zip->close();
+                $this->output_json(['status' => true, 'message' => 'File Uploads berhasil direstore']);
+            } else {
+                 $zip->close();
+                 $this->output_json(['status' => false, 'message' => 'Gagal mengekstrak file']);
+            }
+        } else {
+            $this->output_json(['status' => false, 'message' => 'Gagal membuka file backup']);
+        }
+    }
+
 	function formatSizeUnits($bytes)
 	{
 		if ($bytes >= 1073741824) {

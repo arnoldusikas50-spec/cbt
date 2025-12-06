@@ -3,56 +3,7 @@
 
     <section class="content">
         <div class="container-fluid">
-            <div class="card my-shadow">
-                <div class="card-header">
-                    <h6 class="card-title">Setting Kop</h6>
-                    <button class="card-tools btn btn-sm bg-primary text-white" onclick="submitKop()">
-                        <i class="fas fa-save mr-1"></i> Simpan
-                    </button>
-                     <a href="<?= base_url('cbtcetak') ?>" type="button" class="btn btn-sm btn-danger float-right mr-2">
-                        <i class="fas fa-arrow-circle-left"></i><span
-                            class="d-none d-sm-inline-block ml-1">Kembali</span>
-                    </a>                   
-                </div>
-                <div class="card-body">
-                    <?= form_open('', array('id' => 'set-kop')) ?>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Header 1</label>
-                                <textarea id="header-1" class="form-control" name="header_1" rows="2"
-                                          placeholder="Header baris 1"
-                                          required><?= isset($kop->header_1) ? $kop->header_1 : '' ?></textarea>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Header 2</label>
-                                <textarea id="header-2" class="form-control" name="header_2" rows="2"
-                                          placeholder="Header baris 2"
-                                          required><?= isset($kop->header_2) ? $kop->header_2 : '' ?></textarea>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Header 3</label>
-                                <textarea id="header-3" class="form-control" name="header_3" rows="2"
-                                          placeholder="Header baris 3"
-                                          required><?= isset($kop->header_3) ? $kop->header_3 : '' ?></textarea>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Header 4</label>
-                                <textarea id="header-4" class="form-control" name="header_4" rows="2"
-                                          placeholder="Header baris 4"
-                                          required><?= isset($kop->header_4) ? $kop->header_4 : '' ?></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <?= form_close() ?>
-                </div>
-            </div>
+            <!-- Setting Kop Removed -->
 
             <div class="card my-shadow">
                 <div class="card-header">
@@ -151,28 +102,32 @@
                     <div class="p-4 bg-gray-light">
                         <div style="display: flex; justify-content: center; align-items: center;">
                             <div id="print-preview" style="width: 21cm; min-height: 29cm;" class="border my-shadow p-5 bg-white">
+                                <?php if (isset($setting->kopsekolah) && $setting->kopsekolah != ''): ?>
+                                    <img src="<?= base_url() . $setting->kopsekolah ?>" style="width: 100%; margin-bottom: 2px;">
+                                <?php else: ?>
                                 <table id="table-header-print"
                                        style="width: 100%; border: 0;">
                                     <tr>
                                         <td style="width:15%;">
                                             <img alt="logo kiri" id="prev-logo-kanan-print"
-                                                 src="<?= isset($kop->logo_kiri) ? base_url() . $kop->logo_kiri : '' ?>"
+                                                 src="<?= isset($setting->logo_kiri) ? base_url() . $setting->logo_kiri : '' ?>"
                                                  style="width:85px; height:85px; margin: 6px;">
                                         </td>
                                         <td style="width:70%; text-align: center;">
-                                            <div style="line-height: 1.1; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 14pt"><?= isset($kop->header_1) ? $kop->header_1 : '' ?></div>
+                                            <div style="line-height: 1.1; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 14pt"><?= isset($setting->header_1) ? $setting->header_1 : strtoupper($setting->sekolah) ?></div>
                                             <div style="line-height: 1.1; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 16pt">
-                                                <b><?= isset($kop->header_2) ? $kop->header_2 : '' ?></b></div>
-                                            <div style="line-height: 1.2; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 13pt"><?= isset($kop->header_3) ? $kop->header_3 : '' ?></div>
-                                            <div style="line-height: 1.2; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 12pt"><?= isset($kop->header_4) ? $kop->header_4 : '' ?></div>
+                                                <b><?= isset($setting->header_2) ? $setting->header_2 : strtoupper($setting->kota) ?></b></div>
+                                            <div style="line-height: 1.2; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 13pt"><?= isset($setting->header_3) ? $setting->header_3 : $setting->alamat .' '. $setting->kecamatan ?></div>
+                                            <div style="line-height: 1.2; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 12pt"><?= isset($setting->header_4) ? $setting->header_4 : 'Telp: '.$setting->telp ?></div>
                                         </td>
                                         <td style="width:15%;">
                                             <img alt="logo kanan" id="prev-logo-kiri-print"
-                                                 src="<?= isset($kop->logo_kanan) ? base_url() . $kop->logo_kanan : '' ?>"
+                                                 src="<?= isset($setting->logo_kanan) ? base_url() . $setting->logo_kanan : '' ?>"
                                                  style="width:85px; height:85px; margin: 6px; border-style: none">
                                         </td>
                                     </tr>
                                 </table>
+                                <?php endif; ?>
                                 <hr style="border: 1px solid; margin-bottom: 6px">
                                 <br>
                                 <br>
@@ -365,10 +320,13 @@
 
     const kepsek = "<?= isset($kop->kepsek) && $kop->kepsek != "" ? $kop->kepsek : "_________________________" ?>";
     const nip = "<?= isset($kop->nip) && $kop->nip != "" ? $kop->nip : "_________________________" ?>";
-    var oldVal1 = "<?=$kop->header_1 ?? ""?>";
-    var oldVal2 = "<?=$kop->header_2 ?? ""?>";
-    var oldVal3 = "<?=$kop->header_3 ?? ""?>";
-    var oldVal4 = "<?=$kop->header_4 ?? ""?>";
+    var kopImage = "<?= isset($setting->kopsekolah) && $setting->kopsekolah ? base_url() . $setting->kopsekolah : "" ?>";
+    var oldVal1 = "<?= isset($setting->header_1) ? $setting->header_1 : strtoupper($setting->sekolah) ?>";
+    var oldVal2 = "<?= isset($setting->header_2) ? $setting->header_2 : strtoupper($setting->kota) ?>";
+    var oldVal3 = "<?= isset($setting->header_3) ? $setting->header_3 : $setting->alamat . ' ' . $setting->kecamatan ?>";
+    var oldVal4 = "<?= isset($setting->header_4) ? $setting->header_4 : 'Telp: ' . $setting->telp ?>";
+    var logoKanan = "<?=isset($setting->logo_kanan) ? base_url() . $setting->logo_kanan : ""?>";
+    var logoKiri = "<?=isset($setting->logo_kiri) ? base_url() . $setting->logo_kiri : ""?>";
     var printBy = 1;
 
     function handleNull(value) {
@@ -420,81 +378,89 @@
                 printPreview.style.pageBreakAfter = 'always'
                 //<div style="page-break-after: always"></div>
 
-                // Membuat tabel header
-                const tableHeader = document.createElement("table");
-                tableHeader.style.width = "100%";
-                tableHeader.style.border = "0";
+                if (kopImage) {
+                     const img = document.createElement('img');
+                     img.src = kopImage;
+                     img.style.width = '100%';
+                     img.style.marginBottom = '2px';
+                     printPreview.appendChild(img);
+                } else {
+                    // Membuat tabel header
+                    const tableHeader = document.createElement("table");
+                    tableHeader.style.width = "100%";
+                    tableHeader.style.border = "0";
 
-                // Baris tabel header
-                const headerRow = document.createElement("tr");
+                    // Baris tabel header
+                    const headerRow = document.createElement("tr");
 
-                // Kolom logo kiri
-                const logoKiriTd = document.createElement("td");
-                logoKiriTd.style.width = "15%";
-                const logoKiriImg = document.createElement("img");
-                logoKiriImg.alt = "logo kiri";
-                logoKiriImg.src = base_url + kop?.logo_kiri;
-                logoKiriImg.style.width = "85px";
-                logoKiriImg.style.height = "85px";
-                logoKiriImg.style.margin = "6px";
-                logoKiriTd.appendChild(logoKiriImg);
+                    // Kolom logo kiri
+                    const logoKiriTd = document.createElement("td");
+                    logoKiriTd.style.width = "15%";
+                    const logoKiriImg = document.createElement("img");
+                    logoKiriImg.alt = "logo kiri";
+                    logoKiriImg.src = logoKiri;
+                    logoKiriImg.style.width = "85px";
+                    logoKiriImg.style.height = "85px";
+                    logoKiriImg.style.margin = "6px";
+                    logoKiriTd.appendChild(logoKiriImg);
 
-                // Kolom teks tengah
-                const centerTd = document.createElement("td");
-                centerTd.style.width = "70%";
-                centerTd.style.textAlign = "center";
+                    // Kolom teks tengah
+                    const centerTd = document.createElement("td");
+                    centerTd.style.width = "70%";
+                    centerTd.style.textAlign = "center";
 
-                const header1Div = document.createElement("div");
-                header1Div.style.lineHeight = "1.1";
-                header1Div.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
-                header1Div.style.fontSize = "14pt";
-                header1Div.textContent = kop?.header_1 || 'Header 1'; // Ganti dengan data dinamis
-                centerTd.appendChild(header1Div);
+                    const header1Div = document.createElement("div");
+                    header1Div.style.lineHeight = "1.1";
+                    header1Div.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
+                    header1Div.style.fontSize = "14pt";
+                    header1Div.textContent = oldVal1;
+                    centerTd.appendChild(header1Div);
 
-                const header2Div = document.createElement("div");
-                header2Div.style.lineHeight = "1.1";
-                header2Div.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
-                header2Div.style.fontSize = "16pt";
-                header2Div.style.fontWeight = "bold";
-                header2Div.textContent = kop?.header_2 || 'Header 2'; // Ganti dengan data dinamis
-                centerTd.appendChild(header2Div);
+                    const header2Div = document.createElement("div");
+                    header2Div.style.lineHeight = "1.1";
+                    header2Div.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
+                    header2Div.style.fontSize = "16pt";
+                    header2Div.style.fontWeight = "bold";
+                    header2Div.textContent = oldVal2;
+                    centerTd.appendChild(header2Div);
 
-                const header3Div = document.createElement("div");
-                header3Div.style.lineHeight = "1.2";
-                header3Div.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
-                header3Div.style.fontSize = "13pt";
-                header3Div.textContent = kop?.header_3 || 'Header 3'; // Ganti dengan data dinamis
-                centerTd.appendChild(header3Div);
+                    const header3Div = document.createElement("div");
+                    header3Div.style.lineHeight = "1.2";
+                    header3Div.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
+                    header3Div.style.fontSize = "13pt";
+                    header3Div.textContent = oldVal3;
+                    centerTd.appendChild(header3Div);
 
-                const header4Div = document.createElement("div");
-                header4Div.style.lineHeight = "1.2";
-                header4Div.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
-                header4Div.style.fontSize = "12pt";
-                header4Div.textContent = kop?.header_4 || 'Header 4'; // Ganti dengan data dinamis
-                centerTd.appendChild(header4Div);
+                    const header4Div = document.createElement("div");
+                    header4Div.style.lineHeight = "1.2";
+                    header4Div.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif";
+                    header4Div.style.fontSize = "12pt";
+                    header4Div.textContent = oldVal4;
+                    centerTd.appendChild(header4Div);
 
-                // Kolom logo kanan
-                const logoKananTd = document.createElement("td");
-                logoKananTd.style.width = "15%";
-                const logoKananImg = document.createElement("img");
-                logoKananImg.alt = "logo kanan";
-                logoKananImg.src = base_url + kop?.logo_kanan;
-                logoKananImg.style.width = "85px";
-                logoKananImg.style.height = "85px";
-                logoKananImg.style.margin = "6px";
-                logoKananImg.style.borderStyle = "none";
-                logoKananTd.appendChild(logoKananImg);
+                    // Kolom logo kanan
+                    const logoKananTd = document.createElement("td");
+                    logoKananTd.style.width = "15%";
+                    const logoKananImg = document.createElement("img");
+                    logoKananImg.alt = "logo kanan";
+                    logoKananImg.src = logoKanan;
+                    logoKananImg.style.width = "85px";
+                    logoKananImg.style.height = "85px";
+                    logoKananImg.style.margin = "6px";
+                    logoKananImg.style.borderStyle = "none";
+                    logoKananTd.appendChild(logoKananImg);
 
-                // Menambahkan kolom ke baris header
-                headerRow.appendChild(logoKiriTd);
-                headerRow.appendChild(centerTd);
-                headerRow.appendChild(logoKananTd);
+                    // Menambahkan kolom ke baris header
+                    headerRow.appendChild(logoKiriTd);
+                    headerRow.appendChild(centerTd);
+                    headerRow.appendChild(logoKananTd);
 
-                // Menambahkan baris ke tabel header
-                tableHeader.appendChild(headerRow);
+                    // Menambahkan baris ke tabel header
+                    tableHeader.appendChild(headerRow);
 
-                // Menambahkan tabel header ke elemen utama
-                printPreview.appendChild(tableHeader);
+                    // Menambahkan tabel header ke elemen utama
+                    printPreview.appendChild(tableHeader);
+                }
 
                 // Menambahkan garis horizontal
                 const hr = document.createElement("hr");
