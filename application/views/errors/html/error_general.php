@@ -1,71 +1,138 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
-?><!DOCTYPE html>
+?>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Error</title>
-    <style type="text/css">
-
-        ::selection {
-            background-color: #E13300;
-            color: white;
+    <style>
+        :root {
+            --primary: #EF4444;
+            --primary-dark: #DC2626;
+            --secondary: #64748b;
+            --bg: #fef2f2;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
         }
 
-        ::-moz-selection {
-            background-color: #E13300;
-            color: white;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            background-color: #fff;
-            margin: 40px;
-            font: 13px/20px normal Helvetica, Arial, sans-serif;
-            color: #4F5155;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
         }
 
-        a {
-            color: #003399;
-            background-color: transparent;
-            font-weight: normal;
+        .container {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            background: var(--card-bg);
+            padding: 3rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.1);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .illustration {
+            width: 100%;
+            height: 180px;
+            margin-bottom: 2rem;
         }
 
         h1 {
-            color: #444;
-            background-color: transparent;
-            border-bottom: 1px solid #D0D0D0;
-            font-size: 19px;
-            font-weight: normal;
-            margin: 0 0 14px 0;
-            padding: 14px 15px 10px 15px;
-        }
-
-        code {
-            font-family: Consolas, Monaco, Courier New, Courier, monospace;
-            font-size: 12px;
-            background-color: #f9f9f9;
-            border: 1px solid #D0D0D0;
-            color: #002166;
-            display: block;
-            margin: 14px 0 14px 0;
-            padding: 12px 10px 12px 10px;
-        }
-
-        #container {
-            margin: 10px;
-            border: 1px solid #D0D0D0;
-            box-shadow: 0 0 8px #D0D0D0;
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text-main);
         }
 
         p {
-            margin: 12px 15px 12px 15px;
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            background-color: var(--primary);
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .code {
+            font-family: monospace;
+            color: var(--primary);
+            font-size: 0.875rem;
+            margin-top: 2rem;
+            background: #fef2f2;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            display: inline-block;
         }
     </style>
 </head>
+
 <body>
-<div id="container">
-    <h1><?php echo $heading; ?></h1>
-    <?php echo $message; ?>
-</div>
+    <div class="container">
+        <!-- SVG Warning Icon -->
+        <svg class="illustration" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                fill="#FEE2E2" />
+            <path d="M12 8V12" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M12 16H12.01" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+
+        <h1><?php echo $heading; ?></h1>
+        <p>
+            <?php echo $message; ?>
+        </p>
+
+        <a href="javascript:history.back()" class="btn">Kembali</a>
+    </div>
 </body>
+
 </html>

@@ -39,11 +39,13 @@ $(document).ready(function () {
 				orderable: false,
 				searchable: false
 			},
-			{data: "nama_sesi"},
-			{data: "kode_sesi"},
-			{data: null, render: function (data, type, row) {
-					return data.waktu_mulai+'  s/d  '+data.waktu_akhir;
-				}}
+			{ data: "nama_sesi" },
+			{ data: "kode_sesi" },
+			{
+				data: null, render: function (data, type, row) {
+					return data.waktu_mulai + '  s/d  ' + data.waktu_akhir;
+				}
+			}
 		],
 		columnDefs: [
 			{
@@ -61,7 +63,7 @@ $(document).ready(function () {
 									<a class="ml-1 mr-2 btn btn-warning btn-sm" data-toggle="modal" data-target="#editSesiModal"
 									 data-id='${data.id_sesi}' data-nama='${data.nama_sesi}' data-kode='${data.kode_sesi}'
 									 data-awal='${data.waktu_mulai}' data-akhir='${data.waktu_akhir}'>
-										<i class="fa fa-pencil-alt"></i> Edit
+										<i class="bi bi-pencil"></i> Edit
 									</a>
 								</div>`;
 				}
@@ -96,13 +98,13 @@ $(document).ready(function () {
 
 	$("div.toolbar").html(
 		'<button id="hapusterpilih" onclick="bulk_delete()" type="button" class="btn btn-danger" data-toggle="tooltip" title="Hapus Terpilh" disabled="disabled">' +
-		'<i class="far fa-trash-alt"></i></button>'
+		'<i class="b bi-trash"></i></button>'
 		/*
 		'<div class="btn-group">' +
-		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Print"><i class="fas fa-print"></i></button>' +
-		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As PDF"><i class="fas fa-file-pdf"></i></button>' +
-		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As Word"><i class="fa fa-file-word"></i></button>' +
-		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As Excel"><i class="fa fa-file-excel"></i></button>' +
+		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Print"><i class="bi bi-print"></i></button>' +
+		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As PDF"><i class="bi bi-file-pdf"></i></button>' +
+		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As Word"><i class="bi bi-file-word"></i></button>' +
+		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As Excel"><i class="bi bi-file-excel"></i></button>' +
 		'</div>'
 		*/
 	);
@@ -112,13 +114,13 @@ $(document).ready(function () {
 			$(".check").each(function () {
 				this.checked = true;
 				$(".select_all").prop("checked", true);
-                $('#hapusterpilih').attr('disabled','disabled');
+				$('#hapusterpilih').attr('disabled', 'disabled');
 			});
 		} else {
 			$(".check").each(function () {
 				this.checked = false;
 				$(".select_all").prop("checked", false);
-                $('#hapusterpilih').attr('disabled','disabled');
+				$('#hapusterpilih').attr('disabled', 'disabled');
 			});
 		}
 	});
@@ -132,11 +134,11 @@ $(document).ready(function () {
 			$(".select_all").prop("checked", false);
 		}
 
-        if (checked === 0) {
-            $('#hapusterpilih').attr('disabled','disabled');
-        } else {
-            $('#hapusterpilih').removeAttr('disabled');
-        }
+		if (checked === 0) {
+			$('#hapusterpilih').attr('disabled', 'disabled');
+		} else {
+			$('#hapusterpilih').removeAttr('disabled');
+		}
 	});
 
 	$('#create').submit('click', function (e) {
@@ -228,13 +230,13 @@ $(document).ready(function () {
 			success: function (respon) {
 				$('#hapusterpilih').addClass('d-none');
 				if (respon.status) {
-					swal.fire({
+					Swal.fire({
 						title: "Berhasil",
 						text: respon.total + " data berhasil dihapus",
 						icon: "success"
 					});
 				} else {
-					swal.fire({
+					Swal.fire({
 						title: "Gagal",
 						text: "Tidak ada data yang dipilih",
 						icon: "error"
@@ -244,7 +246,7 @@ $(document).ready(function () {
 			},
 			error: function () {
 				$('#hapusterpilih').addClass('d-none');
-				swal.fire({
+				Swal.fire({
 					title: "Gagal",
 					text: "Ada data yang sedang digunakan",
 					icon: "error"
@@ -254,8 +256,8 @@ $(document).ready(function () {
 	});
 
 	$('#jamAwalEdit, #jamAkhirEdit, #jamAwal, #jamAkhir').datetimepicker({
-		datepicker:false,
-		format:'H:i:s',
+		datepicker: false,
+		format: 'H:i:s',
 		step: 30,
 		minTime: '07:00',
 		maxTime: '23:00'
@@ -265,13 +267,13 @@ $(document).ready(function () {
 
 function bulk_delete() {
 	if ($("#sesi tbody tr .check:checked").length == 0) {
-		swal.fire({
+		Swal.fire({
 			title: "Gagal",
 			text: "Tidak ada data yang dipilih",
 			icon: "error"
 		});
 	} else {
-		swal.fire({
+		Swal.fire({
 			title: "Anda yakin?",
 			text: "Data akan dihapus!",
 			icon: "warning",

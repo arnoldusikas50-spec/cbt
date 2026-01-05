@@ -295,8 +295,9 @@
 }
 
 /* Modern Info Box for CBT Cetak */
+/* Enhanced info-box-modern styles for better display */
 .info-box-modern {
-    background: rgba(255,255,255,0.8) !important;
+    background: rgba(255,255,255,0.9) !important;
     backdrop-filter: blur(15px) !important;
     -webkit-backdrop-filter: blur(15px) !important;
     border: 1px solid rgba(255,255,255,0.4) !important;
@@ -310,6 +311,15 @@
     display: flex !important;
     align-items: center !important;
     gap: 1rem !important;
+    min-height: 120px !important;
+}
+
+/* Fallback for browsers that don't support backdrop-filter */
+@supports not ((backdrop-filter: blur(15px)) or (-webkit-backdrop-filter: blur(15px))) {
+    .info-box-modern {
+        background: rgba(255,255,255,0.95) !important;
+        border: 1px solid rgba(0,0,0,0.1) !important;
+    }
 }
 
 .info-box-modern::before {
@@ -396,6 +406,84 @@
     font-size: 1.2rem !important;
     transition: all 0.3s ease !important;
     flex-shrink: 0 !important;
+}
+
+/* Responsive improvements for info-box-modern */
+@media (max-width: 768px) {
+    .info-box-modern {
+        padding: 1rem !important;
+        min-height: 100px !important;
+        gap: 0.75rem !important;
+    }
+    
+    .info-box-icon-modern {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 1.25rem !important;
+    }
+    
+    .info-box-title {
+        font-size: 0.9rem !important;
+    }
+    
+    .info-box-desc {
+        font-size: 0.8rem !important;
+    }
+    
+    .info-box-arrow {
+        font-size: 1rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .info-box-modern {
+        padding: 0.75rem !important;
+        min-height: 90px !important;
+        gap: 0.5rem !important;
+    }
+    
+    .info-box-icon-modern {
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 1.1rem !important;
+    }
+    
+    .info-box-title {
+        font-size: 0.85rem !important;
+        margin-bottom: 0.15rem !important;
+    }
+    
+    .info-box-desc {
+        font-size: 0.75rem !important;
+        line-height: 1.3 !important;
+    }
+}
+
+/* Enhanced card styling for cbtcetak pages */
+.content-wrapper.bg-white {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+    min-height: 100vh !important;
+}
+
+.card.my-shadow.fade-in-up {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+}
+
+.card.my-shadow.fade-in-up .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-bottom: none !important;
+    padding: 1.25rem 1.5rem !important;
+}
+
+.card.my-shadow.fade-in-up .card-body {
+    padding: 0 !important;
+    background: transparent !important;
 }
 
 /* Alert wrapper styling for info boxes */

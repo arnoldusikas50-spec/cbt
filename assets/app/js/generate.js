@@ -20,7 +20,6 @@ function loadTokenFromServer() {
     $.ajax({
         url: base_url + "cbttoken/loadtoken",
         type: "GET",
-        timeout: 5000, // Add timeout
         success: function (response) {
             globalToken = response;
             localStorage.setItem('garudaCBT.token', JSON.stringify(response));
@@ -28,18 +27,7 @@ function loadTokenFromServer() {
             createIntervalToken();
         },
         error: function (xhr, status, error) {
-            console.log('Token load error:', status, error);
-            // Fallback: use existing token from localStorage if available
-            const existingToken = localStorage.getItem('garudaCBT.token');
-            if (existingToken) {
-                try {
-                    globalToken = JSON.parse(existingToken);
-                    createIntervalToken();
-                    console.log('Using fallback token from localStorage');
-                } catch (e) {
-                    console.log('Failed to parse fallback token');
-                }
-            }
+            console.log(xhr);
         }
     });
 }

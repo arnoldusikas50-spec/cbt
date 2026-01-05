@@ -2,23 +2,23 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
 
-;(function ($, window, document, undefined) {
+; (function ($, window, document, undefined) {
     "use strict";
     const pluginName = "linkerList";
     const defaults = {
         data: {
             kiri: [
-                {key: '1', value: '<p>Jawa barat</p>'},
-                {key: '2', value: '<p>Sumatera Selatan<p/>'},
+                { key: '1', value: '<p>Pernyataan 1</p>' },
+                { key: '2', value: '<p>Pernyataan 2<p/>' },
             ],
             kanan: [
                 {
                     key: 'A',
-                    value: '<p>Palembang</p>'
+                    value: '<p>Jawaban 1</p>'
                 },
                 {
                     key: 'B',
-                    value: '<p>Bandung</p>'
+                    value: '<p>Jawaban 2</p>'
                 },
             ],
             linked: {
@@ -29,18 +29,18 @@ function getRandomInt(max) {
         }
     };
     const colorsLine = [
-        "#BDBDBD",
-        "#C62828", "#283593", "#00695C", "#9E9D24", "#6A1B9A",
-        "#FBC02D", "#F57C00", "#E64A19", "#5D4037", "#37474F",
-        "#C62828", "#283593", "#00695C", "#9E9D24", "#6A1B9A",
-        "#FBC02D", "#F57C00", "#E64A19", "#5D4037", "#37474F",
+        "#94a3b8", // slate-400 (default)
+        "#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6",
+        "#ec4899", "#06b6d4", "#f97316", "#6366f1", "#14b8a6",
+        "#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6",
+        "#ec4899", "#06b6d4", "#f97316", "#6366f1", "#14b8a6",
     ]
     const colorsBg = [
         "#FFFFFF",
-        "#fff7f8", "#e6e9ff", "#d6faff", "#f0ffdc", "#fbecff",
-        "#fffbde", "#fff0d6", "#ffe5dc", "#fff5f0", "#effcff",
-        "#fff7f8", "#e6e9ff", "#d6faff", "#f0ffdc", "#fbecff",
-        "#fffbde", "#fff0d6", "#ffe5dc", "#fff5f0", "#effcff",
+        "#eff6ff", "#fef2f2", "#ecfdf5", "#fffbeb", "#f5f3ff",
+        "#fdf2f8", "#ecfeff", "#fff7ed", "#eef2ff", "#f0fdfa",
+        "#eff6ff", "#fef2f2", "#ecfdf5", "#fffbeb", "#f5f3ff",
+        "#fdf2f8", "#ecfeff", "#fff7ed", "#eef2ff", "#f0fdfa",
     ]
     const templates = {
         kiriContainer: '<div style="width: 42%; min-width: 200px"></div>',
@@ -67,8 +67,8 @@ function getRandomInt(max) {
             </div>
         </div>
         <div class="col-5 text-right">
-            <button class="btn btn-warning" data-id=""><i class="fa fa-pencil-alt mr-2"></i>Edit</button>
-            <button class="btn btn-success" data-id=""><i class="fa fa-check mr-2"></i>Selesai</button>
+            <button class="btn btn-warning" data-id=""><i class="bi bi-pencil mr-2"></i>Edit</button>
+            <button class="btn btn-success" data-id=""><i class="bi bi-check mr-2"></i>Selesai</button>
         </div>
     </div>`
     };
@@ -166,8 +166,8 @@ function getRandomInt(max) {
                 let header = $('<div class="row" style="min-width: 500px"></div>')
                 header.append('<div class="col-7"><div class="row"><div class="col mb-2" style="max-width: 90px">' +
                     '<div class="btn-group" role="group" data-toggle="button">' +
-                    '   <button class="btn btn-outline-primary '+ (self.modelSoal === '1' ? 'active' : '') +'" data-id="switch-list' + self.listIdPrefix + '"><i class="fa fa-bars"></i></button>' +
-                    '   <button class="btn btn-outline-primary '+ (self.modelSoal === '2' ? 'active' : '') +'" data-id="switch-table' + self.listIdPrefix + '"><i class="fa fa-table"></i></button>' +
+                    '   <button class="btn btn-outline-primary ' + (self.modelSoal === '1' ? 'active' : '') + '" data-id="switch-list' + self.listIdPrefix + '"><i class="bi bi-bars"></i></button>' +
+                    '   <button class="btn btn-outline-primary ' + (self.modelSoal === '2' ? 'active' : '') + '" data-id="switch-table' + self.listIdPrefix + '"><i class="bi bi-table"></i></button>' +
                     '</div></div>' +
                     '<div class="col mb-2" style="max-width: 250px">' +
                     '   <select class="form-control" data-id="type-opsi' + self.listIdPrefix + '">' +
@@ -176,8 +176,8 @@ function getRandomInt(max) {
                     '   </select>' +
                     '</div></div></div>' +
                     '<div class="col-5 text-right">' +
-                    '   <button class="btn btn-warning" data-id="btn-edit' + self.listIdPrefix + '"><i class="fa fa-pencil-alt mr-2"></i>Edit</button>' +
-                    '   <button class="btn btn-success d-none" data-id="btn-ok' + self.listIdPrefix + '"><i class="fa fa-check mr-2"></i>Selesai</button>' +
+                    '   <button class="btn btn-warning" data-id="btn-edit' + self.listIdPrefix + '"><i class="bi bi-pencil mr-2"></i>Edit</button>' +
+                    '   <button class="btn btn-success d-none" data-id="btn-ok' + self.listIdPrefix + '"><i class="bi bi-check mr-2"></i>Selesai</button>' +
                     '</div>');
 
                 $(self.cardBody).append(header)
@@ -197,14 +197,17 @@ function getRandomInt(max) {
             self.listKiri.forEach(function (kr, idx) {
                 let div = $('<div></div>');
                 div.attr('id', 'item' + kr.key + self.listIdPrefix);
-                div.addClass('col my-2 item-kiri py-1 px-2');
-                div.css({
+                div.addClass('col my-3 item-kiri p-3 linker-box');
+                // Inline styles moved to .linker-box class in CSS
+                /* div.css({
                     'background-color': "#FFF",
-                    'border': '1px solid #BDBDBD',
-                    'border-radius': '6px',
-                });
+                    'border': '1px solid #cbd5e1',
+                    'border-radius': '12px',
+                    'box-shadow': '0 2px 4px rgba(0,0,0,0.05)',
+                    'transition': 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                }); */
                 if (self.viewMode !== '1') {
-                    div.css({'cursor': 'pointer'});
+                    div.css({ 'cursor': 'pointer' });
                 }
                 div.html(self.convertLinkImage(kr.value))
                 contKiri.append(div)
@@ -225,21 +228,24 @@ function getRandomInt(max) {
             self.listKanan.forEach(function (kn, idx) {
                 let div = $('<div></div>');
                 div.attr('id', 'item' + kn.key + self.listIdPrefix);
-                div.addClass('col my-2 item-kanan py-1 px-2');
-                div.css({
+                div.addClass('col my-3 item-kanan p-3 linker-box');
+                // Inline styles moved to .linker-box class in CSS
+                /* div.css({
                     'background-color': "#FFF",
-                    'border': '1px solid #BDBDBD',
-                    'border-radius': '6px',
-                });
+                    'border': '1px solid #cbd5e1',
+                    'border-radius': '12px',
+                    'box-shadow': '0 2px 4px rgba(0,0,0,0.05)',
+                    'transition': 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                }); */
                 if (self.viewMode !== '1') {
-                    div.css({'cursor': 'pointer'});
+                    div.css({ 'cursor': 'pointer' });
                 }
                 div.html(self.convertLinkImage(kn.value))
                 contKanan.append(div)
             })
             linkerContainer.append(contKanan)
 
-            let divResponsive =$('<div class="table-responsive"></div>')
+            let divResponsive = $('<div class="table-responsive"></div>')
             divResponsive.append(linkerContainer)
             $(self.cardBody).append(divResponsive)
 
@@ -365,7 +371,7 @@ function getRandomInt(max) {
                     self.ctx.moveTo(self.startX, self.startY);
                     self.ctx.lineTo(self.mouseX, self.mouseY);
                     self.ctx.strokeStyle = colorsLine[self.idActive];
-                    self.ctx.lineWidth = 1;
+                    self.ctx.lineWidth = 3;
                     self.ctx.lineCap = 'round';
                     self.ctx.stroke()
 
@@ -383,7 +389,7 @@ function getRandomInt(max) {
             }
             self.drawLinked()
 
-            new ResizeSensor($('#list-kiri' + self.listIdPrefix), function(){
+            new ResizeSensor($('#list-kiri' + self.listIdPrefix), function () {
                 if (self.modelSoal === '1' && !self.editMode) self.drawLinked()
             });
 
@@ -446,7 +452,7 @@ function getRandomInt(max) {
             });
             table.append($(trs))
 
-            let divResponsive =$('<div class="table-responsive"></div>')
+            let divResponsive = $('<div class="table-responsive"></div>')
             divResponsive.append(table)
 
             $(self.cardBody).append(divResponsive)
@@ -491,7 +497,7 @@ function getRandomInt(max) {
                 div.append(edittext)
                 contKiri.append(div)
             })
-            contKiri.append($('<button class="btn btn-default hapus ml-2" data-id="tambah-kiri' + self.listIdPrefix + '"><i class="fa fa-plus text-gray"></i> Tambah Baris</button>'))
+            contKiri.append($('<button class="btn btn-default hapus ml-2" data-id="tambah-kiri' + self.listIdPrefix + '"><i class="bi bi-plus text-gray"></i> Tambah Baris</button>'))
             linkerContainer.append(contKiri)
 
             let contKanan = $(templates.kananContainer)
@@ -506,7 +512,7 @@ function getRandomInt(max) {
                 div.append(edittext)
                 contKanan.append(div)
             })
-            contKanan.append($('<button class="float-right btn btn-default hapus ml-2" data-id="tambah-kanan' + self.listIdPrefix + '"><i class="fa fa-plus text-gray"></i> Tambah Kolom</button>'))
+            contKanan.append($('<button class="float-right btn btn-default hapus ml-2" data-id="tambah-kanan' + self.listIdPrefix + '"><i class="bi bi-plus text-gray"></i> Tambah Kolom</button>'))
             linkerContainer.append(contKanan)
             $(self.cardBody).append(linkerContainer)
 
@@ -550,7 +556,7 @@ function getRandomInt(max) {
                 let HelloButton = function (context) {
                     let ui = $.summernote.ui;
                     let button = ui.button({
-                        contents: '<i class="card-tools fa fa-times"/>',
+                        contents: '<i class="card-tools bi bi-x"/>',
                         tooltip: 'Hapus',
                         click: function (e) {
                             e.preventDefault();
@@ -674,17 +680,17 @@ function getRandomInt(max) {
                 //selCanvas.attr("height", 0);
 
                 //function resizeCanvas() {
-                    const fixedHeight = hKiri < hKanan ? hKanan : hKiri
-                    selCanvas.attr("height", '' + (fixedHeight-15));
+                const fixedHeight = hKiri < hKanan ? hKanan : hKiri
+                selCanvas.attr("height", '' + (fixedHeight - 15));
 
-                    const rect = self.canvas.getBoundingClientRect();
-                    self.offsetX = rect.left;
-                    self.offsetY = rect.top;
+                const rect = self.canvas.getBoundingClientRect();
+                self.offsetX = rect.left;
+                self.offsetY = rect.top;
 
-                    //self.canvasOffset = $(self.canvas).offset();
-                    //self.offsetX = self.canvasOffset.left;
-                    //self.offsetY = self.canvasOffset.top;
-                    self.createPoints()
+                //self.canvasOffset = $(self.canvas).offset();
+                //self.offsetX = self.canvasOffset.left;
+                //self.offsetY = self.canvasOffset.top;
+                self.createPoints()
                 //}
 
                 //clearTimeout(self.asyncResize)
@@ -821,7 +827,7 @@ function getRandomInt(max) {
                     css = {
                         'background-color': colorsBg[0],
                         'background-image': 'linear-gradient(' + colorsBg[0] + ',' + colorsBg[0] + ')',
-                        'border': '1px solid ' + colorsLine[0]
+                        'border': '2px solid transparent' // Default border transparent
                     }
                 }
                 $(`#item${kn.key + self.listIdPrefix}`).css(css)
@@ -920,7 +926,7 @@ function getRandomInt(max) {
                 return res;
             } else {
                 let arrEmpty = []
-                $.each(self.linkeds, function( key, value ) {
+                $.each(self.linkeds, function (key, value) {
                     if (key) {
                         arrEmpty.push(value.length > 0 ? 1 : 0)
                     }
@@ -985,7 +991,7 @@ function getRandomInt(max) {
                     idHapus = id.split('-')[0].replace('item', '')
                     content = '<div class="card border card' + self.listIdPrefix + '">' +
                         '<div class="card-body">Hapus ' + item + ' ' + idHapus + '?</div>' +
-                        '<div class="card-footer"><button class="btn text-info btn-cancel">Batal</button><button class="btn btn-outline-danger btn-hapus">Hapus</button></div>' +
+                        '<div class="card-footer"><button class="btn text-info btn-cancel">Batal</button><button class="btn btn-danger btn-hapus">Hapus</button></div>' +
                         '</div>'
                 }
                 self.overlay.append(content)

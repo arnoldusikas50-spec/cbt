@@ -5,7 +5,7 @@ $(document).ready(function () {
         var token = $('#token').val();
         var idUjian = $(this).data('id');
         if (token === '') {
-            swal.fire('Gagal', 'Token harus diisi', 'error');
+            Swal.fire('Gagal', 'Token harus diisi', 'error');
         } else {
             var key = $('#id_ujian').data('key');
             $.ajax({
@@ -17,7 +17,7 @@ $(document).ready(function () {
                 },
                 cache: false,
                 success: function (result) {
-                    swal.fire({
+                    Swal.fire({
                         "type": result.status ? "success" : "error",
                         "title": result.status ? "Berhasil" : "Gagal",
                         "text": result.status ? "Token Benar" : "Token Salah"

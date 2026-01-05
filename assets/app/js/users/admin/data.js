@@ -1,14 +1,14 @@
 var table;
 
-$(document).ready(function() {
+$(document).ready(function () {
     ajaxcsrf();
 
     table = $("#users").DataTable({
-        initComplete: function() {
+        initComplete: function () {
             var api = this.api();
             $("#users_filter input")
                 .off(".DT")
-                .on("keyup.DT", function(e) {
+                .on("keyup.DT", function (e) {
                     api.search(this.value).draw();
                 });
         },
@@ -38,7 +38,7 @@ $(document).ready(function() {
             {
                 targets: 5,
                 data: "level",
-                render: function(data, type, row, meta) {
+                render: function (data, type, row, meta) {
                     return `<div class="text-center">
                             <span class="badge">${data}</span>
                         </div>`;
@@ -50,7 +50,7 @@ $(document).ready(function() {
                 searchable: false,
                 title: "Status",
                 data: "active",
-                render: function(data, type, row, meta) {
+                render: function (data, type, row, meta) {
                     if (data === "1") {
                         return `<div class="text-center">
                                 <span class="badge bg-green">Active</span>
@@ -65,35 +65,35 @@ $(document).ready(function() {
             {
                 targets: 8,
                 data: "id",
-                render: function(data, type, row, meta) {
+                render: function (data, type, row, meta) {
                     if (data === user_id) {
                         return `<div class="text-center">
                                 <a class="btn btn-xs bg-primary" href="${base_url}useradmin/edit/${data}">
-                                    <i class="fa fa-cog fa-spin"></i>
+                                    <i class="bi bi-cog fa-spin"></i>
                                 </a>
                             </div>`;
                     } else {
-                    	if (user_id == "1") {
-							return `<div class="text-center">
+                        if (user_id == "1") {
+                            return `<div class="text-center">
                                 <a type="button" class="btn btn-xs btn-warning" href="${base_url}useradmin/edit/${data}">
-                                    <i class="fa fa-pencil-alt text-white"></i>
+                                    <i class="bi bi-pencil text-white"></i>
                                 </a>
                                 <button type="button" class="btn btn-xs btn-danger" onclick="hapus(${data})">
-                                    <i class="fa fa-trash text-white"></i>
+                                    <i class="bi bi-trash text-white"></i>
                                 </button>
                             </div>`;
-						} else {
-							return `<div class="text-center"><i class="fa fa-ban text-danger"></i></div>`;
-						}
+                        } else {
+                            return `<div class="text-center"><i class="bi bi-ban text-danger"></i></div>`;
+                        }
                     }
                 }
             }
         ],
         order: [[1, "asc"]],
-        rowId: function(a) {
+        rowId: function (a) {
             return a;
         },
-        rowCallback: function(row, data, iDisplayIndex) {
+        rowCallback: function (row, data, iDisplayIndex) {
             var info = this.fnPagingInfo();
             var page = info.iPage;
             var length = info.iLength;
@@ -107,56 +107,56 @@ $(document).ready(function() {
         .container()
         .appendTo("#users_wrapper .col-md-6:eq(0)");
 
-    $("#show_me").on("change", function() {
+    $("#show_me").on("change", function () {
         let src = base_url + "useradmin/data";
         let url = $(this).prop("checked") === true ? src : src + "/" + user_id;
         table.ajax.url(url).load();
     });
 
 
-	$('#create').on('submit', function (e) {
-		e.preventDefault();
-		e.stopImmediatePropagation();
-		console.log("data:", $(this).serialize());
+    $('#create').on('submit', function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        console.log("data:", $(this).serialize());
 
-		$.ajax({
-			url: base_url + "useradmin/create",
-			type: "POST",
-			dataType: "JSON",
-			data: $(this).serialize(),
-			success: function (data) {
-				//console.log("result", jQuery.parseJSON(data));
-				$('#createAdminModal').modal('hide').data('bs.modal', null);
-				$('#createAdminModal').on('hidden', function () {
-					$(this).data('modal', null);  // destroys modal
-				});
-				showSuccessToast('Data berhasil disimpan.');
-				table.ajax.reload();
-			}, error: function (xhr, status, error) {
-				$('#createAdminModal').modal('hide').data('bs.modal', null);
-				$('#createAdminModal').on('hidden', function () {
-					$(this).data('modal', null);  // destroys modal
-				});
-				showDangerToast(status);
-			}
-		});
-		return false;
-	});
+        $.ajax({
+            url: base_url + "useradmin/create",
+            type: "POST",
+            dataType: "JSON",
+            data: $(this).serialize(),
+            success: function (data) {
+                //console.log("result", jQuery.parseJSON(data));
+                $('#createAdminModal').modal('hide').data('bs.modal', null);
+                $('#createAdminModal').on('hidden', function () {
+                    $(this).data('modal', null);  // destroys modal
+                });
+                showSuccessToast('Data berhasil disimpan.');
+                table.ajax.reload();
+            }, error: function (xhr, status, error) {
+                $('#createAdminModal').modal('hide').data('bs.modal', null);
+                $('#createAdminModal').on('hidden', function () {
+                    $(this).data('modal', null);  // destroys modal
+                });
+                showDangerToast(status);
+            }
+        });
+        return false;
+    });
 });
 
 function hapus(id) {
-    swal.fire({
+    Swal.fire({
         title: "Anda yakin?",
         text: "Data akan dihapus.",
-        type: "question",
+        icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         confirmButtonText: "Hapus!"
     }).then(result => {
         if (result.value) {
-            $.getJSON(base_url + "useradmin/delete/" + id, function(data) {
-                swal.fire({
+            $.getJSON(base_url + "useradmin/delete/" + id, function (data) {
+                Swal.fire({
                     title: data.status ? "Berhasil" : "Gagal",
                     text: data.status
                         ? "User berhasil dihapus"

@@ -1,7 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Kbm extends MY_Controller {
+class Kbm extends MY_Controller
+{
 
     public function __construct()
     {
@@ -19,12 +20,12 @@ class Kbm extends MY_Controller {
 
     }
 
-     public function jadwal_pelajaran()
+    public function jadwal_pelajaran()
     {
         $this->load->model('Master_model', 'master');
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Kelas_model', 'kelas');
-        $this->load->model('Elearning_model',  'elearning');
+        $this->load->model('Elearning_model', 'elearning');
 
         $tp = $this->dashboard->getTahunActive();
         $smt = $this->dashboard->getSemesterActive();
@@ -51,7 +52,7 @@ class Kbm extends MY_Controller {
     public function get_jadwal_harian()
     {
         $this->load->model('Dashboard_model', 'dashboard');
-        $this->load->model('Elearning_model',  'elearning');
+        $this->load->model('Elearning_model', 'elearning');
         $tp = $this->dashboard->getTahunActive();
         $smt = $this->dashboard->getSemesterActive();
         $user = $this->auth->user();
@@ -88,7 +89,7 @@ class Kbm extends MY_Controller {
             $lastSampai = '01:00';
             $latestMpl = '0';
             $lastDay = '';
-            foreach ($mapel as $hari=>$jadwals) {
+            foreach ($mapel as $hari => $jadwals) {
                 $details[$hari] = [];
                 foreach ($jadwals as $jadwal) {
                     $durasiMapel = round(abs(strtotime($jadwal->sampai ?? $lastSampai) - strtotime($jadwal->dari ?? $lastDari)) / 60, 2);
@@ -138,7 +139,8 @@ class Kbm extends MY_Controller {
 
                     $timeSlots[] = ['start' => $formattedStart];
                     $startTime->add(new DateInterval('PT5M'));
-                } catch (Exception $e) {}
+                } catch (Exception $e) {
+                }
             }
             // Akhir timeline
             $data['jadwal_kbm'] = $kelas;
@@ -157,11 +159,12 @@ class Kbm extends MY_Controller {
         $this->getTugasMateri('2');
     }
 
-    private function getTugasMateri($jenis) {
+    private function getTugasMateri($jenis)
+    {
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Dropdown_model', 'dropdown');
         $this->load->model('Kelas_model', 'kelas');
-        $this->load->model('Elearning_model',  'elearning');
+        $this->load->model('Elearning_model', 'elearning');
 
         $tp = $this->dashboard->getTahunActive();
         $smt = $this->dashboard->getSemesterActive();
@@ -190,8 +193,9 @@ class Kbm extends MY_Controller {
         $this->render_view(3, 'members/siswa/elearning/materi_jadwal', $data);
     }
 
-    public function get_jadwal() {
-        $this->load->model('Elearning_model',  'elearning');
+    public function get_jadwal()
+    {
+        $this->load->model('Elearning_model', 'elearning');
 
         $id_kelas = $this->input->get('kelas', true);
         $id_siswa = $this->input->get('siswa', true);
@@ -229,9 +233,11 @@ class Kbm extends MY_Controller {
         foreach ($mapels as $jadwal) {
             $dari = $jadwal->dari;
             $durasiMapel = round(abs(strtotime($jadwal->sampai ?? $lastSampai) - strtotime($jadwal->dari ?? $lastDari)) / 60, 2);
-            if ($latestMpl !== '0' &&
+            if (
+                $latestMpl !== '0' &&
                 $jadwal->id_mapel == $latestMpl &&
-                $jadwal->id_hari == $lastDay && $lastDari == $jadwal->dari) {
+                $jadwal->id_hari == $lastDay && $lastDari == $jadwal->dari
+            ) {
                 if (!isset($details[$lastDari]['rows'])) {
                     $details[$lastDari]['rows'] = 0;
                 }
@@ -240,7 +246,7 @@ class Kbm extends MY_Controller {
             } else {
                 $lastDay = $jadwal->id_hari ?? '0';
                 $latestMpl = $jadwal->id_mapel ?? '0';
-                $filter_materi = array_filter($jadwal_materi, function($val) use ($jenis, $jadwal) {
+                $filter_materi = array_filter($jadwal_materi, function ($val) use ($jenis, $jadwal) {
                     $tgl_jadwal = new DateTime($val->jadwal_materi);
                     $id_hari = $tgl_jadwal->format('w');
                     $id_hari = $id_hari == 0 ? 7 : $id_hari;
@@ -253,22 +259,23 @@ class Kbm extends MY_Controller {
                 });
                 $log = [];
                 foreach ($filter_materi as $film) {
-                    if ($film->jenis == $jenis) $log[] = $log_siswa[$film->id_kjm] ?? [];
+                    if ($film->jenis == $jenis)
+                        $log[] = $log_siswa[$film->id_kjm] ?? [];
                 }
                 $details[$jadwal->dari ?? $lastDari] = [
                     'id_jadwal' => $jadwal->id_jadwal ?? '0',
-                    'dari'      => $jadwal->dari ?? $lastDari,
-                    'sampai'    => $jadwal->sampai ?? $lastSampai,
-                    'rows'      => isset($jadwal->dari) ? $durasiMapel / 5 : 1,
-                    'id_kelas'  => $jadwal->id_kelas ?? '',
-                    'id_hari'   => $jadwal->id_hari ?? '',
-                    'id_mapel'  => $jadwal->id_mapel ?? '0',
-                    'kode'      => $jadwal->kode ?? '',
-                    'mapel'     => $jadwal->nama_mapel,
-                    'materi'    => array_values($filter_materi),
-                    'log'       => $log,
-                    'durasi'    => $durasiMapel,
-                    'now'       => $now->format('Hi')
+                    'dari' => $jadwal->dari ?? $lastDari,
+                    'sampai' => $jadwal->sampai ?? $lastSampai,
+                    'rows' => isset($jadwal->dari) ? $durasiMapel / 5 : 1,
+                    'id_kelas' => $jadwal->id_kelas ?? '',
+                    'id_hari' => $jadwal->id_hari ?? '',
+                    'id_mapel' => $jadwal->id_mapel ?? '0',
+                    'kode' => $jadwal->kode ?? '',
+                    'mapel' => $jadwal->nama_mapel,
+                    'materi' => array_values($filter_materi),
+                    'log' => $log,
+                    'durasi' => $durasiMapel,
+                    'now' => $now->format('Hi')
                 ];
             }
             if ($jadwal->dari != $lastDari) {
@@ -302,9 +309,9 @@ class Kbm extends MY_Controller {
                 $is_libur = true;
             }
             $dates[] = [
-                'hari'  => $dayName,
-                'tgl'   => $day,
-                'bln'   => $monthName,
+                'hari' => $dayName,
+                'tgl' => $day,
+                'bln' => $monthName,
                 'today' => $today,
                 'libur' => $is_libur
             ];
@@ -320,7 +327,7 @@ class Kbm extends MY_Controller {
         $this->load->model('Dropdown_model', 'dropdown');
         $this->load->model('Kelas_model', 'kelas');
         $this->load->model('Cbt_model', 'cbt');
-        $this->load->model('Elearning_model',  'elearning');
+        $this->load->model('Elearning_model', 'elearning');
 
         $tanggal = $this->input->post('tgl', true);
         $id_siswa = $this->input->post('id_siswa', true);
@@ -361,7 +368,7 @@ class Kbm extends MY_Controller {
                 $latestMpl = $jadwal->id_mapel ?? '0';
                 $log = [];
                 if ($jenis) {
-                    $filter_materi = array_filter($jadwal_materi, function($val) use ($jenis, $jadwal) {
+                    $filter_materi = array_filter($jadwal_materi, function ($val) use ($jenis, $jadwal) {
                         $tgl_jadwal = new DateTime($val->jadwal_materi);
                         $id_hari = $tgl_jadwal->format('w');
                         $id_hari = $id_hari == 0 ? 7 : $id_hari;
@@ -371,10 +378,11 @@ class Kbm extends MY_Controller {
                             and $val->id_kelas == $jadwal->id_kelas);
                     });
                     foreach ($filter_materi as $film) {
-                        if ($film->jenis == $jenis) $log[] = $log_siswa[$film->id_kjm] ?? [];
+                        if ($film->jenis == $jenis)
+                            $log[] = $log_siswa[$film->id_kjm] ?? [];
                     }
                 } else {
-                    $filter_materi = array_filter($jadwal_materi, function($val) use ($jadwal) {
+                    $filter_materi = array_filter($jadwal_materi, function ($val) use ($jadwal) {
                         $tgl_jadwal = new DateTime($val->jadwal_materi);
                         $id_hari = $tgl_jadwal->format('w');
                         $id_hari = $id_hari == 0 ? 7 : $id_hari;
@@ -425,9 +433,10 @@ class Kbm extends MY_Controller {
         $this->bukaTugasMateri($id_kjm, '2');
     }
 
-    private function bukaTugasMateri($id_kjm, $jenis) {
+    private function bukaTugasMateri($id_kjm, $jenis)
+    {
         $this->load->model('Dashboard_model', 'dashboard');
-        $this->load->model('Elearning_model',  'elearning');
+        $this->load->model('Elearning_model', 'elearning');
 
         $tp = $this->dashboard->getTahunActive();
         $smt = $this->dashboard->getSemesterActive();
@@ -462,7 +471,7 @@ class Kbm extends MY_Controller {
 
     public function saveLogMateri()
     {
-        $this->load->model('Elearning_model',  'elearning');
+        $this->load->model('Elearning_model', 'elearning');
         $this->load->model('Kelas_model', 'kelas');
         $id_siswa = $this->input->get('id_siswa', true);
         $id_kjm = $this->input->get('id_kjm', true);
@@ -477,13 +486,18 @@ class Kbm extends MY_Controller {
 
     public function saveLogTugas()
     {
-        $this->load->model('Elearning_model',  'elearning');
+        $this->load->model('Elearning_model', 'elearning');
         $this->load->model('Kelas_model', 'kelas');
         $id_siswa = $this->input->get('id_siswa', true);
         $id_kjm = $this->input->get('id_kjm', true);
         $mapel = $this->input->get('mapel', true);
 
-        $this->output_json($this->elearning->saveLog('log_materi', $id_siswa, $id_kjm, $mapel, 'Membuka tugas'));
+        $this->db->where('id_siswa', $id_siswa);
+        $this->db->where('id_materi', $id_kjm);
+        $q = $this->db->get('log_materi');
+        $is_update = $q->num_rows() > 0;
+
+        $this->output_json($this->elearning->saveLog('log_materi', $id_siswa, $id_kjm, $mapel, 'Membuka tugas', $is_update));
     }
 
     public function saveFileMateriSelesai()
@@ -584,7 +598,7 @@ class Kbm extends MY_Controller {
     public function kehadiran()
     {
         $this->load->model('Dashboard_model', 'dashboard');
-        $this->load->model('Elearning_model',  'elearning');
+        $this->load->model('Elearning_model', 'elearning');
 
         $tp = $this->dashboard->getTahunActive();
         $smt = $this->dashboard->getSemesterActive();
@@ -612,7 +626,7 @@ class Kbm extends MY_Controller {
         $lastInd = -1;
         $lastDay = '';
 
-        foreach ($jadwals as $ind=>$jad) {
+        foreach ($jadwals as $ind => $jad) {
             $arrIdMapel[] = $jad->id_mapel;
             if ($latestMpl !== '0' && $jad->id_mapel == $latestMpl && $jad->id_hari == $lastDay) {
                 $jadwals[$lastInd]->sampai = $jad->sampai;
@@ -624,12 +638,12 @@ class Kbm extends MY_Controller {
             }
         }
         $jadwals = array_values($jadwals);
-        usort($jadwals, function($a, $b) {
+        usort($jadwals, function ($a, $b) {
             return $a->dari <=> $b->dari;
         });
 
         $jadwal_materi = [];
-        if (count($arrIdMapel)>0) {
+        if (count($arrIdMapel) > 0) {
             $jadwal_materi = $this->elearning->getAllMateriByTgl($siswa->id_kelas, $today, $arrIdMapel);
         }
         $data['jadwal_materi'] = $jadwal_materi;
@@ -642,7 +656,7 @@ class Kbm extends MY_Controller {
         $data['log'] = $log;
         foreach ($jadwal_materi as $materi_item) {
             $materi_item->materi_kelas = $this->maybe_unserialize($materi_item->materi_kelas ?? '[]');
-            $filter = array_filter($log, function($val) use ($materi_item) {
+            $filter = array_filter($log, function ($val) use ($materi_item) {
                 return $val->id_materi == $materi_item->id_kjm;
             });
             $log_siswa = count($filter) > 0 ? array_values($filter)[0] : null;
@@ -669,12 +683,12 @@ class Kbm extends MY_Controller {
                         $status['status'] = 'Diulang';
                     } elseif ($nilai > 0) {
                         //$jam_materi = $jadwals[$idx_jad];
-                        $jam_jadwal = new DateTime(date('Y-m-d H:i:s', strtotime(($materi_item->jadwal_materi ?? '') . ' ' .$jam_materi->sampai)));
+                        $jam_jadwal = new DateTime(date('Y-m-d H:i:s', strtotime(($materi_item->jadwal_materi ?? '') . ' ' . $jam_materi->sampai)));
                         $jam_siswa = new DateTime(date('Y-m-d H:i:s', strtotime($mulai ?? '')));
                         $interval = $jam_siswa->diff($jam_jadwal);
                         $minutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
 
-                        $time_jadwal = strtotime(($materi_item->jadwal_materi ?? '') . ' ' .$jam_materi->sampai);
+                        $time_jadwal = strtotime(($materi_item->jadwal_materi ?? '') . ' ' . $jam_materi->sampai);
                         $time_siswa = strtotime($mulai ?? '');
                         if (($time_siswa - $time_jadwal) > 0) {
                             $status['terlambat'] = true;
@@ -682,13 +696,13 @@ class Kbm extends MY_Controller {
 
                             $ketMulai = '';
                             if ($interval->days > 0) {
-                                $ketMulai .= $interval->days.' hari ';
+                                $ketMulai .= $interval->days . ' hari ';
                             }
                             if ($interval->h > 0) {
-                                $ketMulai .= $interval->h.' jam ';
+                                $ketMulai .= $interval->h . ' jam ';
                             }
                             if ($interval->i > 0) {
-                                $ketMulai .= $interval->i.' mnt';
+                                $ketMulai .= $interval->i . ' mnt';
                             }
                             $status['ket'] = $ketMulai;
                         } else {
@@ -702,7 +716,7 @@ class Kbm extends MY_Controller {
                     'terlambat' => false,
                 ];
             }
-            $materi_item->status = (object)$status;
+            $materi_item->status = (object) $status;
         }
 
         foreach ($jadwals as $jadwal) {
@@ -718,23 +732,23 @@ class Kbm extends MY_Controller {
         }
         $data['jadwals'] = array_values($jadwals);
 
-        if ($smt->id_smt=='1') {
+        if ($smt->id_smt == '1') {
             $arrBulan = [
-                '07'    => "Juli",
-                '08'    => "Agustus",
-                '09'    => "September",
-                '10'    => "Oktober",
-                '11'    => "Nopember",
-                '12'    => "Desember"
+                '07' => "Juli",
+                '08' => "Agustus",
+                '09' => "September",
+                '10' => "Oktober",
+                '11' => "Nopember",
+                '12' => "Desember"
             ];
         } else {
             $arrBulan = [
-                '01'    => "Januari",
-                '02'    => "Februari",
-                '03'    => "Maret",
-                '04'    => "April",
-                '05'    => "Mei",
-                '06'    => "Juni"
+                '01' => "Januari",
+                '02' => "Februari",
+                '03' => "Maret",
+                '04' => "April",
+                '05' => "Mei",
+                '06' => "Juni"
             ];
         }
         $data['bulans'] = $arrBulan;
@@ -742,7 +756,7 @@ class Kbm extends MY_Controller {
         $namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
         $split = explode('-', $today);
         if (isset($arrBulan[$split[1]])) {
-            $data['today'] = $namaHari[$hari].', ' .$split[2].' ' .$arrBulan[$split[1]].' ' .$split[0];
+            $data['today'] = $namaHari[$hari] . ', ' . $split[2] . ' ' . $arrBulan[$split[1]] . ' ' . $split[0];
         } else {
             $data['today'] = '';
         }
@@ -756,9 +770,10 @@ class Kbm extends MY_Controller {
         $this->render_view(3, 'members/siswa/elearning/kehadiran', $data);
     }
 
-    public function load_absensi_bulanan() {
+    public function load_absensi_bulanan()
+    {
         $this->load->model('Master_model', 'master');
-        $this->load->model('Elearning_model',  'elearning');
+        $this->load->model('Elearning_model', 'elearning');
 
         $id_kelas = $this->input->post('id_kelas', true);
         $id_siswa = $this->input->post('id_siswa', true);
@@ -779,9 +794,9 @@ class Kbm extends MY_Controller {
             unset($jadwal->istirahat);
             $arrTgl = [];
             $tgl = date('t', strtotime("$tahun-$bulan-01"));
-            for ($i=0;$i<$tgl;$i++) {
+            for ($i = 0; $i < $tgl; $i++) {
                 $t = ($i + 1) < 10 ? '0' . ($i + 1) : $i + 1;
-                $arrTgl[] = $tahun.'-'.$bulan.'-'.$t;
+                $arrTgl[] = $tahun . '-' . $bulan . '-' . $t;
             }
             $jadwal_materi = $this->elearning->getAllMateriByArrTgl($id_kelas, $arrTgl, $arrIdMapel);
             $logs_perbulan = $this->elearning->getRekapBulananSiswa($arrIdMapel, $id_kelas, $tahun, $bulan, $id_siswa);
@@ -791,7 +806,7 @@ class Kbm extends MY_Controller {
             $lastInd = -1;
             $lastDay = '';
 
-            foreach ($infos as $ind=>$info) {
+            foreach ($infos as $ind => $info) {
                 if ($latestMpl !== '0' && $info->id_mapel == $latestMpl && $info->id_hari == $lastDay) {
                     if (isset($infos[$lastInd])) {
                         $infos[$lastInd]->sampai = $info->sampai;
@@ -812,34 +827,34 @@ class Kbm extends MY_Controller {
                 $hari = $date->format('w');
                 $hari = $hari == 0 ? 7 : $hari;
 
-                $filter_jad = array_filter($infos, function($val) use ($hari) {
+                $filter_jad = array_filter($infos, function ($val) use ($hari) {
                     return ($val->id_hari == $hari);
                 });
 
                 $dataJadwal[] = [
-                    'is_libur'  => $libur == $hari,
-                    'id_hari'   => $hari,
-                    'tanggal'   => $tanggal,
-                    'hari'      => $namaHari[$hari],
-                    'jadwal'    => array_values($filter_jad),
+                    'is_libur' => $libur == $hari,
+                    'id_hari' => $hari,
+                    'tanggal' => $tanggal,
+                    'hari' => $namaHari[$hari],
+                    'jadwal' => array_values($filter_jad),
                 ];
             }
             $this->output_json([
-                "jadwal"=>$jadwal,
-                "jadwal_materi"=>$jadwal_materi,
+                "jadwal" => $jadwal,
+                "jadwal_materi" => $jadwal_materi,
                 "logs" => $logs_perbulan,
                 //"info" => $infos,
                 "jadwal_mapel" => $dataJadwal
             ]);
         } else {
-            $this->output_json(["jadwal"=>[]]);
+            $this->output_json(["jadwal" => []]);
         }
     }
 
     public function hasil()
     {
         $this->load->model('Dashboard_model', 'dashboard');
-        $this->load->model('Elearning_model',  'elearning');
+        $this->load->model('Elearning_model', 'elearning');
 
         $tp_smt = $this->getTpSmt();
         $tp = $tp_smt->tp_active;
@@ -870,9 +885,10 @@ class Kbm extends MY_Controller {
         $this->render_view(3, 'members/siswa/elearning/nilai', $data);
     }
 
-    public function arsip() {
+    public function arsip()
+    {
         $this->load->model('Dashboard_model', 'dashboard');
-        $this->load->model('Elearning_model',  'elearning');
+        $this->load->model('Elearning_model', 'elearning');
         $this->load->model('Dropdown_model', 'dropdown');
 
         $tp = $this->dashboard->getTahunActive();
@@ -898,9 +914,10 @@ class Kbm extends MY_Controller {
         $this->render_view(3, 'members/siswa/elearning/arsip', $data);
     }
 
-    public function materi_bulanan() {
+    public function materi_bulanan()
+    {
         $this->load->model('Master_model', 'master');
-        $this->load->model('Elearning_model',  'elearning');
+        $this->load->model('Elearning_model', 'elearning');
 
         $id_kelas = $this->input->post('id_kelas', true);
         $id_siswa = $this->input->post('id_siswa', true);
@@ -922,9 +939,9 @@ class Kbm extends MY_Controller {
             $arrTgl = [];
             //$tgl = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
             $tgl = date('t', strtotime("$tahun-$bulan-01"));
-            for ($i=0;$i<$tgl;$i++) {
+            for ($i = 0; $i < $tgl; $i++) {
                 $t = ($i + 1) < 10 ? '0' . ($i + 1) : $i + 1;
-                $arrTgl[] = $tahun.'-'.$bulan.'-'.$t;
+                $arrTgl[] = $tahun . '-' . $bulan . '-' . $t;
             }
             $jadwal_materi = $this->elearning->getAllMateriByArrTgl($id_kelas, $arrTgl, $arrIdMapel);
             $logs_perbulan = $this->elearning->getRekapBulananSiswa($arrIdMapel, $id_kelas, $tahun, $bulan, $id_siswa);
@@ -934,7 +951,7 @@ class Kbm extends MY_Controller {
             $lastInd = -1;
             $lastDay = '';
 
-            foreach ($infos as $ind=>$info) {
+            foreach ($infos as $ind => $info) {
                 if ($latestMpl !== '0' && $info->id_mapel == $latestMpl && $info->id_hari == $lastDay) {
                     if (isset($infos[$lastInd])) {
                         $infos[$lastInd]->sampai = $info->sampai;
@@ -955,32 +972,33 @@ class Kbm extends MY_Controller {
                 $hari = $date->format('w');
                 $hari = $hari == 0 ? 7 : $hari;
 
-                $filter_jad = array_filter($infos, function($val) use ($hari) {
+                $filter_jad = array_filter($infos, function ($val) use ($hari) {
                     return ($val->id_hari == $hari);
                 });
 
                 $dataJadwal[] = [
-                    'is_libur'  => $libur == $hari,
-                    'id_hari'   => $hari,
-                    'tanggal'   => $tanggal,
-                    'hari'      => $namaHari[$hari],
-                    'jadwal'    => array_values($filter_jad),
+                    'is_libur' => $libur == $hari,
+                    'id_hari' => $hari,
+                    'tanggal' => $tanggal,
+                    'hari' => $namaHari[$hari],
+                    'jadwal' => array_values($filter_jad),
                 ];
             }
             $this->output_json([
-                "jadwal"=>$jadwal,
-                "jadwal_materi"=>$jadwal_materi,
+                "jadwal" => $jadwal,
+                "jadwal_materi" => $jadwal_materi,
                 "logs" => $logs_perbulan,
                 //"info" => $infos,
                 "jadwal_mapel" => $dataJadwal
             ]);
         } else {
-            $this->output_json(["jadwal"=>[]]);
+            $this->output_json(["jadwal" => []]);
         }
     }
 
-    public function get_all_nilai() {
-        $this->load->model('Elearning_model',  'elearning');
+    public function get_all_nilai()
+    {
+        $this->load->model('Elearning_model', 'elearning');
         $this->load->model('Cbt_jadwal_model', 'cbt_jadwal_model');
         $this->load->model('Cbt_sesisiswa_model', 'sesisiswa_model');
 
@@ -1002,8 +1020,8 @@ class Kbm extends MY_Controller {
             ->with_bank([
                 'fields' => 'bank_kelas,soal_agama,bank_kode',
                 'with' => [
-                    ['relation' => 'mapel', 'fields'=>'kode,nama_mapel', 'where'=>[]],
-                    ['relation' => 'guru', 'fields'=>'kode_guru,nama_guru', 'where'=>[]],
+                    ['relation' => 'mapel', 'fields' => 'kode,nama_mapel', 'where' => []],
+                    ['relation' => 'guru', 'fields' => 'kode_guru,nama_guru', 'where' => []],
                 ]
             ])
             ->with_cbtsiswa(['fields' => 'id_siswa,mulai,selesai', 'where' => ['id_siswa' => $id_siswa]])
@@ -1011,7 +1029,7 @@ class Kbm extends MY_Controller {
             ->as_array()
             ->get_all();
 
-        if ($all_jadwal && count((array)$all_jadwal) > 0) {
+        if ($all_jadwal && count((array) $all_jadwal) > 0) {
             $bank_kelas = [];
             foreach ($all_jadwal as $key => $jadwal) {
                 $kelasIds = $this->maybe_unserialize($jadwal['bank']->bank_kelas ?? []);
@@ -1034,36 +1052,54 @@ class Kbm extends MY_Controller {
 
     public function get_nilai_jadwal()
     {
-        $this->load->model('Cbt_jadwal_model', 'cbt_jadwal_model');
-        $id_siswa = $this->input->get('siswa', true);
-        $id_jadwal = $this->input->get('jadwal', true);
+        // Bypass CI buffering for manual JSON output
+        if (ob_get_length())
+            ob_clean();
+        header('Content-Type: application/json');
 
-        $jadwal = $this->cbt_jadwal_model
-            ->fields('id_jadwal')
-            ->with_bank(['fields' => 'bank_kelas,soal_agama,bank_kode'])
-            ->get($id_jadwal);
+        try {
+            $this->load->model('Cbt_jadwal_model', 'cbt_jadwal_model');
+            $id_siswa = $this->input->get('siswa', true);
+            $id_jadwal = $this->input->get('jadwal', true);
 
-        $tp_smt = $this->getTpSmt();
-        $tp = $tp_smt->tp_active;
-        $smt = $tp_smt->smt_active;
+            if (empty($id_siswa) || empty($id_jadwal)) {
+                throw new \Exception("Parameter request tidak lengkap");
+            }
 
-        $nilai = $this->olah_nilai(2, $tp->id_tp, $smt->id_smt, $id_siswa, $id_jadwal, false);
-        if (isset($nilai->sesisiswa) && count($nilai->sesisiswa) > 0) {
-            $jadwal->bank = $nilai->bank;
-            $jadwal->jenis = $nilai->jenis;
-            $jadwal->tgl_mulai = $nilai->tgl_mulai;
-            $jadwal->hasil_tampil = $nilai->hasil_tampil;
-            $jadwal->sesisiswa = $nilai->sesisiswa[0];
-            /*
-            unset($jadwal->bank->bank_kelas, $jadwal->sesisiswa->nilai_akhir->skor_pg['detail'],
-                $jadwal->sesisiswa->nilai_akhir->skor_kompleks['detail'],
-                $jadwal->sesisiswa->nilai_akhir->skor_jodohkan['detail'],
-                $jadwal->sesisiswa->nilai_akhir->skor_isian['detail'],
-                $jadwal->sesisiswa->nilai_akhir->skor_essai['detail']
-            );
-            */
+            $jadwal = $this->cbt_jadwal_model
+                ->fields('id_jadwal')
+                ->with_bank(['fields' => 'bank_kelas,soal_agama,bank_kode'])
+                ->get($id_jadwal);
+
+            if (!$jadwal)
+                throw new \Exception("Data jadwal tidak ditemukan");
+
+            $tp_smt = $this->getTpSmt();
+            $tp = $tp_smt->tp_active;
+            $smt = $tp_smt->smt_active;
+
+            $nilai = $this->olah_nilai(2, $tp->id_tp, $smt->id_smt, $id_siswa, $id_jadwal, false);
+
+            if (!is_object($nilai))
+                throw new \Exception("Gagal mengolah nilai (Result Invalid)");
+
+            if (isset($nilai->sesisiswa) && count($nilai->sesisiswa) > 0) {
+                $jadwal->bank = $nilai->bank ?? null;
+                $jadwal->jenis = $nilai->jenis ?? null;
+                $jadwal->tgl_mulai = $nilai->tgl_mulai ?? null;
+                $jadwal->hasil_tampil = $nilai->hasil_tampil ?? null;
+                $jadwal->sesisiswa = $nilai->sesisiswa[0];
+            }
+
+            echo json_encode(['success' => true, 'jadwal' => $jadwal]);
+            exit;
+        } catch (\Exception $e) {
+            echo json_encode(['success' => false, 'message' => "Error: " . $e->getMessage()]);
+            exit;
+        } catch (\Throwable $e) {
+            echo json_encode(['success' => false, 'message' => "Fatal: " . $e->getMessage()]);
+            exit;
         }
-        $this->output_json(['success'=> true, 'jadwal' => $jadwal]);
     }
 
     function uploadFile()
@@ -1103,7 +1139,8 @@ class Kbm extends MY_Controller {
         }
     }
 
-    function getDateFromWeekday($dayOfWeek, $month, $year) {
+    function getDateFromWeekday($dayOfWeek, $month, $year)
+    {
         $dates = [];
         $date = new DateTime("$year-$month-01");
 
@@ -1131,7 +1168,7 @@ class Kbm extends MY_Controller {
         $allMapel = $this->master->getDataMapel();
         $insert = [];
         for ($j = 0; $j < 2; $j++) {
-            $smt = $j+1;
+            $smt = $j + 1;
             for ($i = 0; $i < 20; $i++) {
                 $tp = floor($i / 4) + 1;
                 //$smt = $i < 10 ? '1' : '2';
@@ -1146,8 +1183,9 @@ class Kbm extends MY_Controller {
                 }
                 $data[$tp][$smt][] = $mapels;
 
-                foreach ($mapel_kelas_guru as $id_guru=>$item) {
-                    if ($item == null || count($item) == 0) continue;
+                foreach ($mapel_kelas_guru as $id_guru => $item) {
+                    if ($item == null || count($item) == 0)
+                        continue;
                     foreach ($item as $mkls) {
                         $idmpl = $mkls['id_mapel'];
                         $insert[] = [
@@ -1172,7 +1210,8 @@ class Kbm extends MY_Controller {
         $this->output_json(['insert' => $insert, 'success' => true]);
     }
 
-    function randomString($length = 5, $uppercase = true) {
+    function randomString($length = 5, $uppercase = true)
+    {
         $characters = $uppercase ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
         $randomStr = '';
@@ -1182,7 +1221,8 @@ class Kbm extends MY_Controller {
         return $randomStr;
     }
 
-    function randomText($length = 200) {
+    function randomText($length = 200)
+    {
         $words = explode(' ', str_repeat('lorem ipsum dolor sit amet consectetur adipiscing elit ', ceil($length / 6)));
         shuffle($words);
         return substr(implode(' ', $words), 0, $length);
@@ -1190,11 +1230,32 @@ class Kbm extends MY_Controller {
 
     public function generateJadwalMateri()
     {
-        $this->db->select('a.id_materi, a.kode_materi, a.kode_mapel, a.judul_materi, a.materi_kelas,'.
+        $this->db->select('a.id_materi, a.kode_materi, a.kode_mapel, a.judul_materi, a.materi_kelas,' .
             ' a.id_mapel, a.status, a.id_tp, a.id_smt');
         $this->db->from('kelas_materi a');
         $allMateri = $this->db->get()->result();
 
         $this->output_json($allMateri);
+    }
+    public function save_katrol_config()
+    {
+        $id_jadwal = $this->input->post('id_jadwal', true);
+        $min = $this->input->post('min', true);
+        $max = $this->input->post('max', true);
+
+        $this->load->dbforge();
+        if (!$this->db->field_exists('katrol_min', 'cbt_jadwal')) {
+            $fields = [
+                'katrol_min' => ['type' => 'INT', 'default' => 0],
+                'katrol_max' => ['type' => 'INT', 'default' => 100]
+            ];
+            $this->dbforge->add_column('cbt_jadwal', $fields);
+        }
+
+        $data = ['katrol_min' => $min, 'katrol_max' => $max];
+        $this->db->where('id_jadwal', $id_jadwal);
+        $updated = $this->db->update('cbt_jadwal', $data);
+
+        $this->output_json(['success' => $updated]);
     }
 }

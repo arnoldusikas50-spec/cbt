@@ -80,11 +80,12 @@ if (!empty($settingData->ba_waktu) && $settingData->ba_waktu !== '0000-00-00 00:
         font-size: 0.85rem;
         line-height: 1.3;
     }
+
     .dropify-wrapper .dropify-message span.file-icon {
         font-size: 2.5rem;
     }
 </style>
-<div class="content-wrapper bg-white pt-4">
+<main class="app-main bg-white pt-4">
 
     <section class="content">
         <div class="container-fluid">
@@ -92,15 +93,20 @@ if (!empty($settingData->ba_waktu) && $settingData->ba_waktu !== '0000-00-00 00:
                 <div class="card-body">
                     <div class="mb-4">
                         <h5 class="mb-1 font-weight-bold">Pengaturan Profil Sekolah</h5>
-                        <div class="text-muted">Kelola identitas sekolah, kontak, serta pengaturan ujian dalam satu tempat.</div>
+                        <div class="text-muted">Kelola identitas sekolah, kontak, serta pengaturan ujian dalam satu
+                            tempat.</div>
                     </div>
 
                     <div class="callout callout-info shadow-sm border border-info mb-4">
-                        <h5 class="mb-2 font-weight-bold"><i class="fas fa-info-circle mr-2"></i>Panduan Pengisian Profil</h5>
-                        <ul class="pl-3 mb-0">
-                            <li>Isi seluruh kolom bertanda bintang (<span class="text-danger">*</span>) untuk memastikan data profil lengkap.</li>
-                            <li>Pastikan jenjang dan satuan pendidikan sesuai agar tampilan rapor dan fitur CBT menyesuaikan otomatis.</li>
-                            <li>Unggah logo dan dokumen pendukung dalam format JPG/PNG maksimal 2MB agar tampil tajam pada laporan.</li>
+                        <h5 class="mb-2 font-weight-bold"><i class="bi bi-info-circle me-2"></i>Panduan Pengisian
+                            Profil</h5>
+                        <ul class="ps-3 mb-0">
+                            <li>Isi seluruh kolom bertanda bintang (<span class="text-danger">*</span>) untuk memastikan
+                                data profil lengkap.</li>
+                            <li>Pastikan jenjang dan satuan pendidikan sesuai agar tampilan rapor dan fitur CBT
+                                menyesuaikan otomatis.</li>
+                            <li>Unggah logo dan dokumen pendukung dalam format JPG/PNG maksimal 2MB agar tampil tajam
+                                pada laporan.</li>
                             <li>Aktifkan token siswa hanya saat dibutuhkan untuk sesi ujian.</li>
                         </ul>
                     </div>
@@ -109,46 +115,61 @@ if (!empty($settingData->ba_waktu) && $settingData->ba_waktu !== '0000-00-00 00:
                     <div class="row">
                         <div class="col-lg-6 mb-4">
                             <div class="card border-0 shadow-sm h-100">
-                                <div class="card-header" style="background: linear-gradient(135deg, #f6f9ff 0%, #dbe7ff 100%); color: #111;">
+                                <div class="card-header"
+                                    style="background: linear-gradient(135deg, #f6f9ff 0%, #dbe7ff 100%); color: #111;">
                                     <h6 class="mb-0">Identitas Sekolah</h6>
                                 </div>
                                 <div class="card-body">
-                                    <div class="form-group mb-3">
-                                        <label class="font-weight-semibold">Nama Aplikasi <span class="text-danger">*</span></label>
-                                        <input type="text" name="nama_aplikasi" class="form-control required" value="<?= $esc($settingData->nama_aplikasi ?? '') ?>" required>
+                                    <div class="mb-3 mb-3">
+                                        <label class="font-weight-semibold">Nama Aplikasi <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" name="nama_aplikasi" class="form-control required"
+                                            value="<?= $esc($settingData->nama_aplikasi ?? '') ?>" required>
                                     </div>
-                                    <div class="form-group mb-3">
-                                        <label class="font-weight-semibold">Nama Sekolah <span class="text-danger">*</span></label>
-                                        <input type="text" name="nama_sekolah" class="form-control required" value="<?= $esc($settingData->sekolah ?? '') ?>" required>
+                                    <div class="mb-3 mb-3">
+                                        <label class="font-weight-semibold">Nama Sekolah <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" name="nama_sekolah" class="form-control required"
+                                            value="<?= $esc($settingData->sekolah ?? '') ?>" required>
                                     </div>
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
+                                    <div class="row g-3">
+                                        <div class="mb-3 col-md-6">
                                             <label class="font-weight-semibold">NSS/NSM</label>
-                                            <input type="text" name="nss" class="form-control" value="<?= $esc($settingData->nss ?? '') ?>" pattern="[0-9]{10,12}" title="NSS/NSM harus berupa angka 10-12 digit">
+                                            <input type="text" name="nss" class="form-control"
+                                                value="<?= $esc($settingData->nss ?? '') ?>" pattern="[0-9]{10,12}"
+                                                title="NSS/NSM harus berupa angka 10-12 digit">
                                         </div>
-                                        <div class="form-group col-md-6">
+                                        <div class="mb-3 col-md-6">
                                             <label class="font-weight-semibold">NPSN</label>
-                                            <input type="text" name="npsn" class="form-control" value="<?= $esc($settingData->npsn ?? '') ?>" pattern="[0-9]{8}" title="NPSN harus berupa 8 digit angka">
+                                            <input type="text" name="npsn" class="form-control"
+                                                value="<?= $esc($settingData->npsn ?? '') ?>" pattern="[0-9]{8}"
+                                                title="NPSN harus berupa 8 digit angka">
                                         </div>
                                     </div>
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
-                                            <label class="font-weight-semibold">Jenjang <span class="text-danger">*</span></label>
+                                    <div class="row g-3">
+                                        <div class="mb-3 col-md-6">
+                                            <label class="font-weight-semibold">Jenjang <span
+                                                    class="text-danger">*</span></label>
                                             <select id="jenjang" class="form-control required" name="jenjang" required>
                                                 <option value="" disabled <?= empty($settingData->jenjang) ? 'selected' : '' ?>>Pilih Jenjang</option>
                                                 <?php foreach ($jenjangOptions as $key => $label): ?>
-                                                    <option value="<?= $key ?>" <?= ((string)($settingData->jenjang ?? '')) === (string)$key ? 'selected' : '' ?>><?= html_escape($label) ?></option>
+                                                        <option value="<?= $key ?>" <?= ((string) ($settingData->jenjang ?? '')) === (string) $key ? 'selected' : '' ?>><?= html_escape($label) ?>
+                                                        </option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
-                                        <div class="form-group col-md-6">
-                                            <label class="font-weight-semibold">Satuan Pendidikan <span class="text-danger">*</span></label>
-                                            <select id="satuan-pend" class="form-control required" name="satuan_pendidikan" required>
+                                        <div class="mb-3 col-md-6">
+                                            <label class="font-weight-semibold">Satuan Pendidikan <span
+                                                    class="text-danger">*</span></label>
+                                            <select id="satuan-pend" class="form-control required"
+                                                name="satuan_pendidikan" required>
                                                 <option value="" disabled <?= empty($settingData->satuan_pendidikan) ? 'selected' : '' ?>>Pilih Satuan Pendidikan</option>
                                                 <?php $satuanOptionList = array_values($satuanOptions); ?>
                                                 <?php foreach ($satuanOptionList as $idx => $label): ?>
-                                                    <?php $optionValue = $idx + 1; ?>
-                                                    <option value="<?= $optionValue ?>" <?= ((string)($settingData->satuan_pendidikan ?? '')) === (string)$optionValue ? 'selected' : '' ?>><?= html_escape($label) ?></option>
+                                                        <?php $optionValue = $idx + 1; ?>
+                                                        <option value="<?= $optionValue ?>"
+                                                            <?= ((string) ($settingData->satuan_pendidikan ?? '')) === (string) $optionValue ? 'selected' : '' ?>>
+                                                            <?= html_escape($label) ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
@@ -159,36 +180,50 @@ if (!empty($settingData->ba_waktu) && $settingData->ba_waktu !== '0000-00-00 00:
 
                         <div class="col-lg-6 mb-4">
                             <div class="card border-0 shadow-sm h-100">
-                                <div class="card-header" style="background: linear-gradient(135deg, #eef1ff 0%, #d8dcff 100%); color: #111;">
+                                <div class="card-header"
+                                    style="background: linear-gradient(135deg, #eef1ff 0%, #d8dcff 100%); color: #111;">
                                     <h6 class="mb-0">Alamat & Wilayah</h6>
                                 </div>
                                 <div class="card-body">
-                                    <div class="form-group mb-3">
-                                        <label class="font-weight-semibold">Alamat <span class="text-danger">*</span></label>
-                                        <textarea class="form-control required" name="alamat" rows="4" placeholder="Masukkan alamat lengkap" required><?= $esc($settingData->alamat ?? '') ?></textarea>
+                                    <div class="mb-3 mb-3">
+                                        <label class="font-weight-semibold">Alamat <span
+                                                class="text-danger">*</span></label>
+                                        <textarea class="form-control required" name="alamat" rows="4"
+                                            placeholder="Masukkan alamat lengkap"
+                                            required><?= $esc($settingData->alamat ?? '') ?></textarea>
                                     </div>
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
-                                            <label class="font-weight-semibold">Desa/Kelurahan <span class="text-danger">*</span></label>
-                                            <input type="text" name="desa" class="form-control required" value="<?= $esc($settingData->desa ?? '') ?>" required>
+                                    <div class="row g-3">
+                                        <div class="mb-3 col-md-6">
+                                            <label class="font-weight-semibold">Desa/Kelurahan <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="desa" class="form-control required"
+                                                value="<?= $esc($settingData->desa ?? '') ?>" required>
                                         </div>
-                                        <div class="form-group col-md-6">
-                                            <label class="font-weight-semibold">Kecamatan <span class="text-danger">*</span></label>
-                                            <input type="text" name="kec" class="form-control required" value="<?= $esc($settingData->kecamatan ?? '') ?>" required>
+                                        <div class="mb-3 col-md-6">
+                                            <label class="font-weight-semibold">Kecamatan <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="kec" class="form-control required"
+                                                value="<?= $esc($settingData->kecamatan ?? '') ?>" required>
                                         </div>
                                     </div>
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
-                                            <label class="font-weight-semibold">Kabupaten/Kota <span class="text-danger">*</span></label>
-                                            <input type="text" name="kota" class="form-control required" value="<?= $esc($settingData->kota ?? '') ?>" required>
+                                    <div class="row g-3">
+                                        <div class="mb-3 col-md-6">
+                                            <label class="font-weight-semibold">Kabupaten/Kota <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="kota" class="form-control required"
+                                                value="<?= $esc($settingData->kota ?? '') ?>" required>
                                         </div>
-                                        <div class="form-group col-md-3">
+                                        <div class="mb-3 col-md-3">
                                             <label class="font-weight-semibold">Kode Pos</label>
-                                            <input type="text" name="kode_pos" class="form-control" value="<?= $esc($settingData->kode_pos ?? '') ?>" pattern="[0-9]{5}" title="Kode pos terdiri dari 5 digit angka">
+                                            <input type="text" name="kode_pos" class="form-control"
+                                                value="<?= $esc($settingData->kode_pos ?? '') ?>" pattern="[0-9]{5}"
+                                                title="Kode pos terdiri dari 5 digit angka">
                                         </div>
-                                        <div class="form-group col-md-3">
-                                            <label class="font-weight-semibold">Provinsi <span class="text-danger">*</span></label>
-                                            <input type="text" name="provinsi" class="form-control required" value="<?= $esc($settingData->provinsi ?? '') ?>" required>
+                                        <div class="mb-3 col-md-3">
+                                            <label class="font-weight-semibold">Provinsi <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="provinsi" class="form-control required"
+                                                value="<?= $esc($settingData->provinsi ?? '') ?>" required>
                                         </div>
                                     </div>
                                 </div>
@@ -197,30 +232,38 @@ if (!empty($settingData->ba_waktu) && $settingData->ba_waktu !== '0000-00-00 00:
 
                         <div class="col-lg-6 mb-4">
                             <div class="card border-0 shadow-sm h-100">
-                                <div class="card-header" style="background: linear-gradient(135deg, #eefbf3 0%, #d6f2e2 100%); color: #111;">
+                                <div class="card-header"
+                                    style="background: linear-gradient(135deg, #eefbf3 0%, #d6f2e2 100%); color: #111;">
                                     <h6 class="mb-0">Kontak Sekolah</h6>
                                 </div>
                                 <div class="card-body">
-                                    <div class="form-group mb-3">
+                                    <div class="mb-3 mb-3">
                                         <label class="font-weight-semibold">Website</label>
-                                        <input type="url" name="web" class="form-control" value="<?= $esc($settingData->web ?? '') ?>" placeholder="https://contoh-sekolah.sch.id">
+                                        <input type="url" name="web" class="form-control"
+                                            value="<?= $esc($settingData->web ?? '') ?>"
+                                            placeholder="https://contoh-sekolah.sch.id">
                                     </div>
-                                    <div class="form-group mb-3">
+                                    <div class="mb-3 mb-3">
                                         <label class="font-weight-semibold">Email</label>
-                                        <input type="email" name="email" class="form-control" value="<?= $esc($settingData->email ?? '') ?>" placeholder="kontak@sekolah.sch.id">
+                                        <input type="email" name="email" class="form-control"
+                                            value="<?= $esc($settingData->email ?? '') ?>"
+                                            placeholder="kontak@sekolah.sch.id">
                                     </div>
-                                    <div class="form-group mb-3">
+                                    <div class="mb-3 mb-3">
                                         <label class="font-weight-semibold">Nomor Telepon</label>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text">+62</span>
                                             </div>
-                                            <input type="tel" name="tlp" class="form-control" value="<?= $esc($settingData->telp ?? '') ?>" pattern="[0-9]{6,15}" title="Masukkan nomor telepon tanpa spasi atau tanda hubung">
+                                            <input type="tel" name="tlp" class="form-control"
+                                                value="<?= $esc($settingData->telp ?? '') ?>" pattern="[0-9]{6,15}"
+                                                title="Masukkan nomor telepon tanpa spasi atau tanda hubung">
                                         </div>
                                     </div>
-                                    <div class="form-group mb-0">
+                                    <div class="mb-3 mb-0">
                                         <label class="font-weight-semibold">Faksimili</label>
-                                        <input type="text" name="fax" class="form-control" value="<?= $esc($settingData->fax ?? '') ?>">
+                                        <input type="text" name="fax" class="form-control"
+                                            value="<?= $esc($settingData->fax ?? '') ?>">
                                     </div>
                                 </div>
                             </div>
@@ -228,69 +271,93 @@ if (!empty($settingData->ba_waktu) && $settingData->ba_waktu !== '0000-00-00 00:
 
                         <div class="col-lg-6 mb-4">
                             <div class="card border-0 shadow-sm h-100">
-                                <div class="card-header" style="background: linear-gradient(135deg, #fff4e4 0%, #ffe3c3 100%); color: #111;">
+                                <div class="card-header"
+                                    style="background: linear-gradient(135deg, #fff4e4 0%, #ffe3c3 100%); color: #111;">
                                     <h6 class="mb-0">Penanggung Jawab & Pengaturan</h6>
                                 </div>
                                 <div class="card-body">
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
-                                            <label class="font-weight-semibold">Kepala Sekolah <span class="text-danger">*</span></label>
-                                            <input type="text" name="kepsek" class="form-control required" value="<?= $esc($settingData->kepsek ?? '') ?>" required>
+                                    <div class="row g-3">
+                                        <div class="mb-3 col-md-6">
+                                            <label class="font-weight-semibold">Kepala Sekolah <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="kepsek" class="form-control required"
+                                                value="<?= $esc($settingData->kepsek ?? '') ?>" required>
                                         </div>
-                                        <div class="form-group col-md-6">
+                                        <div class="mb-3 col-md-6">
                                             <label class="font-weight-semibold">NIP Kepala Sekolah</label>
-                                            <input type="text" name="nip" class="form-control" value="<?= $esc($settingData->nip ?? '') ?>" pattern="[0-9]{8,20}" title="Masukkan 8-20 digit angka">
+                                            <input type="text" name="nip" class="form-control"
+                                                value="<?= $esc($settingData->nip ?? '') ?>" pattern="[0-9]{8,20}"
+                                                title="Masukkan 8-20 digit angka">
                                         </div>
                                     </div>
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
-                                            <label class="font-weight-semibold">Proktor <span class="text-danger">*</span></label>
-                                            <input type="text" name="proktor" class="form-control required" value="<?= $esc($settingData->proktor ?? '') ?>" required>
+                                    <div class="row g-3">
+                                        <div class="mb-3 col-md-6">
+                                            <label class="font-weight-semibold">Proktor <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="proktor" class="form-control required"
+                                                value="<?= $esc($settingData->proktor ?? '') ?>" required>
                                         </div>
-                                        <div class="form-group col-md-6">
+                                        <div class="mb-3 col-md-6">
                                             <label class="font-weight-semibold">NIP Proktor</label>
-                                            <input type="text" name="nip_proktor" class="form-control" value="<?= $esc($settingData->nip_proktor ?? '') ?>" pattern="[0-9]{8,20}" title="Masukkan 8-20 digit angka">
+                                            <input type="text" name="nip_proktor" class="form-control"
+                                                value="<?= $esc($settingData->nip_proktor ?? '') ?>"
+                                                pattern="[0-9]{8,20}" title="Masukkan 8-20 digit angka">
                                         </div>
                                     </div>
-                                    <div class="form-group mb-3">
+                                    <div class="mb-3 mb-3">
                                         <label class="font-weight-semibold">Status Bank Soal</label>
                                         <select id="ba_aktif" class="form-control required" name="ba_aktif" required>
                                             <option value="" disabled <?= empty($settingData->ba_aktif) ? 'selected' : '' ?>>Pilih Status</option>
                                             <?php foreach ($bankSoalOptions as $key => $label): ?>
-                                                <option value="<?= $key ?>" <?= ((string)($settingData->ba_aktif ?? '')) === (string)$key ? 'selected' : '' ?>><?= html_escape($label) ?></option>
+                                                    <option value="<?= $key ?>" <?= ((string) ($settingData->ba_aktif ?? '')) === (string) $key ? 'selected' : '' ?>><?= html_escape($label) ?>
+                                                    </option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
-                                    <div class="form-group mb-3">
+                                    <div class="mb-3 mb-3">
                                         <label class="font-weight-semibold">Waktu Bank Soal</label>
-                                        <input type="datetime-local" name="ba_waktu" class="form-control" value="<?= $esc($bankSoalDateTime) ?>">
+                                        <input type="datetime-local" name="ba_waktu" class="form-control"
+                                            value="<?= $esc($bankSoalDateTime) ?>">
                                     </div>
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
+                                    <div class="row g-3">
+                                        <div class="mb-3 col-md-6">
                                             <label class="font-weight-semibold">Tampilkan Token di Siswa</label>
-                                            <select id="tkn_siswa" class="form-control required" name="tkn_siswa" required>
+                                            <select id="tkn_siswa" class="form-control required" name="tkn_siswa"
+                                                required>
                                                 <option value="" disabled <?= empty($settingData->tkn_siswa) ? 'selected' : '' ?>>Pilih Status</option>
                                                 <?php foreach ($tokenOptions as $key => $label): ?>
-                                                    <option value="<?= $key ?>" <?= ((string)($settingData->tkn_siswa ?? '')) === (string)$key ? 'selected' : '' ?>><?= html_escape($label) ?></option>
+                                                        <option value="<?= $key ?>" <?= ((string) ($settingData->tkn_siswa ?? '')) === (string) $key ? 'selected' : '' ?>><?= html_escape($label) ?>
+                                                        </option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
-                                        <div class="form-group col-md-6">
+                                        <div class="mb-3 col-md-6">
                                             <label class="font-weight-semibold">Mode Aplikasi</label>
-                                            <select id="mode_app" class="form-control required" name="mode_app" required>
+                                            <select id="mode_app" class="form-control required" name="mode_app"
+                                                required>
                                                 <option value="" disabled <?= empty($settingData->mode_app) ? 'selected' : '' ?>>Pilih Mode</option>
                                                 <?php foreach ($modeOptions as $key => $label): ?>
-                                                    <option value="<?= $key ?>" <?= ((string)($settingData->mode_app ?? '')) === (string)$key ? 'selected' : '' ?>><?= html_escape($label) ?></option>
+                                                        <option value="<?= $key ?>" <?= ((string) ($settingData->mode_app ?? '')) === (string) $key ? 'selected' : '' ?>><?= html_escape($label) ?>
+                                                        </option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
+                                    </div>
+                                    <div class="mb-3 mb-3">
+                                        <label class="font-weight-semibold">API Key (OpenAI / Gemini)</label>
+                                        <input type="text" name="api_key" class="form-control"
+                                            value="<?= $esc($settingData->api_key ?? '') ?>"
+                                            placeholder="Paste API Key disini...">
+                                        <small class="text-muted">Kunci API diperlukan untuk fitur generate soal
+                                            otomatis menggunakan AI.</small>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-12 text-right">
-                            <button type="submit" class="btn btn-primary btn-sm mt-2" onclick="submitSetting()"><i class="fa fa-save mr-1"></i>Simpan Pengaturan</button>
+                        <div class="col-12 text-end">
+                            <button type="submit" class="btn btn-primary btn-sm mt-2" onclick="submitSetting()"><i
+                                    class="bi bi-save me-1"></i>Simpan Pengaturan</button>
                         </div>
                     </div>
                     <?= form_close() ?>
@@ -298,14 +365,15 @@ if (!empty($settingData->ba_waktu) && $settingData->ba_waktu !== '0000-00-00 00:
             </div>
 
             <div class="card my-shadow border-0">
-                <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #f6f9ff 0%, #e6f2ff 100%); color: #111;">
+                <div class="card-header d-flex justify-content-between align-items-center"
+                    style="background: linear-gradient(135deg, #f6f9ff 0%, #e6f2ff 100%); color: #111;">
                     <h6 class="mb-0">Identitas Visual & Dokumen Pendukung</h6>
                     <span class="text-muted small">Format file JPG/PNG maksimal 2MB</span>
                 </div>
                 <div class="card-body">
                     <div class="callout callout-warning shadow-sm border border-warning mb-4">
-                        <h6 class="font-weight-bold mb-2"><i class="fas fa-images mr-2"></i>Panduan Upload</h6>
-                        <ul class="pl-3 mb-0">
+                        <h6 class="font-weight-bold mb-2"><i class="bi bi-images me-2"></i>Panduan Upload</h6>
+                        <ul class="ps-3 mb-0">
                             <li>Gunakan resolusi tinggi agar logo dan banner tampil tajam pada laporan.</li>
                             <li>Banner disarankan berukuran 1020x250 piksel dengan rasio 4:1.</li>
                             <li>Format transparan (PNG) ideal untuk tanda tangan digital dan cap sekolah.</li>
@@ -316,61 +384,81 @@ if (!empty($settingData->ba_waktu) && $settingData->ba_waktu !== '0000-00-00 00:
                         <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
                             <?= form_open_multipart('', ['id' => 'set-stampel']) ?>
                             <label class="font-weight-semibold" for="stampel">Cap / Stampel Sekolah</label>
-                            <input type="file" id="stampel" name="logo" class="dropify" data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png" data-default-file="<?= !empty($settingData->stampel) ? base_url() . $esc($settingData->stampel) : '' ?>" />
+                            <input type="file" id="stampel" name="logo" class="dropify" data-max-file-size-preview="2M"
+                                data-allowed-file-extensions="jpg jpeg png"
+                                data-default-file="<?= !empty($settingData->stampel) ? base_url() . $esc($settingData->stampel) : '' ?>" />
                             <?= form_close() ?>
                         </div>
                         <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
                             <?= form_open_multipart('', ['id' => 'set-tandatangan']) ?>
                             <label class="font-weight-semibold" for="tanda-tangan">TTD Kepala Sekolah</label>
-                            <input type="file" id="tanda-tangan" name="logo" class="dropify" data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png" data-default-file="<?= !empty($settingData->tanda_tangan) ? base_url() . $esc($settingData->tanda_tangan) : '' ?>" />
+                            <input type="file" id="tanda-tangan" name="logo" class="dropify"
+                                data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png"
+                                data-default-file="<?= !empty($settingData->tanda_tangan) ? base_url() . $esc($settingData->tanda_tangan) : '' ?>" />
                             <?= form_close() ?>
                         </div>
                         <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
                             <?= form_open_multipart('', ['id' => 'set-ttdproktor']) ?>
                             <label class="font-weight-semibold" for="ttdproktor">TTD Proktor</label>
-                            <input type="file" id="ttdproktor" name="logo" class="dropify" data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png" data-default-file="<?= !empty($settingData->ttdproktor) ? base_url() . $esc($settingData->ttdproktor) : '' ?>" />
+                            <input type="file" id="ttdproktor" name="logo" class="dropify"
+                                data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png"
+                                data-default-file="<?= !empty($settingData->ttdproktor) ? base_url() . $esc($settingData->ttdproktor) : '' ?>" />
                             <?= form_close() ?>
                         </div>
                         <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
                             <?= form_open_multipart('', ['id' => 'set-logo-kiri']) ?>
                             <label class="font-weight-semibold" for="logo-kiri">Logo Kiri / Aplikasi</label>
-                            <input type="file" id="logo-kiri" name="logo" class="dropify" data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png" data-default-file="<?= !empty($settingData->logo_kiri) ? base_url() . $esc($settingData->logo_kiri) : '' ?>" />
+                            <input type="file" id="logo-kiri" name="logo" class="dropify"
+                                data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png"
+                                data-default-file="<?= !empty($settingData->logo_kiri) ? base_url() . $esc($settingData->logo_kiri) : '' ?>" />
                             <?= form_close() ?>
                         </div>
                         <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
                             <?= form_open_multipart('', ['id' => 'set-logo-kanan']) ?>
                             <label class="font-weight-semibold" for="logo-kanan">Logo Kanan</label>
-                            <input type="file" id="logo-kanan" name="logo" class="dropify" data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png" data-default-file="<?= !empty($settingData->logo_kanan) ? base_url() . $esc($settingData->logo_kanan) : '' ?>" />
+                            <input type="file" id="logo-kanan" name="logo" class="dropify"
+                                data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png"
+                                data-default-file="<?= !empty($settingData->logo_kanan) ? base_url() . $esc($settingData->logo_kanan) : '' ?>" />
                             <?= form_close() ?>
                         </div>
                         <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
                             <?= form_open_multipart('', ['id' => 'set-kodescan']) ?>
                             <label class="font-weight-semibold" for="kodescan">QR Code</label>
-                            <input type="file" id="kodescan" name="logo" class="dropify" data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png" data-default-file="<?= !empty($settingData->kodescan) ? base_url() . $esc($settingData->kodescan) : '' ?>" />
+                            <input type="file" id="kodescan" name="logo" class="dropify" data-max-file-size-preview="2M"
+                                data-allowed-file-extensions="jpg jpeg png"
+                                data-default-file="<?= !empty($settingData->kodescan) ? base_url() . $esc($settingData->kodescan) : '' ?>" />
                             <?= form_close() ?>
                         </div>
                         <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
                             <?= form_open_multipart('', ['id' => 'set-kopsekolah']) ?>
                             <label class="font-weight-semibold" for="kopsekolah">Kop Sekolah</label>
-                            <input type="file" id="kopsekolah" name="logo" class="dropify" data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png" data-default-file="<?= !empty($settingData->kopsekolah) ? base_url() . $esc($settingData->kopsekolah) : '' ?>" />
+                            <input type="file" id="kopsekolah" name="logo" class="dropify"
+                                data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png"
+                                data-default-file="<?= !empty($settingData->kopsekolah) ? base_url() . $esc($settingData->kopsekolah) : '' ?>" />
                             <?= form_close() ?>
                         </div>
                         <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
                             <?= form_open_multipart('', ['id' => 'set-banner1']) ?>
                             <label class="font-weight-semibold" for="banner1">Banner 1 (1020×250px)</label>
-                            <input type="file" id="banner1" name="logo" class="dropify" data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png" data-default-file="<?= !empty($settingData->banner1) ? base_url() . $esc($settingData->banner1) : '' ?>" />
+                            <input type="file" id="banner1" name="logo" class="dropify" data-max-file-size-preview="2M"
+                                data-allowed-file-extensions="jpg jpeg png"
+                                data-default-file="<?= !empty($settingData->banner1) ? base_url() . $esc($settingData->banner1) : '' ?>" />
                             <?= form_close() ?>
                         </div>
                         <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
                             <?= form_open_multipart('', ['id' => 'set-banner2']) ?>
                             <label class="font-weight-semibold" for="banner2">Banner 2 (1020×250px)</label>
-                            <input type="file" id="banner2" name="logo" class="dropify" data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png" data-default-file="<?= !empty($settingData->banner2) ? base_url() . $esc($settingData->banner2) : '' ?>" />
+                            <input type="file" id="banner2" name="logo" class="dropify" data-max-file-size-preview="2M"
+                                data-allowed-file-extensions="jpg jpeg png"
+                                data-default-file="<?= !empty($settingData->banner2) ? base_url() . $esc($settingData->banner2) : '' ?>" />
                             <?= form_close() ?>
                         </div>
                         <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
                             <?= form_open_multipart('', ['id' => 'set-banner3']) ?>
                             <label class="font-weight-semibold" for="banner3">Banner 3 (1020×250px)</label>
-                            <input type="file" id="banner3" name="logo" class="dropify" data-max-file-size-preview="2M" data-allowed-file-extensions="jpg jpeg png" data-default-file="<?= !empty($settingData->banner3) ? base_url() . $esc($settingData->banner3) : '' ?>" />
+                            <input type="file" id="banner3" name="logo" class="dropify" data-max-file-size-preview="2M"
+                                data-allowed-file-extensions="jpg jpeg png"
+                                data-default-file="<?= !empty($settingData->banner3) ? base_url() . $esc($settingData->banner3) : '' ?>" />
                             <?= form_close() ?>
                         </div>
                     </div>
@@ -494,15 +582,7 @@ if (!empty($settingData->ba_waktu) && $settingData->ba_waktu !== '0000-00-00 00:
         });
 
         drEvent.on('dropify.errors', function () {
-            $.toast({
-                heading: 'Error',
-                text: 'File tidak valid atau terlalu besar',
-                icon: 'warning',
-                showHideTransition: 'fade',
-                allowToastClose: true,
-                hideAfter: 5000,
-                position: 'top-right'
-            });
+            showWarningToast('File tidak valid atau terlalu besar');
         });
 
         $('#jenjang').on('change', function () {
@@ -581,13 +661,7 @@ if (!empty($settingData->ba_waktu) && $settingData->ba_waktu !== '0000-00-00 00:
             }
 
             if (input.files[0].size > 2 * 1024 * 1024) {
-                $.toast({
-                    heading: 'Error',
-                    text: 'Ukuran file maksimum adalah 2MB',
-                    icon: 'error',
-                    position: 'top-right',
-                    hideAfter: 5000
-                });
+                showDangerToast('Ukuran file maksimum adalah 2MB');
                 $(input).val('');
                 return;
             }
@@ -641,34 +715,16 @@ if (!empty($settingData->ba_waktu) && $settingData->ba_waktu !== '0000-00-00 00:
                             }
                         }
 
-                        $.toast({
-                            heading: 'Berhasil',
-                            text: 'File berhasil diunggah',
-                            icon: 'success',
-                            position: 'top-right',
-                            hideAfter: 4000
-                        });
+                        showSuccessToast('File berhasil diunggah');
                     } else {
                         const message = response?.src || 'Gagal mengunggah file: respons tidak valid';
-                        $.toast({
-                            heading: 'Error',
-                            text: message,
-                            icon: 'error',
-                            position: 'top-right',
-                            hideAfter: 5000
-                        });
+                        showDangerToast(message);
                     }
                 },
                 error: function (xhr) {
                     const resp = xhr.responseJSON || {};
                     const errMessage = resp?.src || resp?.message || 'Gagal mengunggah file';
-                    $.toast({
-                        heading: 'Error',
-                        text: errMessage,
-                        icon: 'error',
-                        position: 'top-right',
-                        hideAfter: 5000
-                    });
+                    showDangerToast(errMessage);
                     console.error('Upload error:', xhr.responseText);
                 }
             });

@@ -1,13 +1,11 @@
 <?php
 /**
- * Created by IntelliJ IDEA.
- * User: AbangAzmi
  * Date: 21/10/2020
  * Time: 17:56
  */
 ?>
 
-<div class="content-wrapper bg-white pt-4">
+<main class="app-main bg-white pt-4">
 
 
     <section class="content">
@@ -21,8 +19,8 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-2">
                         <div>
-                            <button class="btn btn-primary mr-2" onclick="processBackup()">BACKUP SEMUA</button>
-                            <button class="btn btn-info mr-2" onclick="processBackupDb()">BACKUP DB SAJA</button>
+                            <button class="btn btn-primary me-2" onclick="processBackup()">BACKUP SEMUA</button>
+                            <button class="btn btn-info me-2" onclick="processBackupDb()">BACKUP DB SAJA</button>
                             <button class="btn btn-success" onclick="processBackupFile()">BACKUP FILE SAJA</button>
                         </div>
                         <button class="btn btn-danger" onclick="hapusBackup()" <?= count($list) == 0 ? 'disabled' : '' ?>>HAPUS SEMUA</button>
@@ -35,6 +33,7 @@
                    <p>1. Jangan merefresh/menutup halaman ini atau ke halaman lain selama proses backup berlangsung
                         <br>2. Jika backup gagal, gunakan cpanel/phpmyadmin untuk membackup file dan database
                         <br>3. Untuk Backup File (Gambar, Foto, dan lain sebagainya) Backup manual Folder Uploads
+                        <br><span class="text-danger fw-bold">PENTING:</span> File Backup dienkripsi menggunakan system key. Pastikan Anda tidak mengganti encryption_key di config.php.
                     </p>
                     <hr>
                     <br>
@@ -72,7 +71,7 @@
                                     <?= buat_tanggal(date('D, d M Y H:i', $value['tgl'])) ?>
                                 </td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('./backups/' . $value['src']) ?>"
+                                    <a href="<?= base_url('dbmanager/download/' . $value['src']) ?>"
                                        download="<?= $value['src'] ?>" type="button"
                                        class="btn btn-xs btn-warning btn-download">Download</a>
                                     <button onclick="restore('<?= $value['src'] ?>')" type="button"
@@ -89,37 +88,13 @@
                     <?= form_close() ?>
                 </div>
             </div>
-
-            <!--
-            <div class="card my-shadow">
-                <div class="card-header">
-                    <div class="card-title">
-                        <h6>Pilihan Backup/Restore</h6>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <?php
-            echo '<pre>';
-            //var_dump($tables);
-            echo '</pre>';
-            ?>
-                    <button class="btn btn-primary mb-2" onclick="processBackup()">BACKUP SEMUA DATA</button>
-                    <div class="progress" style="height: 30px">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%; height: 30px">
-                        </div>
-                    </div>
-                    <p>Jangan merefresh/menutup halaman ini atau ke halaman lain selama proses backup berlangsung
-                        <br>Jika backup gagal, gunakan cpanel untuk membackup file dan database</p>
-                    <hr>
-                    <br>
-                </div>
-            </div>
-            -->
         </div>
     </section>
 </div>
 
 <script>
+    var CSRF_NAME = '<?= $this->security->get_csrf_token_name() ?>';
+    var CSRF_HASH = '<?= $this->security->get_csrf_hash() ?>';
 
     function updateProgress(count, message) {
         console.log(count, message);
@@ -128,24 +103,29 @@
     }
 
     function processBackupDb() {
-        swal.fire({
+        Swal.fire({
             title: "Backup Database",
             text: "Silahkan tunggu....",
             allowEscapeKey: false,
             allowOutsideClick: false,
-            onOpen: () => {
-                swal.showLoading();
-            }
+            didOpen: () => {
+                                Swal.showLoading();
+                            }
         });
 
         updateProgress(10, 'Memulai Backup Database...');
+        var data = {};
+        data[CSRF_NAME] = CSRF_HASH;
+
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: base_url + 'dbmanager/backupdb',
+            data: data,
             success: function (response) {
                 console.log(response);
+                if(response.csrf_hash) CSRF_HASH = response.csrf_hash;
                 updateProgress(100, response.message);
-                swal.fire({
+                Swal.fire({
                     title: "Berhasil",
                     text: "Database berhasil dibackup",
                     icon: "success"
@@ -154,29 +134,37 @@
                         window.location.reload();
                     }
                 })
+            },
+            error: function(xhr) {
+                Swal.fire("Gagal", "Terjadi kesalahan: " + xhr.statusText, "error");
             }
         });
     }
 
     function processBackupFile() {
-        swal.fire({
+        Swal.fire({
             title: "Backup File Uploads",
             text: "Silahkan tunggu....",
             allowEscapeKey: false,
             allowOutsideClick: false,
-            onOpen: () => {
-                swal.showLoading();
-            }
+            didOpen: () => {
+                                Swal.showLoading();
+                            }
         });
 
         updateProgress(10, 'Memulai Backup File...');
+        var data = {};
+        data[CSRF_NAME] = CSRF_HASH;
+
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: base_url + 'dbmanager/backupdata',
+            data: data,
             success: function (response) {
                 console.log(response);
+                if(response.csrf_hash) CSRF_HASH = response.csrf_hash;
                 updateProgress(100, response.message);
-                swal.fire({
+                Swal.fire({
                     title: "Berhasil",
                     text: "File Uploads berhasil dibackup",
                     icon: "success"
@@ -185,35 +173,46 @@
                         window.location.reload();
                     }
                 })
+            },
+            error: function(xhr) {
+                Swal.fire("Gagal", "Terjadi kesalahan: " + xhr.statusText, "error");
             }
         });
     }
 
     function processBackup() {
-        swal.fire({
+        Swal.fire({
             title: "Backup database dan file sedang berjalan",
             text: "Silahkan tunggu....",
             allowEscapeKey: false,
             allowOutsideClick: false,
-            onOpen: () => {
-                swal.showLoading();
-            }
+            didOpen: () => {
+                                Swal.showLoading();
+                            }
         });
 
         updateProgress(5, ' ');
+        var data = {};
+        data[CSRF_NAME] = CSRF_HASH;
+
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: base_url + 'dbmanager/backupdb',
+            data: data,
             success: function (response) {
                 console.log(response);
+                if(response.csrf_hash) CSRF_HASH = response.csrf_hash; // Update token!
                 updateProgress(50, response.message);
-                backupData();
+                backupData(); // Call next step
+            },
+            error: function(xhr) {
+                Swal.fire("Gagal", "Terjadi kesalahan: " + xhr.statusText, "error");
             }
         });
     }
 
     function hapusBackup() {
-        swal.fire({
+        Swal.fire({
             title: "HAPUS SEMUA",
             html: "<span class='text-danger'><b>Semua backup akan dihapus dan tidak bisa dikembalikan!</b></span>",
             icon: "warning",
@@ -223,23 +222,29 @@
             confirmButtonText: "YA, Hapus!"
         }).then(result => {
             if (result.value) {
-                swal.fire({
+                Swal.fire({
                     title: "Menghapus backup",
                     text: "Silahkan tunggu....",
                     allowEscapeKey: false,
                     allowOutsideClick: false,
-                    onOpen: () => {
-                        swal.showLoading();
-                    }
+                    didOpen: () => {
+                                Swal.showLoading();
+                            }
                 });
+
+                var data = {};
+                data[CSRF_NAME] = CSRF_HASH;
 
                 $.ajax({
                     url: base_url + 'dbmanager/del_backup',
-                    type: "GET",
+                    type: "POST",
+                    data: data,
                     success: function (respon) {
                         console.log(respon);
+                        if(respon.csrf_hash) CSRF_HASH = respon.csrf_hash;
+
                         if (respon.status) {
-                            swal.fire({
+                            Swal.fire({
                                 title: "Berhasil",
                                 text: respon.message,
                                 icon: "success"
@@ -249,7 +254,7 @@
                                 }
                             })
                         } else {
-                            swal.fire({
+                            Swal.fire({
                                 title: "Gagal",
                                 text: respon.message,
                                 icon: "error"
@@ -258,10 +263,9 @@
                     },
                     error: function (xhr, status, error) {
                         console.log(xhr.responseText);
-                        const err = JSON.parse(xhr.responseText)
-                        swal.fire({
+                        Swal.fire({
                             title: "Error",
-                            text: err.Message,
+                            text: "Terjadi kesalahan dalam menghapus",
                             icon: "error"
                         });
                     }
@@ -272,13 +276,19 @@
     }
 
     function backupData() {
+        var data = {};
+        data[CSRF_NAME] = CSRF_HASH;
+
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: base_url + 'dbmanager/backupdata',
+            data: data,
             success: function (response) {
                 console.log(response);
+                if(response.csrf_hash) CSRF_HASH = response.csrf_hash;
+
                 updateProgress(100, response.message);
-                swal.fire({
+                Swal.fire({
                     title: "Berhasil",
                     text: "Semua file data berhasil dibackup",
                     icon: "success"
@@ -287,12 +297,15 @@
                         window.location.href = base_url + 'dbmanager';
                     }
                 })
+            },
+            error: function(xhr) {
+                Swal.fire("Gagal", "Terjadi kesalahan: " + xhr.statusText, "error");
             }
         });
     }
 
     function hapus(src) {
-        swal.fire({
+        Swal.fire({
             title: "Anda yakin?",
             html: "File <b>" + src + "</b> akan dihapus!",
             icon: "warning",
@@ -302,21 +315,28 @@
             confirmButtonText: "Hapus!"
         }).then(result => {
             if (result.value) {
-                swal.fire({
+                Swal.fire({
                     text: "Silahkan tunggu....",
                     allowEscapeKey: false,
                     allowOutsideClick: false,
-                    onOpen: () => {
-                        swal.showLoading();
-                    }
+                    didOpen: () => {
+                                Swal.showLoading();
+                            }
                 });
+
+                var data = { src: src };
+                data[CSRF_NAME] = CSRF_HASH;
+
                 $.ajax({
-                    url: base_url + 'dbmanager/hapusbackup/' + src,
-                    type: "GET",
+                    url: base_url + 'dbmanager/hapusbackup',
+                    type: "POST",
+                    data: data,
                     success: function (respon) {
                         console.log(respon);
+                        if(respon.csrf_hash) CSRF_HASH = respon.csrf_hash;
+
                         if (respon.status) {
-                            swal.fire({
+                            Swal.fire({
                                 title: "Berhasil",
                                 text: respon.message,
                                 icon: "success"
@@ -326,7 +346,7 @@
                                 }
                             })
                         } else {
-                            swal.fire({
+                            Swal.fire({
                                 title: "Gagal",
                                 text: respon.message,
                                 icon: "error"
@@ -335,10 +355,9 @@
                     },
                     error: function (xhr, status, error) {
                         console.log(xhr.responseText);
-                        const err = JSON.parse(xhr.responseText)
-                        swal.fire({
+                        Swal.fire({
                             title: "Error",
-                            text: err.Message,
+                            text: "Terjadi kesalahan saat menghapus",
                             icon: "error"
                         });
                     }
@@ -348,7 +367,7 @@
     }
 
     function restore(src) {
-        swal.fire({
+        Swal.fire({
             title: "RESTORE BACKUP",
             html: "Anda yakin ingin merestore file <b>" + src + "</b>?<br><br><span class='text-danger'><b>PERINGATAN:</b><br>1. Data aplikasi saat ini akan DITIMPA/DIHAPUS.<br>2. Pastikan Anda sudah melakukan BACKUP terlebih dahulu.<br>3. Proses ini tidak dapat dibatalkan.</span>",
             icon: "warning",
@@ -358,23 +377,29 @@
             confirmButtonText: "YA, Restore Data!"
         }).then(result => {
             if (result.value) {
-                swal.fire({
+                Swal.fire({
                     title: "Memproses Restore",
                     text: "Mohon tunggu, jangan tutup halaman ini...",
                     allowEscapeKey: false,
                     allowOutsideClick: false,
-                    onOpen: () => {
-                        swal.showLoading();
-                    }
+                    didOpen: () => {
+                                Swal.showLoading();
+                            }
                 });
                 
+                var data = { src: src };
+                data[CSRF_NAME] = CSRF_HASH;
+
                 $.ajax({
-                    url: base_url + 'dbmanager/restore/' + src,
-                    type: "GET",
+                    url: base_url + 'dbmanager/restore',
+                    type: "POST",
+                    data: data,
                     success: function (respon) {
                         console.log(respon);
+                        if(respon.csrf_hash) CSRF_HASH = respon.csrf_hash;
+                        
                         if (respon.status) {
-                            swal.fire({
+                            Swal.fire({
                                 title: "Berhasil",
                                 text: respon.message,
                                 icon: "success"
@@ -384,7 +409,7 @@
                                 }
                             })
                         } else {
-                            swal.fire({
+                            Swal.fire({
                                 title: "Gagal",
                                 text: respon.message,
                                 icon: "error"
@@ -393,7 +418,7 @@
                     },
                     error: function (xhr, status, error) {
                         console.log(xhr.responseText);
-                        swal.fire({
+                        Swal.fire({
                             title: "Error",
                             text: "Terjadi kesalahan server saat proses restore.",
                             icon: "error"

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: AbangAzmi
- * Date: 23/06/2020
- * Time: 20.54
- */
+
 
 class ModelDtoLoader {
 	public function __construct(){

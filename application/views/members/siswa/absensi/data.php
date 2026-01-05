@@ -1,5 +1,9 @@
 <?php
+/**
 
+ * Date: 23/08/20
+ * Time: 23:18
+ */
 
 function format_interval(DateInterval $interval)
 {
@@ -28,14 +32,33 @@ $arrHari = ['Ming', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Ming'];
 $arrBulan = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 ?>
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper" style="margin-top: -1px;">
-    <!-- Main content -->
-    <div class="sticky">
-    </div>
-    <section class="content overlap p-5">
-        <div class="container">
-            <!-- <?php $this->load->view('members/siswa/templates/top'); ?> --> <!-- ikasmedia -->
-            <div class="row">
+	<style>
+	    .no-close .ui-dialog-titlebar-close {
+	        display: none;
+	    }
+	</style>
+	<main>
+	    <header class="masthead">
+	        <?php $this->load->view('members/siswa/templates/top'); ?>
+	    </header>
+	    <div class="container-fluid">
+	        <div class="main-content">
+	            <div class="container-fluid xl-width">
+	                <div class="row g-0">
+	                    <div class="col-md-1"></div>
+	                    <div class="col-md-10">
+	                        <div class="content">
+	                            <div class="row">
+	                                <div class="col-sm-12">
+	                                    <nav aria-label="breadcrumb">
+	                                        <ol class="breadcrumb">
+	                                            <li class="breadcrumb-item"><a href="dashboard">Dashboard</a></li>
+	                                            <li class="breadcrumb-item active" aria-current="page">Daftar Nilai</li>
+	                                        </ol>
+	                                    </nav>
+	                                </div>
+	                            </div>
+	                            <div class="row">
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
@@ -182,7 +205,7 @@ $arrBulan = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
                                         if ($hari != 7 && (int)$tgl <= (int)$tanggal) :
                                             ?>
                                             <tr class="group bg-secondary">
-                                                <td class="pl-2 border"
+                                                <td class="ps-2 border"
                                                     colspan="2"><?= $tgl . ' ' . $arrBulan[(int)$bulan] ?></td>
                                                 <th class="text-center align-middle">Status</th>
                                                 <th class="text-center align-middle">Keterangan</th>
@@ -304,5 +327,20 @@ $arrBulan = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
                 </div>
             </div>
         </div>
-    </section>
-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="container-fluid">
+            <div class="row g-0">
+                <div class="col-md-12">
+                    <div class="copyright">COPYRIGHT &copy; <?php $tgl = date('Y'); echo $tgl; ?> | IKASMEDIA </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</main>
+

@@ -14,8 +14,8 @@
      */
     var pluginName = "bstreeview",
         defaults = {
-            expandIcon: 'fa fa-angle-down',
-            collapseIcon: 'fa fa-angle-right',
+            expandIcon: 'bi bi-angle-down',
+            collapseIcon: 'bi bi-angle-right',
             indent: 1.25
         };
     /**

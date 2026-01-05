@@ -9,30 +9,16 @@ date_default_timezone_set('Asia/Makassar');
 // $config['base_url'] = "http://".$_SERVER['HTTP_HOST'];
 // $config['base_url'] .= preg_replace('@/+$@','',dirname($_SERVER['SCRIPT_NAME'])).'/';
 
-// Deteksi apakah localhost atau development
-$is_localhost = ($_SERVER['HTTP_HOST'] == 'localhost' || 
-                 strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false || 
-                 strpos($_SERVER['HTTP_HOST'], '192.168.') !== false ||
-                 strpos($_SERVER['HTTP_HOST'], '.local') !== false ||
-                 strpos($_SERVER['HTTP_HOST'], '.dev') !== false);
-
-if ($is_localhost) {
-    // Untuk localhost, gunakan HTTP
-    $scheme = "http";
-} else {
-    // Untuk production, gunakan HTTPS
-    $scheme = "https";
-}
-
-$config['base_url'] = "$scheme://".$_SERVER['HTTP_HOST'];
-$config['base_url'] .= preg_replace('@/+$@','',dirname($_SERVER['SCRIPT_NAME'])).'/';
+$scheme = (isset($_SERVER["HTTPS"]) && @$_SERVER["HTTPS"] == "on") ? "https" : "http";
+$config['base_url'] = "$scheme://" . $_SERVER['HTTP_HOST'];
+$config['base_url'] .= preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])) . '/';
 
 $config['index_page'] = '';
 
-$config['uri_protocol']	= 'REQUEST_URI';
+$config['uri_protocol'] = 'REQUEST_URI';
 //$config['uri_protocol'] = "ORIG_PATH_INFO";
 $config['url_suffix'] = '';
-$config['language']	= 'indonesian';
+$config['language'] = 'indonesian';
 $config['charset'] = 'UTF-8';
 $config['enable_hooks'] = FALSE;
 //$config['enable_hooks'] = TRUE;
@@ -48,11 +34,11 @@ $config['directory_trigger'] = 'd';
 $config['allow_get_array'] = TRUE;
 $config['log_threshold'] = 1;
 /*
-	0 = Disables logging, Error logging TURNED OFF
-	1 = Error Messages (including PHP errors)
-	2 = Debug Messages
-	3 = Informational Messages
-	4 = All Messages
+    0 = Disables logging, Error logging TURNED OFF
+    1 = Error Messages (including PHP errors)
+    2 = Debug Messages
+    3 = Informational Messages
+    4 = All Messages
 */
 $config['log_path'] = '';
 $config['log_file_extension'] = '';
@@ -61,14 +47,6 @@ $config['log_date_format'] = 'Y-m-d H:i:s';
 $config['error_views_path'] = '';
 $config['cache_path'] = '';
 $config['cache_query_string'] = FALSE;
-
-/*
-|--------------------------------------------------------------------------
-| JWT Configuration
-|--------------------------------------------------------------------------
-*/
-$config['jwt_secret_key'] = 'IkasmediaCBTNTT';
-$config['jwt_expire_time'] = 3600; // 1 hour in seconds
 
 //$config['encryption_key'] = '';
 $config['encryption_key'] = '498f8140edc311eb94b9c83dd4416dc8';
@@ -154,11 +132,11 @@ $config['sess_regenerate_destroy'] = TRUE;
 |       'cookie_httponly') will also affect sessions.
 |
 */
-$config['cookie_prefix']	= '';
-$config['cookie_domain']	= '';
-$config['cookie_path']		= '/';
-$config['cookie_secure']	= FALSE;
-$config['cookie_httponly'] 	= FALSE;
+$config['cookie_prefix'] = '';
+$config['cookie_domain'] = '';
+$config['cookie_path'] = '/';
+$config['cookie_secure'] = FALSE;
+$config['cookie_httponly'] = FALSE;
 
 /*
 |--------------------------------------------------------------------------
@@ -222,10 +200,18 @@ $config['csrf_cookie_name'] = 'csrf_cookie';
 $config['csrf_expire'] = 9000 * 12;
 $config['csrf_regenerate'] = FALSE;
 $config['csrf_exclude_uris'] = array(
-    'kelasmateri/saveMateri',
-    'kelasmateri/uploadfile',
-    'kelasmateri/deletefile',
-    'auth/qrcode_login'
+    'sync/download',
+    'sync/download_table',
+    'sync/upload',
+    'sync/full_sync',
+    'sync/test_connection',
+    'sync/toggle_school/.*',
+    'sync/regenerate_key/.*',
+    'sync/register_school',
+    'sync/get_pending_media',
+    'sync/upload_single_media',
+    'sync/get_comparison',
+    'api_sync/.*'
 );
 /*
 $config['csrf_exclude_uris'] = array(
@@ -302,5 +288,5 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = '';
 
-$config['min_password_length']  = 6;
+$config['min_password_length'] = 6;
 $config['max_password_length'] = 20;

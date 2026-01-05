@@ -1,14 +1,14 @@
 var table;
 
-$(document).ready(function() {
+$(document).ready(function () {
     ajaxcsrf();
 
     table = $("#users").DataTable({
-        initComplete: function() {
+        initComplete: function () {
             var api = this.api();
             $("#users_filter input")
                 .off(".DT")
-                .on("keyup.DT", function(e) {
+                .on("keyup.DT", function (e) {
                     api.search(this.value).draw();
                 });
         },
@@ -60,7 +60,7 @@ $(document).ready(function() {
             {
                 targets: 5,
                 data: "level",
-                render: function(data, type, row, meta) {
+                render: function (data, type, row, meta) {
                     return `<div class="text-center">
                             <span class="badge">${data}</span>
                         </div>`;
@@ -72,7 +72,7 @@ $(document).ready(function() {
                 searchable: false,
                 title: "Status",
                 data: "active",
-                render: function(data, type, row, meta) {
+                render: function (data, type, row, meta) {
                     if (data === "1") {
                         return `<div class="text-center">
                                 <span class="badge bg-green">Active</span>
@@ -87,20 +87,20 @@ $(document).ready(function() {
             {
                 targets: 8,
                 data: "id",
-                render: function(data, type, row, meta) {
+                render: function (data, type, row, meta) {
                     if (data === user_id) {
                         return `<div class="text-center">
                                 <a class="btn btn-xs bg-primary" href="${base_url}users/edit/${data}">
-                                    <i class="fa fa-cog fa-spin"></i>
+                                    <i class="bi bi-cog fa-spin"></i>
                                 </a>
                             </div>`;
                     } else {
                         return `<div class="text-center">
                                 <a class="btn btn-xs btn-warning" href="${base_url}users/edit/${data}">
-                                    <i class="fa fa-pencil"></i>
+                                    <i class="bi bi-pencil"></i>
                                 </a>
                                 <button type="button" class="btn btn-xs btn-danger" onclick="hapus(${data})">
-                                    <i class="fa fa-trash"></i>
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </div>`;
                     }
@@ -108,10 +108,10 @@ $(document).ready(function() {
             }
         ],
         order: [[1, "asc"]],
-        rowId: function(a) {
+        rowId: function (a) {
             return a;
         },
-        rowCallback: function(row, data, iDisplayIndex) {
+        rowCallback: function (row, data, iDisplayIndex) {
             var info = this.fnPagingInfo();
             var page = info.iPage;
             var length = info.iLength;
@@ -125,7 +125,7 @@ $(document).ready(function() {
         .container()
         .appendTo("#users_wrapper .col-md-6:eq(0)");
 
-    $("#show_me").on("change", function() {
+    $("#show_me").on("change", function () {
         let src = base_url + "users/data";
         let url = $(this).prop("checked") === true ? src : src + "/" + user_id;
         table.ajax.url(url).load();
@@ -133,18 +133,18 @@ $(document).ready(function() {
 });
 
 function hapus(id) {
-    swal.fire({
+    Swal.fire({
         title: "Anda yakin?",
         text: "Data akan dihapus.",
-        type: "question",
+        icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         confirmButtonText: "Hapus!"
     }).then(result => {
         if (result.value) {
-            $.getJSON(base_url + "users/delete/" + id, function(data) {
-                swal.fire({
+            $.getJSON(base_url + "users/delete/" + id, function (data) {
+                Swal.fire({
                     title: data.status ? "Berhasil" : "Gagal",
                     text: data.status
                         ? "User berhasil dihapus"

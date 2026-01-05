@@ -6,66 +6,65 @@
     <!-- Meta Tag -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title><?= $judul ?></title>
-    <meta name="renderer" content="webkit"/>
+    <title><?= $judul ?> | CBT by Ikasmedia</title>
+    <meta name="renderer" content="webkit" />
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" name="viewport">
     <?php $logo_app = $setting->logo_kiri == null ? base_url() . 'assets/img/favicon.png' : base_url() . $setting->logo_kiri; ?>
     <link rel="shortcut icon" href="<?= $logo_app ?>" type="image/x-icon">
 
     <!-- Required CSS -->
     <!-- v3 -->
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <!-- Required CSS -->
+    <!-- v3 -->
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/datatables-bs5/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet"
-          href="<?= base_url() ?>/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-    <!-- Font Awesome -->
+        href="<?= base_url() ?>/assets/plugins/datatables-responsive/css/responsive.bootstrap5.min.css">
+    <!-- Font Awesome (Removed - 404) -->
+    <!--
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/fontawesome-free/css/fontawesome.min.css">
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/fontawesome-free/css/v4-shims.min.css">
+    -->
     <!-- Ionicons -->
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/Ionicons/css/ionicons.min.css">
-    <!-- Tempusdominus Bbootstrap 4 -->
-    <link rel="stylesheet"
-          href="<?= base_url() ?>/assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- Tempusdominus bootstrap 5 -->
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/tempus-dominus/tempus-dominus.min.css">
     <!-- iCheck -->
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <!-- JQVMap -->
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/jqvmap/jqvmap.min.css">
-    
+
     <!-- Select2 -->
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/select2/css/select2.min.css">
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <link rel="stylesheet"
+        href="<?= base_url() ?>/assets/plugins/select2-bootstrap5-theme/select2-bootstrap-5-theme.min.css">
     <!-- multi select -->
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/multiselect/css/multi-select.css">
+    <script src="<?= base_url() ?>/assets/plugins/signature/signature_pad.min.js?v=08"></script>
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
     <!-- Datetime picker -->
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/jquery-datetimepicker/jquery.datetimepicker.min.css">
-    <!-- Tempusdominus Bbootstrap 4 -->
-    <link rel="stylesheet"
-          href="<?= base_url() ?>/assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-    <!-- iCheck for checkboxes and radio inputs -->
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/select2/css/select2.min.css">
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
     <!-- Toastr -->
     <link rel="stylesheet" href="<?= base_url() ?>/assets/app/css/jquery.toast.min.css">
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/toastr/toastr.min.css">
     <!-- SweetAlert2 -->
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/sweetalert2/sweetalert2.min.css">
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/dropify/css/dropify.min.css">
 
     <!-- Datatables Buttons -->
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <!-- <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css"> -->
 
     <!-- fonts -->
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/adminlte/dist/css/poppins.css">
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/adminlte/dist/css/calibri.css">
+
     <!--
     <link rel="stylesheet" href="<?= base_url() ?>/assets/adminlte/dist/css/montserrat.css">
     <link rel="stylesheet" href="<?= base_url() ?>/assets/adminlte/dist/css/fonts.css">
     <link rel="stylesheet" href="<?= base_url() ?>/assets/adminlte/dist/css/scheherazade.css">
     <link rel="stylesheet" href="<?= base_url() ?>/assets/adminlte/dist/css/uthmanic.css">
-	-->
+    -->
     <link rel="stylesheet" href="<?= base_url() ?>/assets/app/css/show.toast.css">
 
     <!-- Theme style -->
@@ -73,15 +72,12 @@
 
     <!-- textarea editor -->
     <!-- summernote -->
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/summernote/summernote-bs4.css">
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/summernote/summernote-lite.min.css">
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/summernote/plugin/audio/summernote-audio.css">
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/katex/katex.css">
     <!-- /texarea editor; -->
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/app/css/mystyle.css">
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/app/css/dashboard-flat.css">
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/app/css/font-material.css">
-
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/app/css/premium_adminlte.css">
     <link rel="stylesheet" href="<?= base_url() ?>/assets/plugins/bootstrap-icon/bootstrap-icons.css">
     <link rel="stylesheet" type="text/css" href="<?= base_url() ?>/assets/plugins/pignose/css/pignose.calendar.css">
 
@@ -100,7 +96,8 @@
     <script src="<?= base_url() ?>/assets/plugins/jexcel/js/jexcel.js"></script>
     <script src="<?= base_url() ?>/assets/plugins/jexcel/js/jsuites.js"></script>
 
-    <script defer src="<?= base_url() ?>/assets/plugins/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script defer src="<?= base_url() ?>/assets/plugins/katex/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body);"></script>
 
     <link rel="stylesheet" type="text/css" href="<?= base_url() ?>/assets/app/css/new-upload.css">
     <style>
@@ -113,7 +110,7 @@
 
 <script type="text/javascript">
     let reloadCOunt = 0;
-    let base_url = '<?=base_url()?>';
+    let base_url = '<?= base_url() ?>';
 
     let globalToken;
     var adaJadwalUjian;
@@ -127,7 +124,7 @@
             url: base_url + "dashboard/checktokenjadwal",
             type: "GET",
             success: function (response) {
-                console.log('getToken', response);
+                // console.log('getToken', response);
                 globalToken = response.token;
                 adaJadwalUjian = response.ada_ujian;
 
@@ -179,7 +176,7 @@
             const infoTimer = $('#info-interval');
             if (infoTimer.length) infoTimer.addClass('d-none');
 
-            console.log('globalToken', adaJadwalUjian);
+            // console.log('globalToken', adaJadwalUjian);
 
             if (globalToken.auto == '1' && adaJadwalUjian > 0) {
                 if (infoTimer.length) infoTimer.removeClass('d-none');
@@ -217,14 +214,14 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.log(xhr);
+                    // console.log(xhr);
                 }
             });
         }
     });
 
     function logout() {
-        swal.fire({
+        Swal.fire({
             title: "Logout",
             text: "Anda yakin ingin logout?",
             icon: "question",
@@ -233,8 +230,8 @@
             cancelButtonColor: '#d33',
             confirmButtonText: 'Logout!'
         }).then((result) => {
-            if(result.value){
-                location.href=base_url+"logout";
+            if (result.value) {
+                location.href = base_url + "logout";
             }
         });
     }
@@ -391,12 +388,13 @@ function singkat_tanggal($str)
 
 ?>
 
-<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed text-sm" spellcheck="false" onload="startTime()">
-<div class="wrapper">
+<body class="layout-fixed layout-navbar-fixed layout-footer-fixed sidebar-expand-lg bg-body-tertiary text-sm"
+    spellcheck="false" onload="startTime()">
+    <div class="app-wrapper">
 
-    <!-- Navbar -->
-    <?php require_once("navbar.php"); ?>
+        <!-- Navbar -->
+        <?php require_once("navbar.php"); ?>
 
-    <!-- Sidebar -->
-    <?php require_once("sidebar.php"); ?>
-    <!-- /.sidebar -->
+        <!-- Sidebar -->
+        <?php require_once("sidebar.php"); ?>
+        <!-- /.sidebar -->

@@ -1,13 +1,15 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Datasiswa extends MY_Controller {
+class Datasiswa extends MY_Controller
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         if (!$this->auth->logged_in()) {
             redirect('auth');
-        }else if ( !$this->auth->is_admin() && !$this->auth->in_group('guru') ){
+        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru')) {
             show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
         }
         $this->load->library('upload');
@@ -15,7 +17,8 @@ class Datasiswa extends MY_Controller {
         $this->form_validation->set_error_delimiters('', '');
     }
 
-    public function index() {
+    public function index()
+    {
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Dropdown_model', 'dropdown');
 
@@ -36,10 +39,16 @@ class Datasiswa extends MY_Controller {
 
         $data['kelass'] = $this->dropdown->getAllKelas($tpAktif->id_tp, $smtAktif->id_smt);
 
+        // Ensure sync_school_uuid column exists for multi-tenancy
+        if (!$this->db->field_exists('sync_school_uuid', 'master_siswa')) {
+            $this->db->query("ALTER TABLE master_siswa ADD COLUMN sync_school_uuid VARCHAR(50) DEFAULT NULL");
+        }
+
         $this->render_view(1, 'master/siswa/data', $data);
     }
 
-    public function data() {
+    public function data()
+    {
         $this->load->model('Master_model', 'master');
         $this->load->model('Dashboard_model', 'dashboard');
 
@@ -48,7 +57,8 @@ class Datasiswa extends MY_Controller {
         $this->output_json($this->master->getDataSiswa($tp->id_tp, $smt->id_smt), false);
     }
 
-    public function list() {
+    public function list()
+    {
         $this->load->model('Master_model', 'master');
         $this->load->model('Dashboard_model', 'dashboard');
 
@@ -86,7 +96,8 @@ class Datasiswa extends MY_Controller {
         $this->output_json($data);
     }
 
-    public function add($id_kelas = null) {
+    public function add($id_kelas = null)
+    {
         $this->load->model('Dashboard_model', 'dashboard');
 
         $user = $this->auth->user();
@@ -104,13 +115,14 @@ class Datasiswa extends MY_Controller {
         $this->render_view(1, 'master/siswa/add', $data);
     }
 
-    public function create() {
+    public function create()
+    {
         $this->load->model('Log_model', 'logging');
         $this->load->model('Master_model', 'master');
 
-        $nis           = $this->input->post('nis', true);
-        $nisn          = $this->input->post('nisn', true);
-        $username      = $this->input->post('username', true);
+        $nis = $this->input->post('nis', true);
+        $nisn = $this->input->post('nisn', true);
+        $username = $this->input->post('username', true);
 
         $u_nis = '|is_unique[master_siswa.nis]';
         $u_nisn = '|is_unique[master_siswa.nisn]';
@@ -118,7 +130,7 @@ class Datasiswa extends MY_Controller {
 
         $this->form_validation->set_rules('nama_siswa', 'Nama', 'required|trim');
         $this->form_validation->set_rules('nis', 'NIS', 'required|numeric|trim|min_length[5]|max_length[30]' . $u_nis);
-        $this->form_validation->set_rules('nisn', 'NISN', 'required|numeric|trim|min_length[5]|max_length[20]'. $u_nisn);
+        $this->form_validation->set_rules('nisn', 'NISN', 'required|numeric|trim|min_length[5]|max_length[20]' . $u_nisn);
         $this->form_validation->set_rules('username', 'Username', 'required|trim' . $u_name);
         $this->form_validation->set_rules('password', 'Username', 'required|trim');
 
@@ -138,31 +150,31 @@ class Datasiswa extends MY_Controller {
             $first_name = $nama[0];
             $last_name = end($nama);
             $insert = [
-                "nama"          => $nama_siswa,
-                "nis"           => $nis,
-                "nisn"          => $nisn,
+                "nama" => $nama_siswa,
+                "nis" => $nis,
+                "nisn" => $nisn,
                 "jenis_kelamin" => $this->input->post('jenis_kelamin', true),
-                "agama"         => $this->input->post('agama', true),
-                "kelas_awal"    => $this->input->post('kelas_awal', true),
-                "tahun_masuk"   => $this->input->post('tahun_masuk', true),
-                "username"      => $username,
-                "password"      => $this->input->post('password', true),
-                "foto"          => 'uploads/foto_siswa/'.$nis.'jpg'
+                "agama" => $this->input->post('agama', true),
+                "kelas_awal" => $this->input->post('kelas_awal', true),
+                "tahun_masuk" => $this->input->post('tahun_masuk', true),
+                "username" => $username,
+                "password" => $this->input->post('password', true),
+                "foto" => 'uploads/foto_siswa/' . $nis . 'jpg'
             ];
 
-            $this->db->set('uid','UUID()',FALSE);
+            $this->db->set('uid', 'UUID()', FALSE);
             $data['insert'] = $this->db->insert('master_siswa', $insert);
             $id = $this->db->insert_id();
 
             $siswa = $this->master->getSiswaById($id);
             $induk = [
-                "id_siswa"   => $id,
-                "uid"        => $siswa->uid,
-                "status"     => 1
+                "id_siswa" => $id,
+                "uid" => $siswa->uid,
+                "status" => 1
             ];
 
             $this->db->insert('buku_induk', $induk);
-            $this->logging->saveLog($this->LOG_TYPE->ADD, 'Menambahkan Siswa: '. $nama_siswa);
+            $this->logging->saveLog($this->LOG_TYPE->ADD, 'Menambahkan Siswa: ' . $nama_siswa);
 
             $user = [
                 'username' => $siswa->username,
@@ -177,7 +189,8 @@ class Datasiswa extends MY_Controller {
         $this->output_json($data);
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $this->load->model('Master_model', 'master');
         $this->load->model('Dashboard_model', 'dashboard');
 
@@ -187,7 +200,7 @@ class Datasiswa extends MY_Controller {
                 'label' => 'Nama Lengkap',
                 'name' => 'nama',
                 'value' => $siswa->nama,
-                'icon' => 'far fa-user',
+                'icon' => 'bi bi-person',
                 'class' => '',
                 'type' => 'text'
             ],
@@ -195,7 +208,7 @@ class Datasiswa extends MY_Controller {
                 'label' => 'NIS',
                 'name' => 'nis',
                 'value' => $siswa->nis,
-                'icon' => 'far fa-id-card',
+                'icon' => 'bi bi-person-badge',
                 'class' => '',
                 'type' => 'number'
             ],
@@ -203,7 +216,7 @@ class Datasiswa extends MY_Controller {
                 'name' => 'nisn',
                 'label' => 'NISN',
                 'value' => $siswa->nisn,
-                'icon' => 'far fa-id-card',
+                'icon' => 'bi bi-person-badge',
                 'class' => '',
                 'type' => 'text'
             ],
@@ -211,7 +224,7 @@ class Datasiswa extends MY_Controller {
                 'label' => 'Jenis Kelamin',
                 'name' => 'jenis_kelamin',
                 'value' => $siswa->jenis_kelamin,
-                'icon' => 'fas fa-venus-mars',
+                'icon' => 'bi bi-gender-ambiguous',
                 'class' => '',
                 'type' => 'text'
             ],
@@ -219,7 +232,7 @@ class Datasiswa extends MY_Controller {
                 'name' => 'kelas_awal',
                 'label' => 'Diterima di kelas',
                 'value' => $siswa->kelas_awal,
-                'icon' => 'fas fa-graduation-cap',
+                'icon' => 'bi bi-mortarboard',
                 'class' => '',
                 'type' => 'text'
             ],
@@ -227,7 +240,7 @@ class Datasiswa extends MY_Controller {
                 'name' => 'tahun_masuk',
                 'label' => 'Tgl diterima',
                 'value' => $siswa->tahun_masuk,
-                'icon' => 'tahun far fa-calendar-alt',
+                'icon' => 'tahun bi bi-calendar-date',
                 'class' => 'tahun',
                 'type' => 'text'
             ],
@@ -235,25 +248,25 @@ class Datasiswa extends MY_Controller {
                 'name' => 'sekolah_asal',
                 'label' => 'Sekolah Asal',
                 'value' => $siswa->sekolah_asal,
-                'icon' => 'fas fa-graduation-cap',
+                'icon' => 'bi bi-mortarboard',
                 'class' => '',
                 'type' => 'text'
             ],
             [
-            'name' => 'status',
-            'label' => 'Status',
-            'value' => $siswa->status,
-                'icon' => 'far fa-user',
-            'class' => 'status',
-            'type' => 'text'
-        ]
+                'name' => 'status',
+                'label' => 'Status',
+                'value' => $siswa->status,
+                'icon' => 'bi bi-person-check',
+                'class' => 'status',
+                'type' => 'text'
+            ]
         ];
         $inputBio = [
             [
                 'name' => 'tempat_lahir',
                 'label' => 'Tempat Lahir',
                 'value' => $siswa->tempat_lahir,
-                'icon' => 'far fa-map',
+                'icon' => 'bi bi-geo-alt',
                 'class' => '',
                 'type' => 'text'
             ],
@@ -261,42 +274,42 @@ class Datasiswa extends MY_Controller {
                 'name' => 'tanggal_lahir',
                 'label' => 'Tanggal Lahir',
                 'value' => $siswa->tanggal_lahir,
-                'icon' => 'far fa-calendar',
+                'icon' => 'bi bi-calendar-date',
                 'class' => 'tahun',
                 'type' => 'text'
             ],
-            ['class' => '', 'name' => 'agama', 'label' => 'Agama', 'value' => $siswa->agama, 'icon' => 'far fa-calendar', 'type' => 'text'],
-            ['class' => '', 'name' => 'alamat', 'label' => 'Alamat', 'value' => $siswa->alamat, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'rt', 'label' => 'Rt', 'value' => $siswa->rt, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'rw', 'label' => 'Rw', 'value' => $siswa->rw, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'kelurahan', 'label' => 'Kelurahan/Desa', 'value' => $siswa->kelurahan, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'kecamatan', 'label' => 'Kecamatan', 'value' => $siswa->kecamatan, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'kabupaten', 'label' => 'Kabupaten/Kota', 'value' => $siswa->kabupaten, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'kode_pos', 'label' => 'Kode Pos', 'value' => $siswa->kode_pos, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'hp', 'label' => 'Hp', 'value' => $siswa->hp, 'icon' => 'far fa-user', 'type' => 'text']
+            ['class' => '', 'name' => 'agama', 'label' => 'Agama', 'value' => $siswa->agama, 'icon' => 'bi bi-star', 'type' => 'text'],
+            ['class' => '', 'name' => 'alamat', 'label' => 'Alamat', 'value' => $siswa->alamat, 'icon' => 'bi bi-geo-alt', 'type' => 'text'],
+            ['class' => '', 'name' => 'rt', 'label' => 'Rt', 'value' => $siswa->rt, 'icon' => 'bi bi-geo-alt', 'type' => 'text'],
+            ['class' => '', 'name' => 'rw', 'label' => 'Rw', 'value' => $siswa->rw, 'icon' => 'bi bi-geo-alt', 'type' => 'text'],
+            ['class' => '', 'name' => 'kelurahan', 'label' => 'Kelurahan/Desa', 'value' => $siswa->kelurahan, 'icon' => 'bi bi-geo-alt', 'type' => 'text'],
+            ['class' => '', 'name' => 'kecamatan', 'label' => 'Kecamatan', 'value' => $siswa->kecamatan, 'icon' => 'bi bi-geo-alt', 'type' => 'text'],
+            ['class' => '', 'name' => 'kabupaten', 'label' => 'Kabupaten/Kota', 'value' => $siswa->kabupaten, 'icon' => 'bi bi-geo-alt', 'type' => 'text'],
+            ['class' => '', 'name' => 'kode_pos', 'label' => 'Kode Pos', 'value' => $siswa->kode_pos, 'icon' => 'bi bi-envelope', 'type' => 'text'],
+            ['class' => '', 'name' => 'hp', 'label' => 'Hp', 'value' => $siswa->hp, 'icon' => 'bi bi-telephone', 'type' => 'text']
         ];
 
         $inputOrtu = [
-            ['name' => 'status_keluarga', 'label' => 'Status Keluarga', 'value' => $siswa->status_keluarga, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['name' => 'anak_ke', 'label' => 'Anak ke', 'value' => $siswa->anak_ke, 'icon' => 'far fa-user', 'type' => 'number'],
-            ['name' => 'nama_ayah', 'label' => 'Nama Ayah', 'value' => $siswa->nama_ayah, 'icon' => 'far fa-user', 'type' => 'text'],
-            //['name' => 'pendidikan_ayah', 'label' => 'Pendidikan Ayah', 'value' => $siswa->pendidikan_ayah, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['name' => 'pekerjaan_ayah', 'label' => 'Pekerjaan Ayah', 'value' => $siswa->pekerjaan_ayah, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['name' => 'alamat_ayah', 'label' => 'Alamat Ayah', 'value' => $siswa->alamat_ayah, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['name' => 'nohp_ayah', 'label' => 'No. HP Ayah', 'value' => $siswa->nohp_ayah, 'icon' => 'far fa-user', 'type' => 'number'],
-            ['name' => 'nama_ibu', 'label' => 'Nama Ibu', 'value' => $siswa->nama_ibu, 'icon' => 'far fa-user', 'type' => 'text'],
-            //['name' => 'pendidikan_ibu', 'label' => 'Pendidikan Ibu', 'value' => $siswa->pendidikan_ibu, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['name' => 'pekerjaan_ibu', 'label' => 'Pekerjaan Ibu', 'value' => $siswa->pekerjaan_ibu, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['name' => 'alamat_ibu', 'label' => 'Alamat Ibu', 'value' => $siswa->alamat_ibu, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['name' => 'nohp_ibu', 'label' => 'No. HP Ibu', 'value' => $siswa->nohp_ibu, 'icon' => 'far fa-user', 'type' => 'number']
+            ['name' => 'status_keluarga', 'label' => 'Status Keluarga', 'value' => $siswa->status_keluarga, 'icon' => 'bi bi-people', 'type' => 'text'],
+            ['name' => 'anak_ke', 'label' => 'Anak ke', 'value' => $siswa->anak_ke, 'icon' => 'bi bi-sort-numeric-down', 'type' => 'number'],
+            ['name' => 'nama_ayah', 'label' => 'Nama Ayah', 'value' => $siswa->nama_ayah, 'icon' => 'bi bi-person', 'type' => 'text'],
+            //['name' => 'pendidikan_ayah', 'label' => 'Pendidikan Ayah', 'value' => $siswa->pendidikan_ayah, 'icon' => 'bi bi-user', 'type' => 'text'],
+            ['name' => 'pekerjaan_ayah', 'label' => 'Pekerjaan Ayah', 'value' => $siswa->pekerjaan_ayah, 'icon' => 'bi bi-briefcase', 'type' => 'text'],
+            ['name' => 'alamat_ayah', 'label' => 'Alamat Ayah', 'value' => $siswa->alamat_ayah, 'icon' => 'bi bi-geo-alt', 'type' => 'text'],
+            ['name' => 'nohp_ayah', 'label' => 'No. HP Ayah', 'value' => $siswa->nohp_ayah, 'icon' => 'bi bi-telephone', 'type' => 'number'],
+            ['name' => 'nama_ibu', 'label' => 'Nama Ibu', 'value' => $siswa->nama_ibu, 'icon' => 'bi bi-person', 'type' => 'text'],
+            //['name' => 'pendidikan_ibu', 'label' => 'Pendidikan Ibu', 'value' => $siswa->pendidikan_ibu, 'icon' => 'bi bi-user', 'type' => 'text'],
+            ['name' => 'pekerjaan_ibu', 'label' => 'Pekerjaan Ibu', 'value' => $siswa->pekerjaan_ibu, 'icon' => 'bi bi-briefcase', 'type' => 'text'],
+            ['name' => 'alamat_ibu', 'label' => 'Alamat Ibu', 'value' => $siswa->alamat_ibu, 'icon' => 'bi bi-geo-alt', 'type' => 'text'],
+            ['name' => 'nohp_ibu', 'label' => 'No. HP Ibu', 'value' => $siswa->nohp_ibu, 'icon' => 'bi bi-telephone', 'type' => 'number']
         ];
 
         $inputWali = [
-            ['name' => 'nama_wali', 'label' => 'Nama Wali', 'value' => $siswa->nama_wali, 'icon' => 'far fa-user', 'type' => 'text'],
-            //['name' => 'pendidikan_wali', 'label' => 'Pendidikan Wali', 'value' => $siswa->pendidikan_wali, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['name' => 'pekerjaan_wali', 'label' => 'Pekerjaan Wali', 'value' => $siswa->pekerjaan_wali, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['name' => 'alamat_wali', 'label' => 'Alamat Wali', 'value' => $siswa->alamat_wali, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['name' => 'nohp_wali', 'label' => 'No. HP Wali', 'value' => $siswa->nohp_wali, 'icon' => 'far fa-user', 'type' => 'number']
+            ['name' => 'nama_wali', 'label' => 'Nama Wali', 'value' => $siswa->nama_wali, 'icon' => 'bi bi-person', 'type' => 'text'],
+            //['name' => 'pendidikan_wali', 'label' => 'Pendidikan Wali', 'value' => $siswa->pendidikan_wali, 'icon' => 'bi bi-user', 'type' => 'text'],
+            ['name' => 'pekerjaan_wali', 'label' => 'Pekerjaan Wali', 'value' => $siswa->pekerjaan_wali, 'icon' => 'bi bi-briefcase', 'type' => 'text'],
+            ['name' => 'alamat_wali', 'label' => 'Alamat Wali', 'value' => $siswa->alamat_wali, 'icon' => 'bi bi-geo-alt', 'type' => 'text'],
+            ['name' => 'nohp_wali', 'label' => 'No. HP Wali', 'value' => $siswa->nohp_wali, 'icon' => 'bi bi-telephone', 'type' => 'number']
         ];
 
         $user = $this->auth->user();
@@ -313,7 +326,7 @@ class Datasiswa extends MY_Controller {
         $data['input_ortu'] = json_decode(json_encode($inputOrtu), FALSE);
         $data['input_wali'] = json_decode(json_encode($inputWali), FALSE);
 
-        if ( $this->auth->is_admin() ) {
+        if ($this->auth->is_admin()) {
             $this->render_view(1, 'master/siswa/edit', $data);
         } else {
             $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
@@ -321,12 +334,13 @@ class Datasiswa extends MY_Controller {
         }
     }
 
-    public function updateData() {
+    public function updateData()
+    {
         $this->load->model('Master_model', 'master');
 
         $id_siswa = $this->input->post('id_siswa', true);
-        $nis           = $this->input->post('nis', true);
-        $nisn          = $this->input->post('nisn', true);
+        $nis = $this->input->post('nis', true);
+        $nisn = $this->input->post('nisn', true);
 
         $siswa = $this->master->getSiswaById($id_siswa);
         $u_nis = $siswa->nis == $nis ? "" : "|is_unique[master_siswa.nis]";
@@ -334,7 +348,7 @@ class Datasiswa extends MY_Controller {
 
         $this->form_validation->set_rules('nis', 'NIS', 'required|numeric|trim|min_length[6]|max_length[30]' . $u_nis);
         $this->form_validation->set_rules('nama', 'Nama', 'required|trim');
-        $this->form_validation->set_rules('nisn', 'NISN', 'required|trim|numeric'. $u_nisn);
+        $this->form_validation->set_rules('nisn', 'NISN', 'required|trim|numeric' . $u_nisn);
 
         if (!$this->form_validation->run()) {
             $data['insert'] = false;
@@ -345,46 +359,46 @@ class Datasiswa extends MY_Controller {
             $tgl_masuk = $this->input->post('tahun_masuk', true);
 
             $input = [
-            'nisn'   => $this->input->post('nisn', true),
-            'nis'     => $this->input->post('nis', true),
-            'nama'   => $this->input->post('nama', true),
-            'jenis_kelamin'   => $this->input->post('jenis_kelamin', true),
-            'tempat_lahir'   => $this->input->post('tempat_lahir', true),
-            'tanggal_lahir'   => $this->strContains($tgl_lahir, '0000-') ? null : $tgl_lahir,
-            'agama'   => $this->input->post('agama', true),
-            'status_keluarga'   => $this->input->post('status_keluarga', true),
-            'anak_ke'   => $this->input->post('anak_ke', true),
-            'alamat'   => $this->input->post('alamat', true),
-            'rt'   =>	$this->input->post('rt', true),
-            'rw'   =>	$this->input->post('rw', true),
-            'kelurahan'   => $this->input->post('kelurahan', true),
-            'kecamatan'   => $this->input->post('kecamatan', true),
-            'kabupaten'   => $this->input->post('kabupaten', true),
-            'provinsi'   =>	$this->input->post('provinsi', true),
-            'kode_pos'   =>	$this->input->post('kode_pos', true),
-            'hp'   =>	$this->input->post('hp', true),
-            'nama_ayah'   =>	$this->input->post('nama_ayah', true),
-            'nohp_ayah'   =>	$this->input->post('nohp_ayah', true),
-            'pendidikan_ayah'   =>	$this->input->post('pendidikan_ayah', true),
-            'pekerjaan_ayah'   =>	$this->input->post('pekerjaan_ayah', true),
-            'alamat_ayah'   =>	$this->input->post('alamat_ayah', true),
-            'nama_ibu'   =>	$this->input->post('nama_ibu', true),
-            'nohp_ibu'   =>	$this->input->post('nohp_ibu', true),
-            'pendidikan_ibu'   =>	$this->input->post('pendidikan_ibu', true),
-            'pekerjaan_ibu'   =>	$this->input->post('pekerjaan_ibu', true),
-            'alamat_ibu'   =>	$this->input->post('alamat_ibu', true),
-            'nama_wali'   =>	$this->input->post('nama_wali', true),
-            'pendidikan_wali'   =>	$this->input->post('pendidikan_wali', true),
-            'pekerjaan_wali'   =>	$this->input->post('pekerjaan_wali', true),
-            'nohp_wali'   =>	$this->input->post('nohp_wali', true),
-            'alamat_wali'   =>	$this->input->post('alamat_wali', true),
-            'tahun_masuk'   =>	$this->strContains($tgl_masuk, '0000-') ? null : $tgl_masuk,
-            'kelas_awal'   =>	$this->input->post('kelas_awal', true),
-            'tgl_lahir_ayah'   =>	$this->input->post('tgl_lahir_ayah', true),
-            'tgl_lahir_ibu'   =>	$this->input->post('tgl_lahir_ibu', true),
-            'tgl_lahir_wali'   =>	$this->input->post('tgl_lahir_wali', true),
-            'sekolah_asal'   =>	$this->input->post('sekolah_asal', true),
-            'foto'   =>	$siswa->foto != null && $siswa->foto != "" ? $siswa->foto : 'uploads/foto_siswa/'.$nis.'.jpg'
+                'nisn' => $this->input->post('nisn', true),
+                'nis' => $this->input->post('nis', true),
+                'nama' => $this->input->post('nama', true),
+                'jenis_kelamin' => $this->input->post('jenis_kelamin', true),
+                'tempat_lahir' => $this->input->post('tempat_lahir', true),
+                'tanggal_lahir' => $this->strContains($tgl_lahir, '0000-') ? null : $tgl_lahir,
+                'agama' => $this->input->post('agama', true),
+                'status_keluarga' => $this->input->post('status_keluarga', true),
+                'anak_ke' => $this->input->post('anak_ke', true),
+                'alamat' => $this->input->post('alamat', true),
+                'rt' => $this->input->post('rt', true),
+                'rw' => $this->input->post('rw', true),
+                'kelurahan' => $this->input->post('kelurahan', true),
+                'kecamatan' => $this->input->post('kecamatan', true),
+                'kabupaten' => $this->input->post('kabupaten', true),
+                'provinsi' => $this->input->post('provinsi', true),
+                'kode_pos' => $this->input->post('kode_pos', true),
+                'hp' => $this->input->post('hp', true),
+                'nama_ayah' => $this->input->post('nama_ayah', true),
+                'nohp_ayah' => $this->input->post('nohp_ayah', true),
+                'pendidikan_ayah' => $this->input->post('pendidikan_ayah', true),
+                'pekerjaan_ayah' => $this->input->post('pekerjaan_ayah', true),
+                'alamat_ayah' => $this->input->post('alamat_ayah', true),
+                'nama_ibu' => $this->input->post('nama_ibu', true),
+                'nohp_ibu' => $this->input->post('nohp_ibu', true),
+                'pendidikan_ibu' => $this->input->post('pendidikan_ibu', true),
+                'pekerjaan_ibu' => $this->input->post('pekerjaan_ibu', true),
+                'alamat_ibu' => $this->input->post('alamat_ibu', true),
+                'nama_wali' => $this->input->post('nama_wali', true),
+                'pendidikan_wali' => $this->input->post('pendidikan_wali', true),
+                'pekerjaan_wali' => $this->input->post('pekerjaan_wali', true),
+                'nohp_wali' => $this->input->post('nohp_wali', true),
+                'alamat_wali' => $this->input->post('alamat_wali', true),
+                'tahun_masuk' => $this->strContains($tgl_masuk, '0000-') ? null : $tgl_masuk,
+                'kelas_awal' => $this->input->post('kelas_awal', true),
+                'tgl_lahir_ayah' => $this->input->post('tgl_lahir_ayah', true),
+                'tgl_lahir_ibu' => $this->input->post('tgl_lahir_ibu', true),
+                'tgl_lahir_wali' => $this->input->post('tgl_lahir_wali', true),
+                'sekolah_asal' => $this->input->post('sekolah_asal', true),
+                'foto' => $siswa->foto != null && $siswa->foto != "" ? $siswa->foto : 'uploads/foto_siswa/' . $nis . '.jpg'
             ];
 
             $this->master->update('master_siswa', $input, 'id_siswa', $id_siswa);
@@ -400,15 +414,17 @@ class Datasiswa extends MY_Controller {
         $this->output_json($data);
     }
 
-    function strContains($string, $val) {
+    function strContains($string, $val)
+    {
         return strpos($string, $val) !== false;
     }
 
-    function uploadFile($id_siswa){
+    function uploadFile($id_siswa)
+    {
         $this->load->model('Master_model', 'master');
 
         $siswa = $this->master->getSiswaById($id_siswa);
-        if(isset($_FILES["foto"]["name"])){
+        if (isset($_FILES["foto"]["name"])) {
 
             $config['upload_path'] = './uploads/foto_siswa/';
             $config['allowed_types'] = 'gif|jpg|png|jpeg|JPEG|JPG|PNG|GIF';
@@ -417,16 +433,16 @@ class Datasiswa extends MY_Controller {
             $config['file_name'] = $siswa->nis;
 
             $this->upload->initialize($config);
-            if(!$this->upload->do_upload('foto')){
+            if (!$this->upload->do_upload('foto')) {
                 $data['status'] = false;
                 $data['src'] = $this->upload->display_errors();
-            }else{
+            } else {
                 $result = $this->upload->data();
-                $data['src'] = base_url().'uploads/foto_siswa/'.$result['file_name'];
+                $data['src'] = base_url() . 'uploads/foto_siswa/' . $result['file_name'];
                 $data['filename'] = pathinfo($result['file_name'], PATHINFO_FILENAME);
                 $data['status'] = true;
 
-                $this->db->set('foto', 'uploads/foto_siswa/'.$result['file_name']);
+                $this->db->set('foto', 'uploads/foto_siswa/' . $result['file_name']);
                 $this->db->where('id_siswa', $id_siswa);
                 $this->db->update('master_siswa');
             }
@@ -441,7 +457,8 @@ class Datasiswa extends MY_Controller {
         $this->output_json($data);
     }
 
-    function deleteFile($id_siswa) {
+    function deleteFile($id_siswa)
+    {
         $src = $this->input->post('src');
         $file_name = str_replace(base_url(), '', $src ?? '');
         if ($file_name != 'assets/img/siswa.png') {
@@ -455,7 +472,8 @@ class Datasiswa extends MY_Controller {
         }
     }
 
-    public function delete() {
+    public function delete()
+    {
         $this->load->model('Master_model', 'master');
 
         $chk = $this->input->post('checked', true);
@@ -481,7 +499,7 @@ class Datasiswa extends MY_Controller {
             if ($aksi == 'pindah') {
                 foreach ($chk as $id) {
                     $this->db->set('kelas_akhir', $siswas[$id]->nama_kelas);
-                    $this->db->set('tgl_pindah',date('Y-m-d'));
+                    $this->db->set('tgl_pindah', date('Y-m-d'));
                     $this->db->set('status', '3');
                     $this->db->where('id_siswa', $id);
                     $this->db->update('buku_induk');
@@ -489,7 +507,7 @@ class Datasiswa extends MY_Controller {
             } elseif ($aksi == 'keluar') {
                 foreach ($chk as $id) {
                     $this->db->set('kelas_akhir', $siswas[$id]->nama_kelas);
-                    $this->db->set('tgl_pindah',date('Y-m-d'));
+                    $this->db->set('tgl_pindah', date('Y-m-d'));
                     $this->db->set('status', '4');
                     $this->db->where('id_siswa', $id);
                     $this->db->update('buku_induk');
@@ -503,17 +521,17 @@ class Datasiswa extends MY_Controller {
                         $actives[$siswa->id_siswa] = $siswa->active;
                     }
                 }
-                if (count($actives)>0) {
+                if (count($actives) > 0) {
                     $messages[] = 'Nonaktifkan dahulu akun siswa';
                 }
 
                 // ==> check
                 $tables = [
-                    'kelas_siswa'       => 'Keluarkan dahulu siswa dari kelas.',
-                    'cbt_siswa'         => 'Rekap dahulu hasil ujian siswa.',
+                    'kelas_siswa' => 'Keluarkan dahulu siswa dari kelas.',
+                    'cbt_siswa' => 'Rekap dahulu hasil ujian siswa.',
                     'rapor_nilai_akhir' => 'Tidak bisa dihapus, silahkan set sebagai siswa pindah/keluar.'
                 ];
-                foreach ($tables as $table=>$msg) {
+                foreach ($tables as $table => $msg) {
                     if ($table == 'cbt_siswa') {
                         $this->db->select('a.id_siswa, b.id_rekap_siswa');
                         $this->db->join('cbt_rekap_siswa b', 'a.id_siswa = b.id_siswa', 'left');
@@ -526,7 +544,7 @@ class Datasiswa extends MY_Controller {
                         $this->db->join('buku_induk b', 'a.id_siswa = b.id_siswa', 'left');
                     }
                     $this->db->where_in('a.id_siswa', $chk);
-                    $nums = $this->db->get($table. ' a')->result();
+                    $nums = $this->db->get($table . ' a')->result();
                     $resultAll[$table] = $nums;
 
                     if ($table == 'cbt_siswa') {
@@ -584,30 +602,36 @@ class Datasiswa extends MY_Controller {
                 }
             }
 
-            $msg = $aksi == 'hapus' ? 'dihapus' : 'di'.$aksi.'kan';
+            $msg = $aksi == 'hapus' ? 'dihapus' : 'di' . $aksi . 'kan';
             $this->output_json([
                 'status' => $status,
                 'total' => count($chk),
-                'last'=>$last,
-                'data'=> $siswas ?? [],
+                'last' => $last,
+                'data' => $siswas ?? [],
                 'count' => count($messages),
                 'msg' => $messages,
                 'actives' => $actives,
                 'deletable' => $deletable,
                 'results' => $resultAll,
-                'message' => $status ? 'Siswa berhasil '.$msg : '<b>Siswa tidak bisa dihapus:</b><br>'.implode('<br>', $messages)
+                'message' => $status ? 'Siswa berhasil ' . $msg : '<b>Siswa tidak bisa dihapus:</b><br>' . implode('<br>', $messages)
             ]);
         }
     }
 
-    public function do_import() {
+    public function do_import()
+    {
         $id_kelas = $this->input->post('id_kelas', true);
         $input = $this->input->post('siswa', true);
         $errors = [];
         $wrong_file = false;
 
         $users = [];
-        foreach ($input as $key=>$value) {
+        $school_uuid = $this->session->userdata('school_uuid');
+        foreach ($input as $key => &$value) {
+            if ($school_uuid) {
+                $value['sync_school_uuid'] = $school_uuid;
+            }
+
             if (isset($value['id_siswa'])) {
                 $errors[] = $key + 1;
                 $wrong_file = true;
@@ -650,7 +674,7 @@ class Datasiswa extends MY_Controller {
 
             $uids = $this->db->select('id_siswa, uid')->from('master_siswa')->get()->result();
 
-            foreach ($uids as $ind=>$uid) {
+            foreach ($uids as $ind => $uid) {
                 $uid->status = 1;
                 $check = $this->db->select('id_siswa')->from('buku_induk')->where('id_siswa', $uid->id_siswa);
                 if ($check->get()->num_rows() > 0) {
@@ -697,9 +721,9 @@ class Datasiswa extends MY_Controller {
             }
 
             $data = [
-                'status'	=> true,
-                'data'      => $input,
-                'user'      => count($input),
+                'status' => true,
+                'data' => $input,
+                'user' => count($input),
             ];
         } else {
             $data = [
@@ -713,7 +737,8 @@ class Datasiswa extends MY_Controller {
         $this->output_json($data);
     }
 
-    public function update() {
+    public function update()
+    {
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Dropdown_model', 'dropdown');
 
@@ -734,21 +759,23 @@ class Datasiswa extends MY_Controller {
         $this->render_view(1, 'master/siswa/update', $data);
     }
 
-    public function downloadData($id_kelas) {
+    public function downloadData($id_kelas)
+    {
         $this->load->model('Master_model', 'master');
 
         $tp = $this->master->getTahunActive();
         $smt = $this->master->getSemesterActive();
         $siswas = $this->master->getSiswaByKelas($tp->id_tp, $smt->id_smt, $id_kelas);
 
-        foreach ($siswas as $ind=>$siswa) {
+        foreach ($siswas as $ind => $siswa) {
             $siswa->no = ($ind + 1);
             $siswa->foto = $siswa->foto != null && $siswa->foto != "" && file_exists($siswa->foto) ? base_url($siswa->foto) : base_url('assets/img/siswa_sm.png');
         }
-        $this->output_json(['status' => true, 'siswa'=>$siswas]);
+        $this->output_json(['status' => true, 'siswa' => $siswas]);
     }
 
-    public function updateAll() {
+    public function updateAll()
+    {
         $ids = $this->input->post('ids', true);
         $update_siswa = $this->input->post('siswa', true);
 
@@ -757,21 +784,22 @@ class Datasiswa extends MY_Controller {
         $users = $this->auth->usersSiswa(json_decode($ids));
         foreach ($users as $siswa) {
             $update_user[] = [
-                'id'       => $siswa->id,
+                'id' => $siswa->id,
                 'username' => $siswa->username,
                 'password' => password_hash($siswa->password, PASSWORD_BCRYPT)
             ];
         }
         $this->db->update_batch('users', $update_user, 'id');
         $data = [
-            'status'	=> true,
-            'siswa'     => count($update_siswa),
-            'user'      => count($update_user)
+            'status' => true,
+            'siswa' => count($update_siswa),
+            'user' => count($update_user)
         ];
         $this->output_json($data);
     }
 
-    public function update_foto() {
+    public function update_foto()
+    {
         $input = $this->input->post('siswa', true);
         $errors = [];
         $duplikat = [];
@@ -789,9 +817,9 @@ class Datasiswa extends MY_Controller {
 
         if (count($errors) > 0) {
             $data = [
-                'status'	=> false,
-                'errors'	=> $errors,
-                'duplikat'  => $duplikat
+                'status' => false,
+                'errors' => $errors,
+                'duplikat' => $duplikat
             ];
         } else {
             $siswas = [];
@@ -800,29 +828,31 @@ class Datasiswa extends MY_Controller {
                 if (isset($value['foto'])) {
                     $base64_image_string = $value['foto'];
                     $extension = $value['ext'];
-                    if ($extension == 'jpeg') $extension = 'jpg';
+                    if ($extension == 'jpeg')
+                        $extension = 'jpg';
                     $output_file = trim($value['nis'] ?? '00') . '.' . $extension;
                     file_put_contents('./uploads/foto_siswa/' . $output_file, base64_decode($base64_image_string));
-                    $foto = 'uploads/foto_siswa/'.$output_file;
+                    $foto = 'uploads/foto_siswa/' . $output_file;
                 }
 
                 $siswas[] = [
                     "id_siswa" => $value['id_siswa'],
-                    "nis" => $value["nis"]  ?? '',
+                    "nis" => $value["nis"] ?? '',
                     "foto" => $foto
                 ];
             }
             $this->db->update_batch('master_siswa', $siswas, 'id_siswa');
 
             $data = [
-                'status'	=> true,
-                'user'	=> count($siswas),
+                'status' => true,
+                'user' => count($siswas),
             ];
         }
         $this->output_json($data);
     }
 
-    public function updateNisByNisn() {
+    public function updateNisByNisn()
+    {
         $input = json_decode($this->input->post('siswa', true));
         //$this->db->trans_start();
 
@@ -836,18 +866,19 @@ class Datasiswa extends MY_Controller {
         $this->output_json($save);
     }
 
-    public function editLogin() {
+    public function editLogin()
+    {
         $this->load->model('Master_model', 'master');
         $this->load->model('Dashboard_model', 'dashboard');
 
-        $id_siswa 	= $this->input->post('id_siswa', true);
-        $username 	= $this->input->post('username', true);
-        $pass 	= $this->input->post('new', true);
+        $id_siswa = $this->input->post('id_siswa', true);
+        $username = $this->input->post('username', true);
+        $pass = $this->input->post('new', true);
 
         $tp = $this->master->getTahunActive();
         $smt = $this->master->getSemesterActive();
         $siswa_check = $this->dashboard->checkUsernameSiswa($username);
-        $siswa_lain = array_filter($siswa_check, function($siswa) use ($id_siswa) {
+        $siswa_lain = array_filter($siswa_check, function ($siswa) use ($id_siswa) {
             return $siswa->id_siswa != $id_siswa;
         });
 
@@ -861,7 +892,7 @@ class Datasiswa extends MY_Controller {
                 'status' => false,
                 'errors' => ['username' => 'Username sudah digunakan']
             ];
-        } elseif ($this->form_validation->run() == FALSE){
+        } elseif ($this->form_validation->run() == FALSE) {
             $data = [
                 'status' => false,
                 'errors' => [
@@ -883,10 +914,10 @@ class Datasiswa extends MY_Controller {
                 $this->db->set('password', $pass);
                 $this->db->where('id_siswa', $id_siswa);
                 $status = $this->db->update('master_siswa');
-                $msg	 = !$status ? 'Gagal mengganti username/passsword.' : 'berhasil mengganti username/passsword.';
+                $msg = !$status ? 'Gagal mengganti username/passsword.' : 'berhasil mengganti username/passsword.';
             } else {
                 $status = false;
-                $msg	 = 'Gagal mengganti username/passsword.';
+                $msg = 'Gagal mengganti username/passsword.';
             }
 
             $data['status'] = $status;

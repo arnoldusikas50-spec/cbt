@@ -1,9 +1,11 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Master_model extends CI_Model {
+class Master_model extends CI_Model
+{
 
-    public function check_data_by_id($tabel, $key, $val) {
+    public function check_data_by_id($tabel, $key, $val)
+    {
         $this->db->where($key, $val);
         $query = $this->db->get($tabel);
 
@@ -14,7 +16,20 @@ class Master_model extends CI_Model {
         }
     }
 
-    public function create($table, $data, $batch = false) {
+    public function create($table, $data, $batch = false)
+    {
+        $school_uuid = $this->session->userdata('school_uuid');
+        if ($school_uuid && $this->db->field_exists('sync_school_uuid', $table)) {
+            if ($batch) {
+                foreach ($data as &$row) {
+                    if (is_array($row))
+                        $row['sync_school_uuid'] = $school_uuid;
+                }
+            } else {
+                $data['sync_school_uuid'] = $school_uuid;
+            }
+        }
+
         if ($batch == false) {
             $insert = $this->db->insert($table, $data);
         } else {
@@ -23,7 +38,8 @@ class Master_model extends CI_Model {
         return $insert;
     }
 
-    public function update($table, $data, $pk, $id = null, $batch = false) {
+    public function update($table, $data, $pk, $id = null, $batch = false)
+    {
         if ($batch == false) {
             $insert = $this->db->update($table, $data, array($pk => $id));
         } else {
@@ -32,32 +48,49 @@ class Master_model extends CI_Model {
         return $insert;
     }
 
-    public function delete($table, $data, $pk) {
+    public function delete($table, $data, $pk)
+    {
         $this->db->query('SET FOREIGN_KEY_CHECKS=0');
+
+        // Security: Ensure we only delete our own data
+        $school_uuid = $this->session->userdata('school_uuid');
+        if ($school_uuid && $this->db->field_exists('sync_school_uuid', $table)) {
+            $this->db->where('sync_school_uuid', $school_uuid);
+        }
+
         $this->db->where_in($pk, $data);
         $deleted = $this->db->delete($table);
         $this->db->query('SET FOREIGN_KEY_CHECKS=1');
         return $deleted;
     }
 
-    public function delete_not($table, $data, $pk, $col, $not) {
+    public function delete_not($table, $data, $pk, $col, $not)
+    {
         $this->db->where_in($pk, $data);
-        $this->db->where($col . '!=' .$not);
+        $this->db->where($col . '!=' . $not);
         return $this->db->delete($table);
     }
     /**
      * Data Kelas
      */
 
-    public function getDataKelas() {
+    public function getDataKelas()
+    {
         $this->datatables->select('id_kelas, nama_kelas, id_jurusan, nama_jurusan');
         $this->datatables->from('master_kelas');
+
+        $school_uuid = $this->session->userdata('school_uuid');
+        if ($school_uuid && $this->db->field_exists('sync_school_uuid', 'master_kelas')) {
+            $this->datatables->where('master_kelas.sync_school_uuid', $school_uuid);
+        }
+
         $this->datatables->join('master_jurusan', 'jurusan_id=id_jurusan');
         $this->datatables->add_column('bulk_select', '<div class="text-center"><input type="checkbox" class="check" name="checked[]" value="$1"/></div>', 'id_kelas, nama_kelas, id_jurusan, nama_jurusan');
         return $this->datatables->generate();
     }
 
-    public function getKelasById($id) {
+    public function getKelasById($id)
+    {
         $this->db->select('id_kelas, nama_kelas, level_id, jumlah_siswa');
         $this->db->from('master_kelas');
         $this->db->where('id_kelas', $id);
@@ -69,13 +102,15 @@ class Master_model extends CI_Model {
      * Data Jurusan
      */
 
-    public function getDataJurusan() {
+    public function getDataJurusan()
+    {
         $this->db->select('*');
         $this->db->from('master_jurusan');
         return $this->db->get()->result();
     }
 
-    public function getDataJurusanMapel($arrIds) {
+    public function getDataJurusanMapel($arrIds)
+    {
         $this->db->select('id_mapel, nama_mapel');
         $this->db->from('master_mapel');
         $this->db->where_in('id_mapel', $arrIds);
@@ -83,13 +118,14 @@ class Master_model extends CI_Model {
         $ret = [];
         if ($result) {
             foreach ($result as $key => $row) {
-                $ret [$row->id_mapel] = $row->nama_mapel;
+                $ret[$row->id_mapel] = $row->nama_mapel;
             }
         }
         return $ret;
     }
 
-    public function getDataTableJurusan() {
+    public function getDataTableJurusan()
+    {
         $this->datatables->select('*');
         $this->datatables->from('master_jurusan');
         //$this->datatables->add_column('mapels', '<div class="text-center"><input type="checkbox" id="check$1" class="check" name="checked[]" value="$1"/></div>', 'id_jurusan, nama_jurusan');
@@ -97,13 +133,15 @@ class Master_model extends CI_Model {
         return $this->datatables->generate();
     }
 
-    public function getJurusanById($id) {
+    public function getJurusanById($id)
+    {
         $this->db->where_in('id_jurusan', $id);
         $this->db->order_by('nama_jurusan');
         return $this->db->get('master_jurusan')->result();
     }
 
-    function updateJurusan() {
+    function updateJurusan()
+    {
         $id = $this->input->post('id_jurusan');
         $name = $this->input->post('nama_jurusan', true);
         $kode = $this->input->post('kode_jurusan', true);
@@ -125,7 +163,8 @@ class Master_model extends CI_Model {
         return $this->db->update('master_jurusan');
     }
 
-    public function inputJurusan() {
+    public function inputJurusan()
+    {
         $data = ["nama_jurusan" => $this->input->post('nama_jurusan', true), "kode_jurusan" => $this->input->post('kode_jurusan', true),];
         return $this->db->insert('master_jurusan', $data);
     }
@@ -137,11 +176,17 @@ class Master_model extends CI_Model {
      * @param $id_smt
      * @return int
      */
-    public function getAllDataSiswa($id_tp, $id_smt) {
+    public function getAllDataSiswa($id_tp, $id_smt)
+    {
         $this->db->query('SET SQL_BIG_SELECTS=1');
         $this->db->select('a.*, c.nama_kelas');
         $this->db->from('master_siswa a');
-        $this->db->join('kelas_siswa b', 'b.id_siswa=a.id_siswa AND b.id_tp='.$id_tp.' AND b.id_smt='.$id_smt.'', 'left');
+
+        $school_uuid = $this->session->userdata('school_uuid');
+        if ($school_uuid && $this->db->field_exists('sync_school_uuid', 'master_siswa')) {
+            $this->db->where('a.sync_school_uuid', $school_uuid);
+        }
+        $this->db->join('kelas_siswa b', 'b.id_siswa=a.id_siswa AND b.id_tp=' . $id_tp . ' AND b.id_smt=' . $id_smt . '', 'left');
         $this->db->join('master_kelas c', 'c.id_kelas=b.id_kelas', 'left');
         //$this->db->join('buku_induk i', 'i.id_siswa=a.id_siswa AND =i.status=1');
         $this->db->order_by('b.id_kelas');
@@ -150,10 +195,16 @@ class Master_model extends CI_Model {
         return $query->num_rows();
     }
 
-    public function getSiswaByKelas($id_tp, $id_smt, $id_kelas) {
+    public function getSiswaByKelas($id_tp, $id_smt, $id_kelas)
+    {
         $this->db->select('b.*');
         $this->db->from('kelas_siswa a');
         $this->db->join('master_siswa b', 'b.id_siswa=a.id_siswa');
+
+        $school_uuid = $this->session->userdata('school_uuid');
+        if ($school_uuid && $this->db->field_exists('sync_school_uuid', 'master_siswa')) {
+            $this->db->where('b.sync_school_uuid', $school_uuid);
+        }
         //$this->db->join('buku_induk i', 'i.id_siswa=a.id_siswa AND =i.status=1');
 
         $this->db->where('a.id_tp', $id_tp);
@@ -167,13 +218,19 @@ class Master_model extends CI_Model {
         return $this->db->get()->result();
     }
 
-    public function getDataSiswa($id_tp, $id_smt) {
+    public function getDataSiswa($id_tp, $id_smt)
+    {
         $this->db->query('SET SQL_BIG_SELECTS=1');
         $this->datatables->select('a.id_siswa, a.foto, a.nama, a.nis, a.nisn, a.jenis_kelamin, f.level_id, f.nama_kelas, b.status');
         $this->datatables->from('master_siswa a');
+
+        $school_uuid = $this->session->userdata('school_uuid');
+        if ($school_uuid && $this->db->field_exists('sync_school_uuid', 'master_siswa')) {
+            $this->datatables->where('a.sync_school_uuid', $school_uuid);
+        }
         $this->datatables->join('buku_induk b', 'a.id_siswa=b.id_siswa', 'left');
         $this->datatables->join('users c', 'a.username=c.username');
-        $this->datatables->join('kelas_siswa d', 'd.id_siswa = a.id_siswa AND d.id_tp = '.$id_tp.' AND d.id_smt = '.$id_smt.'', 'left');
+        $this->datatables->join('kelas_siswa d', 'd.id_siswa = a.id_siswa AND d.id_tp = ' . $id_tp . ' AND d.id_smt = ' . $id_smt . '', 'left');
         $this->datatables->join('master_kelas f', 'f.id_kelas=d.id_kelas', 'left');
         $this->db->order_by('ISNULL(f.level_id), f.level_id ASC');
         $this->db->order_by('f.nama_kelas', 'ASC');
@@ -181,100 +238,128 @@ class Master_model extends CI_Model {
         return $this->datatables->generate();
     }
 
-    public function getAllSiswa($id_tp, $id_smt, $offset, $limit, $search=null, $sort=null, $order=null) {
-        $this->db->select('a.id_siswa, a.foto, a.nama, a.nis, a.nisn, a.jenis_kelamin, f.level_id, f.nama_kelas,'.
+    public function getAllSiswa($id_tp, $id_smt, $offset, $limit, $search = null, $sort = null, $order = null)
+    {
+        $this->db->select('a.id_siswa, a.foto, a.nama, a.nis, a.nisn, a.jenis_kelamin, f.level_id, f.nama_kelas,' .
             ' us.active');
         $this->db->from('master_siswa a');
+
+        $school_uuid = $this->session->userdata('school_uuid');
+        if ($school_uuid && $this->db->field_exists('sync_school_uuid', 'master_siswa')) {
+            $this->db->where('a.sync_school_uuid', $school_uuid);
+        }
+
         $this->db->limit($limit, $offset);
         $this->db->order_by('a.nama', 'ASC');
-        $this->db->join('kelas_siswa d', 'd.id_siswa = a.id_siswa AND d.id_tp = '.$id_tp.' AND d.id_smt = '.$id_smt.'', 'left');
+        $this->db->join('kelas_siswa d', 'd.id_siswa = a.id_siswa AND d.id_tp = ' . $id_tp . ' AND d.id_smt = ' . $id_smt . '', 'left');
         $this->db->join('master_kelas f', 'f.id_kelas=d.id_kelas', 'left');
         $this->db->join('users us', 'us.username=a.username');
 
         if ($search != null) {
+            $this->db->group_start();
             $this->db->like('a.nama', $search);
             $this->db->or_like('a.nis', $search);
             $this->db->or_like('a.nisn', $search);
             //$this->db->or_like('f.nama_kelas', $search);
+            $this->db->group_end();
         }
         //if ($sort != null) {
-            //$this->db->order_by('ISNULL(f.level_id), f.level_id ASC');
-            //$this->db->order_by('f.nama_kelas', 'ASC');
-            //$this->db->order_by('b.status', 'ASC');
+        //$this->db->order_by('ISNULL(f.level_id), f.level_id ASC');
+        //$this->db->order_by('f.nama_kelas', 'ASC');
+        //$this->db->order_by('b.status', 'ASC');
         //}
         return $this->db->get()->result();
     }
 
-    public function getSiswaPage($id_tp, $id_smt, $offset, $limit, $filter, $kelas, $search=null, $sort=null, $order=null) {
-        $this->db->select('a.id_siswa, a.foto, a.nama, a.nis, a.nisn, a.jenis_kelamin, d.id_kelas, a.agama, '.
+    public function getSiswaPage($id_tp, $id_smt, $offset, $limit, $filter, $kelas, $search = null, $sort = null, $order = null)
+    {
+        $this->db->select('a.id_siswa, a.foto, a.nama, a.nis, a.nisn, a.jenis_kelamin, d.id_kelas, a.agama, ' .
             'f.nama_kelas, us.active, u.status');
         $this->db->from('master_siswa a');
+
+        $school_uuid = $this->session->userdata('school_uuid');
+        if ($school_uuid && $this->db->field_exists('sync_school_uuid', 'master_siswa')) {
+            $this->db->where('a.sync_school_uuid', $school_uuid);
+        }
+
         $this->db->join('buku_induk u', 'u.id_siswa=a.id_siswa AND u.status="1"');
         $this->db->order_by('LENGTH(nama), nama');
         $this->db->limit($limit, $offset);
 
         if ($filter == "0") {
-            $this->db->join('kelas_siswa d', 'd.id_siswa=a.id_siswa AND d.id_tp = '.$id_tp.' AND d.id_smt = '.$id_smt.'', 'left');
+            $this->db->join('kelas_siswa d', 'd.id_siswa=a.id_siswa AND d.id_tp = ' . $id_tp . ' AND d.id_smt = ' . $id_smt . '', 'left');
             $this->db->join('master_kelas f', 'f.id_kelas=d.id_kelas', 'left');
             $this->db->join('users us', 'us.username=a.username');
         } elseif ($filter == "1") {
-            $this->db->join('kelas_siswa d', 'd.id_siswa=a.id_siswa AND d.id_tp = '.$id_tp.' AND d.id_smt = '.$id_smt.'', 'left');
+            $this->db->join('kelas_siswa d', 'd.id_siswa=a.id_siswa AND d.id_tp = ' . $id_tp . ' AND d.id_smt = ' . $id_smt . '', 'left');
             $this->db->join('master_kelas f', 'f.id_kelas=d.id_kelas', 'left');
             $this->db->join('users us', 'us.username=a.username AND us.active = "1"');
         } elseif ($filter == "3") {
             $this->db->join('kelas_siswa d', 'd.id_siswa=a.id_siswa AND d.id_tp = '
-                .$id_tp.' AND d.id_smt = '.$id_smt. ' AND d.id_kelas = '.$kelas.'');
+                . $id_tp . ' AND d.id_smt = ' . $id_smt . ' AND d.id_kelas = ' . $kelas . '');
             $this->db->join('master_kelas f', 'f.id_kelas=d.id_kelas');
             $this->db->join('users us', 'us.username=a.username AND us.active = "1"');
         } else {
-            $this->db->join('kelas_siswa d', 'd.id_siswa=a.id_siswa AND d.id_tp = '.$id_tp.' AND d.id_smt = '.$id_smt.'', 'left');
+            $this->db->join('kelas_siswa d', 'd.id_siswa=a.id_siswa AND d.id_tp = ' . $id_tp . ' AND d.id_smt = ' . $id_smt . '', 'left');
             $this->db->join('master_kelas f', 'f.id_kelas=d.id_kelas', 'left');
             $this->db->join('users us', 'us.username=a.username AND us.active = "0"');
         }
 
         if ($search != null) {
+            $this->db->group_start();
             $this->db->like('a.nama', $search);
             $this->db->or_like('a.nis', $search);
             $this->db->or_like('a.nisn', $search);
+            $this->db->group_end();
         }
         return $this->db->get()->result();
     }
 
-    public function getSiswaTotalPage($id_tp, $id_smt, $filter, $kelas=null, $search=null) {
+    public function getSiswaTotalPage($id_tp, $id_smt, $filter, $kelas = null, $search = null)
+    {
         $this->db->select('a.id_siswa, us.active');
         $this->db->from('master_siswa a');
+
+        $school_uuid = $this->session->userdata('school_uuid');
+        if ($school_uuid && $this->db->field_exists('sync_school_uuid', 'master_siswa')) {
+            $this->db->where('a.sync_school_uuid', $school_uuid);
+        }
+
         $this->db->join('buku_induk u', 'u.id_siswa=a.id_siswa AND u.status="1"');
 
         if ($filter == "0") {
-            $this->db->join('kelas_siswa d', 'd.id_siswa=a.id_siswa AND d.id_tp = '.$id_tp.' AND d.id_smt = '.$id_smt.'', 'left');
+            $this->db->join('kelas_siswa d', 'd.id_siswa=a.id_siswa AND d.id_tp = ' . $id_tp . ' AND d.id_smt = ' . $id_smt . '', 'left');
             $this->db->join('master_kelas f', 'f.id_kelas=d.id_kelas', 'left');
             $this->db->join('users us', 'us.username=a.username');
         } elseif ($filter == "1") {
-            $this->db->join('kelas_siswa d', 'd.id_siswa=a.id_siswa AND d.id_tp = '.$id_tp.' AND d.id_smt = '.$id_smt.'', 'left');
+            $this->db->join('kelas_siswa d', 'd.id_siswa=a.id_siswa AND d.id_tp = ' . $id_tp . ' AND d.id_smt = ' . $id_smt . '', 'left');
             $this->db->join('master_kelas f', 'f.id_kelas=d.id_kelas', 'left');
             $this->db->join('users us', 'us.username=a.username AND us.active = "1"');
         } elseif ($filter == "3") {
             $this->db->join('kelas_siswa d', 'd.id_siswa=a.id_siswa AND d.id_tp = '
-                .$id_tp.' AND d.id_smt = '.$id_smt. ' AND d.id_kelas = '.$kelas.'');
+                . $id_tp . ' AND d.id_smt = ' . $id_smt . ' AND d.id_kelas = ' . $kelas . '');
             $this->db->join('master_kelas f', 'f.id_kelas=d.id_kelas');
             $this->db->join('users us', 'us.username=a.username AND us.active = "1"');
         } else {
-            $this->db->join('kelas_siswa d', 'd.id_siswa=a.id_siswa AND d.id_tp = '.$id_tp.' AND d.id_smt = '.$id_smt.'', 'left');
+            $this->db->join('kelas_siswa d', 'd.id_siswa=a.id_siswa AND d.id_tp = ' . $id_tp . ' AND d.id_smt = ' . $id_smt . '', 'left');
             $this->db->join('master_kelas f', 'f.id_kelas=d.id_kelas', 'left');
             $this->db->join('users us', 'us.username=a.username AND us.active = "0"');
         }
 
         if ($search != null) {
+            $this->db->group_start();
             $this->db->like('a.nama', $search);
             $this->db->or_like('a.nis', $search);
             $this->db->or_like('a.nisn', $search);
+            $this->db->group_end();
         }
         return $this->db->get()->num_rows();
     }
 
-    public function getDataSiswaByKelas($id_tp, $id_smt, $id_kelas, $offset, $limit, $search=null, $sort=null, $order=null) {
+    public function getDataSiswaByKelas($id_tp, $id_smt, $id_kelas, $offset, $limit, $search = null, $sort = null, $order = null)
+    {
         //$this->db->query('SET SQL_BIG_SELECTS=1');
-        $this->db->select('b.id_siswa, b.nama, b.nis, b.nisn, b.jenis_kelamin, b.username, b.password, b.foto, b.agama,'.
+        $this->db->select('b.id_siswa, b.nama, b.nis, b.nisn, b.jenis_kelamin, b.username, b.password, b.foto, b.agama,' .
             ' f.nama_kelas, us.active');
         $this->db->from('kelas_siswa a');
         if ($limit > 0) {
@@ -296,7 +381,8 @@ class Master_model extends CI_Model {
         return $this->db->get()->result();
     }
 
-    public function getDataSiswaByKelasPage($id_tp, $id_smt, $id_kelas, $search=null) {
+    public function getDataSiswaByKelasPage($id_tp, $id_smt, $id_kelas, $search = null)
+    {
         $this->db->select('a.id_siswa');
         $this->db->from('kelas_siswa a');
         $this->db->where('a.id_tp', $id_tp);
@@ -311,7 +397,8 @@ class Master_model extends CI_Model {
         return $this->db->get()->num_rows();
     }
 
-    public function getSiswaById($id) {
+    public function getSiswaById($id)
+    {
         $this->db->select('a.*, b.status');
         $this->db->from('master_siswa a');
         $this->db->join('buku_induk b', 'a.id_siswa=b.id_siswa', 'left');
@@ -319,7 +406,8 @@ class Master_model extends CI_Model {
         return $this->db->get()->row();
     }
 
-    public function getSiswaByArrId($ids) {
+    public function getSiswaByArrId($ids)
+    {
         $this->db->select('a.id_siswa, f.nama_kelas');
         $this->db->from('master_siswa a');
         $this->db->join('kelas_siswa b', 'b.id_siswa=a.id_siswa', 'left');
@@ -329,13 +417,14 @@ class Master_model extends CI_Model {
         $ret = [];
         if ($result) {
             foreach ($result as $key => $row) {
-                $ret [$row->id_siswa] = $row;
+                $ret[$row->id_siswa] = $row;
             }
         }
         return $ret;
     }
 
-    public function getSiswaByArrNisn($arr_nisn, $arr_nis, $arr_username) {
+    public function getSiswaByArrNisn($arr_nisn, $arr_nis, $arr_username)
+    {
         $this->db->select('id_siswa, nama, nisn, nis, username');
         $this->db->from('master_siswa');
         $this->db->where_in('nisn', $arr_nisn);
@@ -344,13 +433,15 @@ class Master_model extends CI_Model {
         return $this->db->get()->result();
     }
 
-    public function getSiswaByUsername($usernames) {
+    public function getSiswaByUsername($usernames)
+    {
         $this->db->select('id_siswa, username');
         $this->db->where_in('username', $usernames);
         return $this->db->get('master_siswa')->result();
     }
 
-    public function getSiswaKelasBaru($id_tp, $id_smt) {
+    public function getSiswaKelasBaru($id_tp, $id_smt)
+    {
         $this->db->query('SET SQL_BIG_SELECTS=1');
         $this->db->select('b.id_siswa, b.nama, f.id_kelas, f.nama_kelas, f.kode_kelas');
         $this->db->from('kelas_siswa a');
@@ -363,13 +454,14 @@ class Master_model extends CI_Model {
         $ret = [];
         if ($result) {
             foreach ($result as $key => $row) {
-                $ret [$row->id_siswa] = $row;
+                $ret[$row->id_siswa] = $row;
             }
         }
         return $ret;
     }
 
-    public function getAgamaSiswa() {
+    public function getAgamaSiswa()
+    {
         $this->db->select('agama');
         $this->db->distinct();
         $this->db->from('master_siswa a');
@@ -384,7 +476,8 @@ class Master_model extends CI_Model {
         return $ret;
     }
 
-    public function getJurusan() {
+    public function getJurusan()
+    {
         $this->db->select('id_jurusan, nama_jurusan');
         $this->db->from('master_kelas');
         $this->db->join('master_jurusan', 'jurusan_id=id_jurusan');
@@ -394,7 +487,8 @@ class Master_model extends CI_Model {
         return $query->result();
     }
 
-    public function getAllJurusan($id = null) {
+    public function getAllJurusan($id = null)
+    {
         if ($id == null) {
             $this->db->order_by('nama_jurusan', 'ASC');
             return $this->db->get('jurusan')->result();
@@ -418,8 +512,9 @@ class Master_model extends CI_Model {
         }
     }
 
-    public function getKelasByJurusan($id) {
-        $query = $this->db->get_where('master_kelas', array('jurusan_id' => $id));
+    public function getKelasByJurusan($id)
+    {
+        $query = $this->db->where(array('jurusan_id' => $id))->get('master_kelas');
         return $query->result();
     }
 
@@ -429,26 +524,38 @@ class Master_model extends CI_Model {
      * @param $smt
      * @return string
      */
-    public function getDataGuru($tp, $smt) {
+    public function getDataGuru($tp, $smt)
+    {
         $this->db->query('SET SQL_BIG_SELECTS=1');
         $this->datatables->select('a.id_guru, a.nama_guru, a.nip, a.kode_guru, a.jenis_kelamin, a.foto, b.id_jabatan, b.id_kelas, b.mapel_kelas, c.id_level, c.level, d.nama_kelas, e.tahun, f.nama_smt');
         $this->datatables->from('master_guru a');
-        $this->datatables->join('jabatan_guru b', 'a.id_guru=b.id_guru AND b.id_tp='.$tp.' AND b.id_smt='.$smt.'', 'left');
+
+        $school_uuid = $this->session->userdata('school_uuid');
+        if ($school_uuid && $this->db->field_exists('sync_school_uuid', 'master_guru')) {
+            $this->datatables->where('a.sync_school_uuid', $school_uuid);
+        }
+        $this->datatables->join('jabatan_guru b', 'a.id_guru=b.id_guru AND b.id_tp=' . $tp . ' AND b.id_smt=' . $smt . '', 'left');
         $this->datatables->join('level_guru c', 'b.id_jabatan=c.id_level', 'left');
-        $this->datatables->join('master_kelas d', 'b.id_kelas=d.id_kelas AND d.id_tp='.$tp.' AND d.id_smt='.$smt.'', 'left');
+        $this->datatables->join('master_kelas d', 'b.id_kelas=d.id_kelas AND d.id_tp=' . $tp . ' AND d.id_smt=' . $smt . '', 'left');
         $this->datatables->join('master_tp e', 'b.id_tp=e.id_tp', 'left');
         $this->datatables->join('master_smt f', 'b.id_smt=f.id_smt', 'left');
         //$this->db->order_by('c.id_level', 'asc');
         return $this->datatables->generate();
     }
 
-    public function getAllDataGuru($tp, $smt) {
+    public function getAllDataGuru($tp, $smt)
+    {
         $this->db->query('SET SQL_BIG_SELECTS=1');
         $this->db->select('a.id_guru, a.nama_guru, a.nip, a.kode_guru, a.jenis_kelamin, a.foto, b.id_jabatan, b.id_kelas, b.mapel_kelas, b.ekstra_kelas, c.id_level, c.level, d.nama_kelas, e.tahun, f.nama_smt, g.active');
         $this->db->from('master_guru a');
-        $this->db->join('jabatan_guru b', 'a.id_guru=b.id_guru AND b.id_tp='.$tp.' AND b.id_smt='.$smt.'', 'left');
+
+        $school_uuid = $this->session->userdata('school_uuid');
+        if ($school_uuid && $this->db->field_exists('sync_school_uuid', 'master_guru')) {
+            $this->db->where('a.sync_school_uuid', $school_uuid);
+        }
+        $this->db->join('jabatan_guru b', 'a.id_guru=b.id_guru AND b.id_tp=' . $tp . ' AND b.id_smt=' . $smt . '', 'left');
         $this->db->join('level_guru c', 'b.id_jabatan=c.id_level', 'left');
-        $this->db->join('master_kelas d', 'b.id_kelas=d.id_kelas AND d.id_tp='.$tp.' AND d.id_smt='.$smt.'', 'left');
+        $this->db->join('master_kelas d', 'b.id_kelas=d.id_kelas AND d.id_tp=' . $tp . ' AND d.id_smt=' . $smt . '', 'left');
         $this->db->join('master_tp e', 'b.id_tp=e.id_tp', 'left');
         $this->db->join('master_smt f', 'b.id_smt=f.id_smt', 'left');
         $this->db->join('users g', 'a.username=g.username', 'left');
@@ -457,7 +564,8 @@ class Master_model extends CI_Model {
         return $this->db->get()->result();
     }
 
-    public function getGuruById($id, $id_tp=null, $id_smt=null) {
+    public function getGuruById($id, $id_tp = null, $id_smt = null)
+    {
         $this->db->query('SET SQL_BIG_SELECTS=1');
         $select = 'a.*, b.id_jabatan, b.id_kelas, b.mapel_kelas, b.ekstra_kelas, c.*,';
         $this->db->from('master_guru a');
@@ -465,28 +573,32 @@ class Master_model extends CI_Model {
         $this->db->join('level_guru c', 'b.id_jabatan=c.id_level', 'left');
         if ($id_tp != null && $id_smt != null) {
             $select .= ' d.*';
-            $this->db->join('master_kelas d', 'a.id_guru=d.guru_id AND d.id_tp='.$id_tp.' AND d.id_smt='.$id_smt, 'left');
+            $this->db->join('master_kelas d', 'a.id_guru=d.guru_id AND d.id_tp=' . $id_tp . ' AND d.id_smt=' . $id_smt, 'left');
         }
         $this->db->select($select);
         $this->db->where('a.id_guru', $id);
         return $this->db->get()->row();
     }
 
-    public function getGuruByArrId($arr_id) {
-        $this->db->select('nama_guru, nip');
+    public function getGuruByArrId($arr_id)
+    {
+        $this->db->select('nama_guru, nip, ttd');
         $this->db->from('master_guru');
-        if (count($arr_id) > 0) $this->db->where_in('id_guru', $arr_id);
+        if (count($arr_id) > 0)
+            $this->db->where_in('id_guru', $arr_id);
         return $this->db->get()->result();
     }
 
-    public function getUserIdGuruByUsername($username) {
+    public function getUserIdGuruByUsername($username)
+    {
         $this->db->select('id_guru, username');
         $this->db->from('master_guru');
         $this->db->where('username', $username);
         return $this->db->get()->result();
     }
 
-    public function getDetailJabatanGuru($id_guru) {
+    public function getDetailJabatanGuru($id_guru)
+    {
         $this->db->query('SET SQL_BIG_SELECTS=1');
         $this->db->select('a.id_guru, a.nama_guru, b.id_tp, b.id_smt, b.mapel_kelas, b.ekstra_kelas, c.id_level, c.level, d.id_kelas, d.nama_kelas');
         $this->db->from('master_guru a');
@@ -502,24 +614,27 @@ class Master_model extends CI_Model {
         return $ret;
     }
 
-    public function getJabatanGuru($id_guru, $tp, $smt) {
+    public function getJabatanGuru($id_guru, $tp, $smt)
+    {
         $this->db->query('SET SQL_BIG_SELECTS=1');
         $this->db->select('a.id_guru, a.nama_guru, b.mapel_kelas, b.ekstra_kelas, c.id_level, c.level, d.id_kelas, d.nama_kelas');
         $this->db->from('master_guru a');
-        $this->db->join('jabatan_guru b', 'a.id_guru=b.id_guru AND b.id_tp='.$tp.' AND b.id_smt='.$smt.'', 'left');
+        $this->db->join('jabatan_guru b', 'a.id_guru=b.id_guru AND b.id_tp=' . $tp . ' AND b.id_smt=' . $smt . '', 'left');
         $this->db->join('level_guru c', 'b.id_jabatan=c.id_level', 'left');
-        $this->db->join('master_kelas d', 'b.id_kelas=d.id_kelas AND d.id_tp='.$tp.' AND d.id_smt='.$smt.'', 'left');
+        $this->db->join('master_kelas d', 'b.id_kelas=d.id_kelas AND d.id_tp=' . $tp . ' AND d.id_smt=' . $smt . '', 'left');
         $this->db->where('a.id_guru', $id_guru);
         return $this->db->get()->row();
     }
 
-    public function getGuruMapel($tp, $smt, $ids_guru = null) {
+    public function getGuruMapel($tp, $smt, $ids_guru = null)
+    {
         $this->db->select('a.mapel_kelas, a.ekstra_kelas, a.id_jabatan, a.id_kelas, b.id_guru, b.nama_guru');
         $this->db->from('jabatan_guru a');
         $this->db->join('master_guru b', 'a.id_guru=b.id_guru');
         $this->db->where('a.id_tp', $tp);
         $this->db->where('a.id_smt', $smt);
-        if ($ids_guru) $this->db->where_in('a.id_gur', $ids_guru);
+        if ($ids_guru)
+            $this->db->where_in('a.id_gur', $ids_guru);
         return $this->db->get()->result();
     }
 
@@ -527,7 +642,8 @@ class Master_model extends CI_Model {
      * Data Mapel
      */
 
-    public function getKodeKelompokMapel() {
+    public function getKodeKelompokMapel()
+    {
         $this->db->select('*');
         $this->db->from('master_kelompok_mapel');
         $this->db->order_by('kode_kel_mapel');
@@ -539,7 +655,8 @@ class Master_model extends CI_Model {
         return $ret;
     }
 
-    public function getDataKelompokMapel() {
+    public function getDataKelompokMapel()
+    {
         $this->db->select('*');
         $this->db->from('master_kelompok_mapel');
         $this->db->where('id_parent', '0');
@@ -552,14 +669,16 @@ class Master_model extends CI_Model {
         return $ret;
     }
 
-    public function getKategoriKelompokMapel() {
+    public function getKategoriKelompokMapel()
+    {
         $this->db->select('kode_kel_mapel, kategori');
         $this->db->where('kategori', 'WAJIB')->or_where('kategori', 'AGAMA (Kemenag)');
         $this->db->from('master_kelompok_mapel');
         return $this->db->get()->result();
     }
 
-    public function getDataSubKelompokMapel() {
+    public function getDataSubKelompokMapel()
+    {
         $this->db->select('*');
         $this->db->from('master_kelompok_mapel');
         $this->db->where('id_parent <> 0');
@@ -572,7 +691,8 @@ class Master_model extends CI_Model {
         return $ret;
     }
 
-    public function getDataMapel() {
+    public function getDataMapel()
+    {
         $this->db->select('id_mapel, nama_mapel, kode');
         $this->db->from('master_mapel');
         $result = $this->db->get()->result();
@@ -584,7 +704,8 @@ class Master_model extends CI_Model {
         return $ret;
     }
 
-    public function getAllMapel($arrKelompok = null, $arrMapel = null) {
+    public function getAllMapel($arrKelompok = null, $arrMapel = null)
+    {
         if ($arrMapel != null) {
             $this->db->where_in('kelompok', $arrKelompok);
         }
@@ -596,7 +717,8 @@ class Master_model extends CI_Model {
         return $this->db->get('master_mapel')->result();
     }
 
-    public function getAllStatusMapel($arrKelompok = null, $arrMapel = null) {
+    public function getAllStatusMapel($arrKelompok = null, $arrMapel = null)
+    {
         if ($arrMapel != null) {
             $this->db->where_in('kelompok', $arrKelompok);
         }
@@ -607,7 +729,8 @@ class Master_model extends CI_Model {
         return $this->db->get('master_mapel')->result();
     }
 
-    public function getAllMapelByKelompok($jenjang) {
+    public function getAllMapelByKelompok($jenjang)
+    {
         /*
         if ($jenjang == "1") {
             $this->db->where('jenjang=0 OR jenjang=1');
@@ -627,7 +750,8 @@ class Master_model extends CI_Model {
         return $ret;
     }
 
-    public function getAllMapelNonAktif($jenjang) {
+    public function getAllMapelNonAktif($jenjang)
+    {
         /*
         if ($jenjang == "1") {
             $this->db->where('jenjang=0 OR jenjang=1');
@@ -639,18 +763,20 @@ class Master_model extends CI_Model {
         return $this->db->get('master_mapel')->result();
     }
 
-    public function getMapelById($id, $single = false) {
+    public function getMapelById($id, $single = false)
+    {
         if ($single == false) {
             $this->db->where_in('id_mapel', $id);
             $this->db->order_by('nama_mapel');
             $query = $this->db->get('master_mapel')->result();
         } else {
-            $query = $this->db->get_where('master_mapel', array('id_mapel' => $id))->row();
+            $query = $this->db->where(array('id_mapel' => $id))->get('master_mapel')->row();
         }
         return $query;
     }
 
-    function updateMapel() {
+    function updateMapel()
+    {
         $id = $this->input->post('id_mapel');
         $name = $this->input->post('nama_mapel', true);
         $kode = $this->input->post('kode_mapel', true);
@@ -660,29 +786,33 @@ class Master_model extends CI_Model {
 
         $this->db->set('nama_mapel', $name);
         $this->db->set('kode', $kode);
-        if ($kelompok!=null) $this->db->set('kelompok', $kelompok);
+        if ($kelompok != null)
+            $this->db->set('kelompok', $kelompok);
         $this->db->set('status', $status);
         $this->db->set('urutan_tampil', $urut);
         $this->db->where('id_mapel', $id);
         return $this->db->update('master_mapel');
     }
 
-    public function getAllEkstra() {
+    public function getAllEkstra()
+    {
         return $this->db->get('master_ekstra')->result();
     }
 
-    public function getEkstraById($id, $single = false) {
+    public function getEkstraById($id, $single = false)
+    {
         if ($single == false) {
             $this->db->where_in('id_ekstra', $id);
             $this->db->order_by('nama_ekstra');
             $query = $this->db->get('master_ekstra')->result();
         } else {
-            $query = $this->db->get_where('master_ekstra', array('id_ekstra' => $id))->row();
+            $query = $this->db->where(array('id_ekstra' => $id))->get('master_ekstra')->row();
         }
         return $query;
     }
 
-    function updateEkstra() {
+    function updateEkstra()
+    {
         $id = $this->input->post('id_ekstra');
         $name = $this->input->post('nama_ekstra', true);
         $kode = $this->input->post('kode_ekstra', true);
@@ -696,7 +826,8 @@ class Master_model extends CI_Model {
      * Data Kelas Guru
      */
 
-    public function getKelasGuru() {
+    public function getKelasGuru()
+    {
         $this->db->query('SET SQL_BIG_SELECTS=1');
         $this->datatables->select('kelas_guru.id, guru.id_guru, guru.nip, guru.nama_guru, GROUP_CONCAT(master_kelas.nama_kelas) as kelas');
         $this->datatables->from('kelas_guru');
@@ -706,7 +837,8 @@ class Master_model extends CI_Model {
         return $this->datatables->generate();
     }
 
-    public function getKelasByGuru($id) {
+    public function getKelasByGuru($id)
+    {
         $this->db->select('kelas.id_kelas');
         $this->db->from('kelas_guru');
         $this->db->join('master_kelas', 'kelas_guru.kelas_id=kelas.id_kelas');
@@ -714,8 +846,9 @@ class Master_model extends CI_Model {
         return $this->db->get()->result();
     }
 
-    public function getAllJabatanGuru($id) {
-        $result = $this->db->get_where('jabatan_guru', 'id_guru='.$id)->result();
+    public function getAllJabatanGuru($id)
+    {
+        $result = $this->db->get_where('jabatan_guru', 'id_guru=' . $id)->result();
         $ret = [];
         if ($result) {
             foreach ($result as $key => $row) {
@@ -729,7 +862,8 @@ class Master_model extends CI_Model {
      * Data Jurusan Mapel
      */
 
-    public function getJurusanMapel() {
+    public function getJurusanMapel()
+    {
         $this->db->query('SET SQL_BIG_SELECTS=1');
         $this->datatables->select('jurusan_mapel.id, mapel.id_mapel, mapel.nama_mapel, jurusan.id_jurusan, GROUP_CONCAT(jurusan.nama_jurusan) as nama_jurusan');
         $this->datatables->from('jurusan_mapel');
@@ -739,7 +873,8 @@ class Master_model extends CI_Model {
         return $this->datatables->generate();
     }
 
-    public function getMapel($id = null) {
+    public function getMapel($id = null)
+    {
         $this->db->select('mapel_id');
         $this->db->from('jurusan_mapel');
         if ($id !== null) {
@@ -760,7 +895,8 @@ class Master_model extends CI_Model {
         return $this->db->get()->result();
     }
 
-    public function getJurusanByIdMapel($id) {
+    public function getJurusanByIdMapel($id)
+    {
         $this->db->select('jurusan.id_jurusan');
         $this->db->from('jurusan_mapel');
         $this->db->join('master_jurusan', 'jurusan_mapel.jurusan_id=jurusan.id_jurusan');
@@ -768,60 +904,70 @@ class Master_model extends CI_Model {
         return $this->db->get()->result();
     }
 
-    public function getTahunActive() {
+    public function getTahunActive()
+    {
         $this->db->select('id_tp, tahun');
         $this->db->from('master_tp');
         $this->db->where('active', 1);
         return $this->db->get()->row();
     }
 
-    public function getSemesterActive() {
+    public function getSemesterActive()
+    {
         $this->db->select('id_smt, nama_smt, smt');
         $this->db->from('master_smt');
         $this->db->where('active', 1);
         return $this->db->get()->row();
     }
 
-    public function getJmlHariEfektif($id) {
+    public function getJmlHariEfektif($id)
+    {
         $this->db->select('*');
         $this->db->from('master_hari_efektif');
         $this->db->where('id_hari_efektif', $id);
         return $this->db->get()->row();
     }
 
-    public function getDistinctTahunLulus() {
+    public function getDistinctTahunLulus()
+    {
         $this->db->select('tahun_lulus');
         $this->db->distinct();
         $result = $this->db->get('buku_induk')->result();
         $ret = [];
         foreach ($result as $row) {
-            if ($row->tahun_lulus != '') $ret[$row->tahun_lulus] = $row->tahun_lulus;
+            if ($row->tahun_lulus != '')
+                $ret[$row->tahun_lulus] = $row->tahun_lulus;
         }
         return $ret;
     }
 
-    public function getDistinctKelasAkhir() {
+    public function getDistinctKelasAkhir()
+    {
         $this->db->select('kelas_akhir');
         //$this->db->where('kelas_akhir');
         $this->db->distinct();
         $result = $this->db->get('buku_induk')->result();
         $ret = [];
         foreach ($result as $row) {
-            if ($row->kelas_akhir != '') $ret[$row->kelas_akhir] = $row->kelas_akhir;
+            if ($row->kelas_akhir != '')
+                $ret[$row->kelas_akhir] = $row->kelas_akhir;
         }
         return $ret;
     }
 
-    public function getAlumniByTahun($tahun, $kelas = null) {
+    public function getAlumniByTahun($tahun, $kelas = null)
+    {
         $this->db->select('*');
         $this->db->from('buku_induk a');
         $this->db->join('master_siswa b', 'a.id_siswa=b.id_siswa');
         $this->db->where('a.tahun_lulus', $tahun);
-        if ($kelas != null) $this->db->where('a.kelas_akhir', $kelas);
+        if ($kelas != null)
+            $this->db->where('a.kelas_akhir', $kelas);
         return $this->db->get()->result();
     }
 
-    public function getAlumniFilter($filter) {
+    public function getAlumniFilter($filter)
+    {
         $this->db->select('*');
         $this->db->from('buku_induk a');
         $this->db->join('master_siswa b', 'a.id_siswa=b.id_siswa');
@@ -829,7 +975,8 @@ class Master_model extends CI_Model {
         return $this->db->get()->result();
     }
 
-    public function getAlumniById($id) {
+    public function getAlumniById($id)
+    {
         $this->db->select('*');
         $this->db->from('master_siswa a');
         $this->db->join('buku_induk b', 'a.id_siswa=b.id_siswa');
@@ -837,7 +984,8 @@ class Master_model extends CI_Model {
         return $this->db->get()->row();
     }
 
-    public function getAllWaliKelas() {
+    public function getAllWaliKelas()
+    {
         $this->db->query('SET SQL_BIG_SELECTS=1');
         $this->db->select('a.id_tp, a.id_smt, a.id_guru, b.nama_guru, c.id_level, c.level, d.id_kelas, d.nama_kelas');
         $this->db->from('jabatan_guru a');
@@ -849,14 +997,15 @@ class Master_model extends CI_Model {
         if ($result) {
             foreach ($result as $key => $row) {
                 if ($row->id_level == "4") {
-                    $ret [$row->id_tp][$row->id_smt][$row->id_kelas] = $row;
+                    $ret[$row->id_tp][$row->id_smt][$row->id_kelas] = $row;
                 }
             }
         }
         return $ret;
     }
 
-    public function getAllGuru() {
+    public function getAllGuru()
+    {
         $this->db->select('id_guru');
         $this->db->from('jabatan_guru');
         $guru = $this->db->get()->result();
@@ -871,7 +1020,8 @@ class Master_model extends CI_Model {
         return $this->db->get()->result();
     }
 
-    public function getAllKelas($tp = null, $smt = null) {
+    public function getAllKelas($tp = null, $smt = null)
+    {
         $this->db->query('SET SQL_BIG_SELECTS=1');
         $this->db->select('a.id_kelas, a.id_tp, a.id_smt, a.nama_kelas, a.kode_kelas, a.level_id, b.nama_jurusan, b.kode_jurusan, c.nama_guru');
         $this->db->from('master_kelas a');
@@ -888,20 +1038,21 @@ class Master_model extends CI_Model {
         if ($tp != null && $smt != null) {
             if ($result) {
                 foreach ($result as $key => $row) {
-                    $ret [$row->id_kelas] = $row;
+                    $ret[$row->id_kelas] = $row;
                 }
             }
         } else {
             if ($result) {
                 foreach ($result as $key => $row) {
-                    $ret [$row->id_tp][$row->id_smt][$row->id_kelas] = $row;
+                    $ret[$row->id_tp][$row->id_smt][$row->id_kelas] = $row;
                 }
             }
         }
         return $ret;
     }
 
-    public function getAllKelasSiswa() {
+    public function getAllKelasSiswa()
+    {
         $this->db->select('*');
         $this->db->from('kelas_siswa');
         $result = $this->db->get()->result();
@@ -915,7 +1066,8 @@ class Master_model extends CI_Model {
         return $ret;
     }
 
-    public function getDataInduk() {
+    public function getDataInduk()
+    {
         $this->db->select('a.*, b.*,');
         $this->db->from('master_siswa a');
         $this->db->join('buku_induk b', 'a.id_siswa=b.id_siswa', 'left');

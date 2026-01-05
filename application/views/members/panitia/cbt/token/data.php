@@ -2,15 +2,19 @@
 
 ?>
 
-<div class="content-wrapper bg-white pt-4">
+<main class="app-main bg-white pt-4">
 
 
     <section class="content">
         <div class="container-fluid">
             <div class="card card-default my-shadow mb-4">
-                <div class="card-header">
+                <div class="card-header d-flex align-items-center">
                     <h6 class="card-title"><?= $subjudul ?></h6>
-                    <button class="btn btn-sm btn-default d-none card-tools" id="refresh-token"><i class="fa fa-refresh"></i> Refresh Token</button>
+                    <div class="card-tools ms-auto d-flex align-items-center gap-2">
+                        <button class="btn btn-sm btn-primary d-none shadow-sm" id="refresh-token">
+                            <i class="bi bi-arrow-repeat me-1"></i> Refresh Token
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <h6 class="text-center">TOKEN SAAT INI</h6>
@@ -19,30 +23,30 @@
             </div>
         </div>
     </section>
-</div>
+    </div>
 
-<script>
-    let timerTokenView;
-    $(document).ready(function () {
-        getToken(function (result) {
-            getGlobalToken();
-        });
-
-        $('#refresh-token').click(function () {
+    <script>
+        let timerTokenView;
+        $(document).ready(function () {
             getToken(function (result) {
                 getGlobalToken();
             });
-        });
-    });
 
-    function getGlobalToken() {
-        if (globalToken != null) {
-            const viewToken = $('#token-view');
-            if (viewToken.length) viewToken.text(globalToken.token);
-            if (globalToken.auto == '1' && adaJadwalUjian > 0) {
-                $('#refresh-token').removeClass('d-none')
+            $('#refresh-token').click(function () {
+                getToken(function (result) {
+                    getGlobalToken();
+                });
+            });
+        });
+
+        function getGlobalToken() {
+            if (globalToken != null) {
+                const viewToken = $('#token-view');
+                if (viewToken.length) viewToken.text(globalToken.token);
+                if (globalToken.auto == '1' && adaJadwalUjian > 0) {
+                    $('#refresh-token').removeClass('d-none')
+                }
             }
         }
-    }
 
-</script>
+    </script>

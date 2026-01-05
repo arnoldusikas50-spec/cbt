@@ -77,7 +77,7 @@ $(document).ready(function () {
 
 	$('#create').submit(function (e) {
 		e.preventDefault();
-        swal.fire({
+        Swal.fire({
             title: "Menyimpan data",
             text: "Silahkan tunggu....",
             button: false,
@@ -99,7 +99,7 @@ $(document).ready(function () {
 			data: $(this).serialize() + s,
 			success: function (data) {
 				var msg = data.status ? 'Data kelas berhasil disimpan' : 'Data kelas gagal disimpan';
-                swal.fire({
+                Swal.fire({
                     text: msg,
                     icon: data.status ? "success" : "warning",
                     showCancelButton: false,
@@ -112,7 +112,7 @@ $(document).ready(function () {
 
 			}, error: function (xhr, status, error) {
 				console.log(xhr.responseText);
-                swal.fire({
+                Swal.fire({
                     title: "Error",
                     text: "Data tidak tersimpan.",
                     icon: "warning",

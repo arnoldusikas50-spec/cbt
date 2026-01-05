@@ -1,14 +1,16 @@
 <?php
 
 
-class Pengumuman extends MY_Controller {
+class Pengumuman extends MY_Controller
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         if (!$this->auth->logged_in()) {
             redirect('auth');
-        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru') && !$this->auth->in_group('panitia')) {
-            show_error('Hanya Administrator, guru, dan panitia yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
+        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru') && (!$this->auth->in_group('panitia') && $this->session->userdata('role') != '4')) {
+            show_error('Hanya Administrator, Guru, dan Panitia yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
         }
         $this->load->library(['datatables', 'form_validation']);// Load Library Ignited-Datatables
         $this->load->model('Master_model', 'master');
@@ -19,7 +21,8 @@ class Pengumuman extends MY_Controller {
         $this->form_validation->set_error_delimiters('', '');
     }
 
-    public function index() {
+    public function index()
+    {
         $user = $this->auth->user();
         $data = [
             'user' => $user,
@@ -40,28 +43,27 @@ class Pengumuman extends MY_Controller {
         $data['running_text'] = $this->dashboard->getRunningText();
         $data['is_admin'] = $this->auth->is_admin();
 
-        if($this->auth->is_admin()){
+        if ($this->auth->is_admin()) {
             $data['subjudul'] = 'Semua Pengumuman';
             $data['pengumumans'] = $this->post->getPostUser(0);
             $this->render_view(1, 'pengumuman/data', $data);
-        }else{
+        } elseif ($this->auth->in_group('panitia') || $this->session->userdata('role') == '4') {
             $data['subjudul'] = 'Pengumuman Anda';
-            if ($this->auth->in_group('guru')) {
-                $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
-                $data['guru'] = $guru;
-                $data['pengumumans'] = $this->post->getPostUser($guru->id_guru);
-                $this->render_view(2, 'pengumuman/data', $data);
-            } elseif ($this->auth->in_group('panitia')) {
-                $panitia = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
-                $data['panitia'] = $panitia;
-                $data['subjudul'] = 'Semua Pengumuman';
-                $data['pengumumans'] = $this->post->getPostUser(0);
-                $this->render_view(4, 'pengumuman/data', $data);
-            }
+            $panitia = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $data['panitia'] = $panitia;
+            $data['pengumumans'] = $this->post->getPostUser(0);
+            $this->render_view(4, 'pengumuman/data', $data);
+        } else {
+            $data['subjudul'] = 'Pengumuman Anda';
+            $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $data['guru'] = $guru;
+            $data['pengumumans'] = $this->post->getPostUser($guru->id_guru);
+            $this->render_view(2, 'pengumuman/data', $data);
         }
     }
 
-    public function kepada($kepada, $id_kepada=null) {
+    public function kepada($kepada, $id_kepada = null)
+    {
         $user = $this->auth->user();
         $data = [
             'user' => $user,
@@ -81,26 +83,29 @@ class Pengumuman extends MY_Controller {
         $kelas = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
         $data['kelas'] = $kelas;
 
-        $this->db->select('a.*, b.nama_guru, b.foto');
+        $this->db->select('a.*, b.nama_guru, b.foto, d.nama_panitia, d.foto as foto_panitia');
         $this->db->from('post a');
         $this->db->join('master_guru b', 'a.dari=b.id_guru', 'left');
+        $this->db->join('master_panitia d', 'a.dari=d.id_panitia', 'left');
         $this->db->order_by('a.tanggal', 'desc');
         $pengumumans = $this->db->get()->result();
 
         $comments = [];
         $balasan = [];
         foreach ($pengumumans as $pengumuman) {
-            $this->db->select('a.*, b.nama_guru, b.foto');
+            $this->db->select('a.*, b.nama_guru, b.foto, d.nama_panitia, d.foto as foto_panitia');
             $this->db->from('post_comments a');
             $this->db->join('master_guru b', 'a.dari=b.id_guru', 'left');
+            $this->db->join('master_panitia d', 'a.dari=d.id_panitia', 'left');
             $this->db->order_by('a.tanggal', 'desc');
             $this->db->where('a.id_post', $pengumuman->id_post);
             $comment = $this->db->get()->result();
 
             foreach ($comment as $comm) {
-                $this->db->select('a.*, b.nama_guru, b.foto');
+                $this->db->select('a.*, b.nama_guru, b.foto, d.nama_panitia, d.foto as foto_panitia');
                 $this->db->from('post_reply a');
                 $this->db->join('master_guru b', 'a.dari=b.id_guru', 'left');
+                $this->db->join('master_panitia d', 'a.dari=d.id_panitia', 'left');
                 $this->db->order_by('a.tanggal', 'desc');
                 $this->db->where('a.id_comment', $comm->id_comment);
                 $balasan[$pengumuman->id_post][$comm->id_comment] = $this->db->get()->result();
@@ -113,27 +118,32 @@ class Pengumuman extends MY_Controller {
         $data['comments'] = $comments;
         $data['balasans'] = $balasan;
 
-        if ($kepada=='semua_guru') {
+        if ($kepada == 'semua_guru') {
             $data['kepada'] = 'Semua Guru';
-        } elseif ($kepada=='semua_siswa') {
+        } elseif ($kepada == 'semua_siswa') {
             $data['kepada'] = 'Semua Siswa';
         } else {
             $data['kepada'] = urldecode($kepada);
         }
 
-        if($this->auth->is_admin()){
+        if ($this->auth->is_admin()) {
             $this->render_view(1, 'pengumuman/data', $data);
-        } elseif ($this->auth->in_group('guru')) {
+        } elseif ($this->auth->in_group('panitia')) {
+            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(4, 'pengumuman/data', $data);
+        } else {
             $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $this->render_view(2, 'pengumuman/data', $data);
-        } elseif ($this->auth->in_group('panitia')) {
-             $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
-             $this->render_view(4, 'pengumuman/data', $data);
         }
     }
 
-    public function getPost() {
-        $posts = $this->post->getPostForUser(null);
+    public function getPost($page = 0)
+    {
+        session_write_close();
+        $perPage = 5;
+        $offset = $page * $perPage;
+
+        $posts = $this->post->getPostForUser(null, null, $perPage, $offset);
         if (count($posts) > 0) {
             foreach ($posts as $post) {
                 if ($post->dari > 0) {
@@ -144,14 +154,16 @@ class Pengumuman extends MY_Controller {
         $this->output_json($posts);
     }
 
-    public function getComment($id_post, $page) {
+    public function getComment($id_post, $page)
+    {
         $perPage = 5;
         $offset = $page * $perPage;
         $this->db->query('SET SQL_BIG_SELECTS=1');
-        $this->db->select('a.*, b.nama_guru, b.foto, c.nama as nama_siswa, c.foto as foto_siswa, (SELECT COUNT(post_reply.id_reply) FROM post_reply WHERE a.id_comment = post_reply.id_comment) AS jml');
+        $this->db->select('a.*, b.nama_guru, b.foto, c.nama as nama_siswa, c.foto as foto_siswa, d.nama_panitia, d.foto as foto_panitia, (SELECT COUNT(post_reply.id_reply) FROM post_reply WHERE a.id_comment = post_reply.id_comment) AS jml');
         $this->db->from('post_comments a');
         $this->db->join('master_guru b', 'a.dari=b.id_guru', 'left');
         $this->db->join('master_siswa c', 'a.dari=c.id_siswa', 'left');
+        $this->db->join('master_panitia d', 'a.dari=d.id_panitia', 'left');
         $this->db->order_by('a.tanggal', 'desc');
         $this->db->where('a.id_post', $id_post);
         $this->db->limit($perPage, $offset);
@@ -160,14 +172,16 @@ class Pengumuman extends MY_Controller {
         $this->output_json($comment);
     }
 
-    public function getReplies($id_comment, $page) {
+    public function getReplies($id_comment, $page)
+    {
         $perPage = 5;
         $offset = $page * $perPage;
         $this->db->query('SET SQL_BIG_SELECTS=1');
-        $this->db->select('a.*, b.nama_guru, b.foto, c.nama as nama_siswa, c.foto as foto_siswa');
+        $this->db->select('a.*, b.nama_guru, b.foto, c.nama as nama_siswa, c.foto as foto_siswa, d.nama_panitia, d.foto as foto_panitia');
         $this->db->from('post_reply a');
         $this->db->join('master_guru b', 'a.dari=b.id_guru', 'left');
         $this->db->join('master_siswa c', 'a.dari=c.id_siswa', 'left');
+        $this->db->join('master_panitia d', 'a.dari=d.id_panitia', 'left');
         $this->db->order_by('a.tanggal', 'desc');
         $this->db->where('a.id_comment', $id_comment);
         $this->db->limit($perPage, $offset);
@@ -176,13 +190,20 @@ class Pengumuman extends MY_Controller {
         $this->output_json($replies);
     }
 
-    public function save(){
+    public function save()
+    {
         $kepada = json_decode(json_encode($this->input->post('kepada[]', true)));
         $dari = $this->input->post('dari');
+        $dari_group = $dari == '0' ? '1' : '2';
+
+        if ($this->auth->in_group('panitia') || $this->session->userdata('role') == '4') {
+            $dari_group = 4;
+        }
+
         $data = [
-            'kepada'=> json_encode($kepada),
+            'kepada' => json_encode($kepada),
             'dari' => $dari,
-            'dari_group' => $dari == '0' ? '1' : '2',
+            'dari_group' => $dari_group,
             'text' => $this->input->post('text'),
             'tanggal' => date('Y-m-d H:i:s'),
             'updated' => date('Y-m-d H:i:s'),
@@ -192,20 +213,21 @@ class Pengumuman extends MY_Controller {
         $this->output_json($insert);
     }
 
-    public function saveKomentar(){
+    public function saveKomentar()
+    {
         $dari = '0';
         $dari_group = 1;
-        if(!$this->auth->is_admin()){
+        if (!$this->auth->is_admin()) {
             $user = $this->auth->user();
             $tp = $this->master->getTahunActive();
             $smt = $this->master->getSemesterActive();
-            if ($this->auth->in_group('guru')) {
-                $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
-                $dari = $guru->id_guru;
-                $dari_group = 2;
-            } elseif ($this->auth->in_group('panitia')) {
+            if ($this->auth->in_group('panitia') || $this->session->userdata('role') == '4') {
                 $panitia = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
                 $dari = $panitia->id_panitia;
+                $dari_group = 4;
+            } else {
+                $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+                $dari = $guru->id_guru;
                 $dari_group = 2;
             }
         }
@@ -220,10 +242,11 @@ class Pengumuman extends MY_Controller {
 
         $id = $this->db->insert_id();
         $this->db->query('SET SQL_BIG_SELECTS=1');
-        $this->db->select('a.*, b.nama_guru, b.foto, c.nama as nama_siswa, c.foto as foto_siswa, (SELECT COUNT(post_reply.id_reply) FROM post_reply WHERE a.id_comment = post_reply.id_comment) AS jml');
+        $this->db->select('a.*, b.nama_guru, b.foto, c.nama as nama_siswa, c.foto as foto_siswa, d.nama_panitia, d.foto as foto_panitia, (SELECT COUNT(post_reply.id_reply) FROM post_reply WHERE a.id_comment = post_reply.id_comment) AS jml');
         $this->db->from('post_comments a');
         $this->db->join('master_guru b', 'a.dari=b.id_guru', 'left');
         $this->db->join('master_siswa c', 'a.dari=c.id_siswa', 'left');
+        $this->db->join('master_panitia d', 'a.dari=d.id_panitia', 'left');
         $this->db->order_by('a.tanggal', 'desc');
         $this->db->where('a.id_comment', $id);
         $comment = $this->db->get()->result();
@@ -231,20 +254,21 @@ class Pengumuman extends MY_Controller {
         $this->output_json($comment);
     }
 
-    public function saveBalasan(){
+    public function saveBalasan()
+    {
         $dari = '0';
         $dari_group = 1;
-        if(!$this->auth->is_admin()){
+        if (!$this->auth->is_admin()) {
             $user = $this->auth->user();
             $tp = $this->master->getTahunActive();
             $smt = $this->master->getSemesterActive();
-            if ($this->auth->in_group('guru')) {
-                $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
-                $dari = $guru->id_guru;
-                $dari_group = 2;
-            } elseif ($this->auth->in_group('panitia')) {
+            if ($this->auth->in_group('panitia') || $this->session->userdata('role') == '4') {
                 $panitia = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
                 $dari = $panitia->id_panitia;
+                $dari_group = 4; // changed from 2 to 4
+            } else {
+                $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+                $dari = $guru->id_guru;
                 $dari_group = 2;
             }
         }
@@ -259,10 +283,11 @@ class Pengumuman extends MY_Controller {
 
         $id = $this->db->insert_id();
         $this->db->query('SET SQL_BIG_SELECTS=1');
-        $this->db->select('a.*, b.nama_guru, b.foto, c.nama as nama_siswa, c.foto as foto_siswa');
+        $this->db->select('a.*, b.nama_guru, b.foto, c.nama as nama_siswa, c.foto as foto_siswa, d.nama_panitia, d.foto as foto_panitia');
         $this->db->from('post_reply a');
         $this->db->join('master_guru b', 'a.dari=b.id_guru', 'left');
         $this->db->join('master_siswa c', 'a.dari=c.id_siswa', 'left');
+        $this->db->join('master_panitia d', 'a.dari=d.id_panitia', 'left');
         $this->db->order_by('a.tanggal', 'desc');
         $this->db->where('a.id_reply', $id);
         $replies = $this->db->get()->result();
@@ -270,7 +295,8 @@ class Pengumuman extends MY_Controller {
         $this->output_json($replies);
     }
 
-    public function hapusPost($id_post) {
+    public function hapusPost($id_post)
+    {
         $this->db->trans_start();
         $comments = $this->post->getIdComments($id_post);
 
@@ -290,7 +316,8 @@ class Pengumuman extends MY_Controller {
         $this->output_json($deleted);
     }
 
-    public function hapusKomentar($id_comment){
+    public function hapusKomentar($id_comment)
+    {
         $this->db->trans_start();
 
         $this->db->where('id_comment', $id_comment);
@@ -304,7 +331,8 @@ class Pengumuman extends MY_Controller {
         $this->output_json($deleted);
     }
 
-    public function hapusBalasan($id_reply){
+    public function hapusBalasan($id_reply)
+    {
         $this->db->trans_start();
 
         $this->db->where('id_reply', $id_reply);
@@ -315,12 +343,14 @@ class Pengumuman extends MY_Controller {
         $this->output_json($deleted);
     }
 
-    public function getRunningText() {
+    public function getRunningText()
+    {
         $data['running_text'] = $this->dashboard->getRunningText();
         $this->output_json($data);
     }
 
-    public function saveRunningText() {
+    public function saveRunningText()
+    {
         /*
         $text = $this->input->post('text', true);
         $insert = $this->master->create('running_text', ['text' => $text], false);
@@ -332,7 +362,7 @@ class Pengumuman extends MY_Controller {
             $data = [
                 'id_text' => $d->id_text,
                 'text' => $d->text,
-                ];
+            ];
             $update = $this->db->replace('running_text', $data);
             array_push($updates, $update);
         }
@@ -341,7 +371,8 @@ class Pengumuman extends MY_Controller {
 
     }
 
-    public function hapusRunningText($id) {
+    public function hapusRunningText($id)
+    {
         $this->db->where('id_text', $id);
         $deleted = $this->db->delete('running_text');
         $this->output_json($deleted);

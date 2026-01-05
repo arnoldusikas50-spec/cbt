@@ -1,9 +1,10 @@
 <nav class="navbar navbar-static-top">
     <div class="container">
         <div class="navbar-header">
-            <a href="<?= base_url() ?>" class="navbar-brand"><i class="fa fa-laptop"></i> <b>OLT</b>EST</a>
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
-                <i class="fa fa-bars"></i>
+            <a href="<?= base_url() ?>" class="navbar-brand"><i class="bi bi-laptop"></i> <b>OLT</b>EST</a>
+            <button type="button" class="navbar-toggle collapsed" data-bs-toggle="collapse"
+                data-bs-target="#navbar-collapse">
+                <i class="bi bi-list"></i>
             </button>
         </div>
 
@@ -17,7 +18,7 @@
             <ul class="nav navbar-nav">
                 <li><a href="#" onclick="simpan_akhir()">Selesai Ujian</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                    <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="true">
                         <?= $user->username ?> <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu" role="menu">

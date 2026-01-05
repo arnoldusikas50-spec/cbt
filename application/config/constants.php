@@ -28,6 +28,6 @@ defined('EXIT_DATABASE')       OR define('EXIT_DATABASE', 8); // database error
 defined('EXIT__AUTO_MIN')      OR define('EXIT__AUTO_MIN', 9); // lowest automatically-assigned error code
 defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
 
-defined('APP_VERSION') OR define('APP_VERSION', '@ikasmedia');
-defined('APP_COMMIT') OR define('APP_COMMIT', '27112025');
+defined('APP_VERSION') OR define('APP_VERSION', 'Project');
+defined('APP_COMMIT') OR define('APP_COMMIT', '06122025 | c9537e9');
 defined('INIT_BARU') OR define('INIT_BARU', '20250919000000');

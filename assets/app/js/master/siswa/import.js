@@ -75,7 +75,7 @@ $(document).ready(function () {
 		console.log("data:", dataPost);
 
 		var url = typeImport === "add" ? "datasiswa/do_import" : "datasiswa/updateall";
-        swal.fire({
+        Swal.fire({
             text: "Silahkan tunggu....",
             button: false,
             closeOnClickOutside: false,
@@ -96,7 +96,7 @@ $(document).ready(function () {
 				console.log("response:", data);
                 //window.history.back();
                 if (data.status) {
-                    swal.fire({
+                    Swal.fire({
                         title: "Berhasil",
                         text: "Data siswa berhasil diimpor",
                         icon: "success"
@@ -118,7 +118,7 @@ $(document).ready(function () {
                     let err = arrNisnDup.length ? `<b>${arrNisnDup.join("' ")}</b>` : '';
                     err += arrNisDup.length ? `<br /><b>${arrNisDup.join("' ")}</b>` : '';
                     err += arrUserDup.length ? `<br /><b>${arrUserDup.join("' ")}</b>` : '';
-                    swal.fire({
+                    Swal.fire({
                         title: "Gagal",
                         html: 'cek kembali siswa berikut: <br />'+err+'',
                         icon: "error"
@@ -127,7 +127,7 @@ $(document).ready(function () {
             }, error: function (xhr, status, error) {
 				$('#file-preview').html(xhr.responseText);
 				console.log("error:", xhr);
-                swal.fire({
+                Swal.fire({
                     title: "Gagal",
                     html: 'Gagal menyimpan data',
                     icon: "error"

@@ -1,6 +1,4 @@
-<div class="content-wrapper bg-white pt-4">
-
-
+<main class="app-main pt-4">
     <section class="content">
         <div class="container-fluid">
             <?php
@@ -16,7 +14,7 @@
             <div class="card card-default my-shadow">
                 <div class="card-header with-border">
                     <h3 class="card-title">Master <?= $subjudul ?></h3>
-                    <div id="selector" class="card-tools btn-group">
+                    <div id="selector" class="card-tools btn-group ms-auto">
                         <button type="button" class="btn <?= $ruang_aktif ?>">By Ruang</button>
                         <button type="button" class="btn <?= $kelas_aktif ?>">By Kelas</button>
                     </div>
@@ -72,11 +70,11 @@
                     <div class="row" id="for-export">
                         <table>
                             <?php
-                            foreach ($siswas as $siswa) : ?>
+                            foreach ($siswas as $siswa): ?>
                                 <tr>
                                     <td rowspan="6">
                                         <img width="100" height="120" src="<?= base_url() . $siswa->foto ?>"
-                                             style="object-fit: cover;object-position: center;outline: 1px solid;"/>
+                                            style="object-fit: cover;object-position: center;outline: 1px solid;" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -110,10 +108,10 @@
                 </div>
                 <div class="overlay d-none" id="loading">
                     <!-- <div class="spinner-grow"></div> -->
-                     <button class="btn btn-primary" type="button" disabled>
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"> </span>
-                            Loading...
-                            </button>
+                    <button class="btn btn-primary" type="button" disabled>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"> </span>
+                        Loading...
+                    </button>
                 </div>
             </div>
         </div>
@@ -124,10 +122,10 @@
 <script type="text/javascript" src="<?= base_url() ?>/assets/app/js/jquery.wordexport.js"></script>
 <script type="text/javascript" src="<?= base_url() ?>/assets/app/js/tableToExcel.js"></script>
 <script type="text/javascript">
-    var user_id = '<?=$user->id?>';
-    var kelas = '<?=$kelas_selected == null ? '0' : $kelas_selected?>';
-    var ruang = '<?=$ruang_selected == null ? '0' : $ruang_selected?>';
-    var sesi = '<?=$sesi_selected == null ? '0' : $sesi_selected?>';
+    var user_id = '<?= $user->id ?>';
+    var kelas = '<?= $kelas_selected == null ? '0' : $kelas_selected ?>';
+    var ruang = '<?= $ruang_selected == null ? '0' : $ruang_selected ?>';
+    var sesi = '<?= $sesi_selected == null ? '0' : $sesi_selected ?>';
 
     $(document).ready(function () {
         ajaxcsrf();
@@ -194,3 +192,4 @@
         });
     });
 </script>
+

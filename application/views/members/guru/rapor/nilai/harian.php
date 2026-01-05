@@ -1,4 +1,4 @@
-<div class="content-wrapper bg-white pt-4">
+<main class="app-main bg-white pt-4">
 
 
     <section class="content">
@@ -8,9 +8,9 @@
                     <div class="card-title">
                         <h6><b>Template Nilai <?= $mapel['nama_mapel'] ?></b></h6>
                     </div>
-                    <button onclick="window.history.back();" type="button" class="btn btn-sm btn-danger float-right">
-                        <i class="fas fa-arrow-circle-left"></i><span
-                                class="d-none d-sm-inline-block ml-1">Kembali</span>
+                    <button onclick="window.history.back();" type="button" class="btn btn-sm btn-danger float-end">
+                        <i class="bi bi-arrow-left-square"></i><span
+                            class="d-none d-sm-inline-block ms-1">Kembali</span>
                     </button>
 
                 </div>
@@ -23,13 +23,14 @@
                             </div>
                         <?php else: ?>
                             <div class="col-md-4 mb-3">
-                                <div type="button" class="btn btn-primary w-100" onclick="processDownload(<?= $mapel['id_mapel'] ?>, <?= $kelas['id_kelas'] ?>)">
-                                    <i class="fa fa-download"></i> <span class="ml-1">Download Template</span>
+                                <div type="button" class="btn btn-primary w-100"
+                                    onclick="processDownload(<?= $mapel['id_mapel'] ?>, <?= $kelas['id_kelas'] ?>)">
+                                    <i class="bi bi-download"></i> <span class="ms-1">Download Template</span>
                                 </div>
                                 <!--
                                 <a href="<?= base_url('rapor/downloadtemplateharian/' . $mapel['id_mapel'] . '/' . $kelas['id_kelas']) ?>"
                                    id="download" type="button" class="btn btn-primary w-100">
-                                    <i class="fa fa-download"></i> <span class="ml-1">Download Template</span>
+                                    <i class="bi bi-download"></i> <span class="ms-1">Download Template</span>
                                 </a>
                                 -->
                             </div>
@@ -39,7 +40,8 @@
                                     <div class="col-8">
                                         <?= form_open_multipart('', array('id' => 'uploadfile')); ?>
                                         <div class="custom-file">
-                                            <input type="file" name="upload_file" class="custom-file-input" id="custom-file">
+                                            <input type="file" name="upload_file" class="custom-file-input"
+                                                id="custom-file">
                                             <label class="custom-file-label" for="customFile">Pilih file excel</label>
                                         </div>
                                         <?= form_close(); ?>
@@ -47,7 +49,7 @@
 
                                     <div class="col-4">
                                         <button id="upload" class="btn btn-success w-100">
-                                            <i class="fa fa-upload"></i> <span class="ml-1">Upload</span>
+                                            <i class="bi bi-upload"></i> <span class="ms-1">Upload</span>
                                         </button>
                                     </div>
                                 </div>
@@ -67,9 +69,11 @@
                 </div>
                 <div class="card-body">
                     <div class="alert alert-default-info align-content-center" role="alert">
-                        - Tuliskan <b>Tujuan Pembelajaran (TP)</b> yang dinilai pada setiap pertemuan (maks. 120 karakter)
+                        - Tuliskan <b>Tujuan Pembelajaran (TP)</b> yang dinilai pada setiap pertemuan (maks. 120
+                        karakter)
                         <br>
-                        - Pastikan narasi TP menggambarkan capaian pembelajaran dan eviden asesmen formatif Kurikulum Merdeka
+                        - Pastikan narasi TP menggambarkan capaian pembelajaran dan eviden asesmen formatif Kurikulum
+                        Merdeka
                         <br>
                         - Klik teks untuk mengubah TP, lalu simpan agar deskripsi penilaian terbarui
                     </div>
@@ -77,67 +81,68 @@
                         <div class="col-md-6">
                             <table id="tbl1" class="table table-bordered border-success">
                                 <thead>
-                                <tr class="alert-default-success">
-                                    <th class="text-center align-middle border-success" style="width: 50px">#</th>
-                                    <th class="border-success">
-                                        <span class="align-middle">Edit Tujuan Pembelajaran Aspek Pengetahuan</span>
-                                    </th>
-                                </tr>
+                                    <tr class="alert-default-success">
+                                        <th class="text-center align-middle border-success" style="width: 50px">#</th>
+                                        <th class="border-success">
+                                            <span class="align-middle">Edit Tujuan Pembelajaran Aspek Pengetahuan</span>
+                                        </th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <?php
-                                for ($i = 0; $i < 8; $i++):
-                                    $id_mapel_kelas = $mapel['id_mapel'] . $kelas['id_kelas'];
-                                    $id_kikd = $id_mapel_kelas . '1' . ($i + 1);
-                                    $materi = $kikd[1][$id_kikd] == null ? '' : $kikd[1][$id_kikd]->materi_kikd;
-                                    ?>
-                                    <tr>
-                                        <td style="width: 50px"
-                                            class="text-sm align-middle text-center nomor border-success p-0">
-                                            P<?= $i + 1 ?></td>
-                                        <td class="text-sm border-success p-0">
-                                            <input type="text" name="materi[1][<?= $id_mapel_kelas ?>][<?= $id_kikd ?>]"
-                                                   value="<?= $materi ?>"
-                                                   style="width: 100%; border: 0; padding-left: 6px; padding-right: 6px">
-                                        </td>
-                                    </tr>
-                                <?php endfor; ?>
+                                    <?php
+                                    for ($i = 0; $i < 8; $i++):
+                                        $id_mapel_kelas = $mapel['id_mapel'] . $kelas['id_kelas'];
+                                        $id_kikd = $id_mapel_kelas . '1' . ($i + 1);
+                                        $materi = $kikd[1][$id_kikd] == null ? '' : $kikd[1][$id_kikd]->materi_kikd;
+                                        ?>
+                                        <tr>
+                                            <td style="width: 50px"
+                                                class="text-sm align-middle text-center nomor border-success p-0">
+                                                P<?= $i + 1 ?></td>
+                                            <td class="text-sm border-success p-0">
+                                                <input type="text" name="materi[1][<?= $id_mapel_kelas ?>][<?= $id_kikd ?>]"
+                                                    value="<?= $materi ?>"
+                                                    style="width: 100%; border: 0; padding-left: 6px; padding-right: 6px">
+                                            </td>
+                                        </tr>
+                                    <?php endfor; ?>
                                 </tbody>
                             </table>
                         </div>
                         <div class="col-md-6">
                             <table id="tbl2" class="table table-bordered border-success">
                                 <thead>
-                                <tr class="alert-default-success">
-                                    <th class="text-center align-middle border-success">#</th>
-                                    <th class="border-success">
-                                        <span class="pl-2 align-middle">Edit Tujuan Pembelajaran Aspek Keterampilan (Praktik/Portofolio/Proyek)</span>
-                                    </th>
-                                </tr>
+                                    <tr class="alert-default-success">
+                                        <th class="text-center align-middle border-success">#</th>
+                                        <th class="border-success">
+                                            <span class="ps-2 align-middle">Edit Tujuan Pembelajaran Aspek Keterampilan
+                                                (Praktik/Portofolio/Proyek)</span>
+                                        </th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <?php
-                                for ($i = 0; $i < 8; $i++):
-                                    $id_mapel_kelas = $mapel['id_mapel'] . $kelas['id_kelas'];
-                                    $id_kikd = $id_mapel_kelas . '2' . ($i + 1);
-                                    $materi = $kikd[2][$id_kikd] == null ? '' : $kikd[2][$id_kikd]->materi_kikd;
-                                    ?>
-                                    <tr>
-                                        <td style="width: 50px"
-                                            class="text-sm text-center border-success nomor pt-0 pb-0">
-                                            K<?= $i + 1 ?></td>
-                                        <td class="text-sm border-success editable p-0">
-                                            <input type="text" name="materi[2][<?= $id_mapel_kelas ?>][<?= $id_kikd ?>]"
-                                                   value="<?= $materi ?>"
-                                                   style="width: 100%; border: 0; padding-left: 6px; padding-right: 6px">
-                                    </tr>
-                                <?php endfor; ?>
+                                    <?php
+                                    for ($i = 0; $i < 8; $i++):
+                                        $id_mapel_kelas = $mapel['id_mapel'] . $kelas['id_kelas'];
+                                        $id_kikd = $id_mapel_kelas . '2' . ($i + 1);
+                                        $materi = $kikd[2][$id_kikd] == null ? '' : $kikd[2][$id_kikd]->materi_kikd;
+                                        ?>
+                                        <tr>
+                                            <td style="width: 50px"
+                                                class="text-sm text-center border-success nomor pt-0 pb-0">
+                                                K<?= $i + 1 ?></td>
+                                            <td class="text-sm border-success editable p-0">
+                                                <input type="text" name="materi[2][<?= $id_mapel_kelas ?>][<?= $id_kikd ?>]"
+                                                    value="<?= $materi ?>"
+                                                    style="width: 100%; border: 0; padding-left: 6px; padding-right: 6px">
+                                        </tr>
+                                    <?php endfor; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary float-right" data-jenis="1"><i
-                                            class="fa fa-save"></i> Simpan</button>
+                    <button type="submit" class="btn btn-primary float-end" data-jenis="1"><i class="bi bi-save"></i>
+                        Simpan</button>
                 </div>
             </div>
             <?= form_close() ?>
@@ -147,9 +152,14 @@
                     <div class="card-title">
                         <h6><b>Edit Nilai <?= $mapel['nama_mapel'] ?></b></h6>
                     </div>
+                    <button type="button" id="download-excel" class="btn btn-sm btn-info float-end me-2"
+                        data-bs-toggle="tooltip" title="Download Excel Nilai Harian">
+                        <i class="bi bi-file-excel ms-1 me-1"></i><span class="d-none d-sm-inline-block ms-1">Ekspor ke
+                            Excel</span>
+                    </button>
                 </div>
                 <div class="card-body">
-                    <?php if ($kkm == null) : ?>
+                    <?php if ($kkm == null): ?>
                         <div class="alert alert-default-warning shadow align-content-center" role="alert">
                             KKM dan Bobot belum diatur
                         </div>
@@ -190,9 +200,9 @@
                     <input type="hidden" name="id_mapel" class="form-control" value="<?= $mapel['id_mapel'] ?>">
                     <input type="hidden" name="id_kelas" class="form-control" value="<?= $kelas['id_kelas'] ?>">
                     <div class="row mt-3 mb-3">
-                        <div class="col-12 text-right">
+                        <div class="col-12 text-end">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fa fa-save mr-1"></i>Simpan
+                                <i class="bi bi-save me-1"></i>Simpan
                             </button>
                         </div>
                     </div>
@@ -207,648 +217,933 @@
     <input type="hidden" name="id_mapel" class="form-control" value="<?= $mapel['id_mapel'] ?>">
     <input type="hidden" name="id_kelas" class="form-control" value="<?= $kelas['id_kelas'] ?>">
     <?= form_close(); ?>
-</div>
-<script type="text/javascript" src="<?= base_url() ?>/assets/app/js/FileSaver.min.js"></script>
-<script type="text/javascript" src="<?= base_url() ?>/assets/app/js/excel/exceljs.js"></script>
-<script type="text/javascript" src="<?= base_url() ?>/assets/app/js/excel/js-excel-template.min.js"></script>
+    </div>
+    <script type="text/javascript" src="<?= base_url() ?>/assets/app/js/FileSaver.min.js"></script>
+    <script type="text/javascript" src="<?= base_url() ?>/assets/app/js/excel/exceljs.js"></script>
+    <script type="text/javascript" src="<?= base_url() ?>/assets/app/js/excel/js-excel-template.min.js"></script>
 
-<script type="text/javascript" src="<?= base_url() ?>/assets/plugins/jexcel/js/jexcel.js"></script>
-<script type="text/javascript" src="<?= base_url() ?>/assets/plugins/jexcel/js/jsuites.js"></script>
-<script>
-    var tpActive = '<?=$tp_active->id_tp?>';
-    var smtActive = '<?=$smt_active->id_smt?>';
-    var arrSiswa = JSON.parse(JSON.stringify(<?= json_encode($siswa)?>));
-    var arrNilai = JSON.parse(JSON.stringify(<?= json_encode($nilai)?>));
-    var arrKiKd = JSON.parse(JSON.stringify(<?= json_encode($kikd)?>));
-    var kkm = JSON.parse(JSON.stringify(<?= json_encode($kkm)?>));
-    var idMapel = '<?=$mapel['id_mapel']?>';
-    var idKelas = '<?=$kelas['id_kelas']?>';
-    var namaMapel = '<?=$mapel['nama_mapel']?>';
-    var namaKelas = '<?=$kelas['nama_kelas']?>';
+    <script type="text/javascript" src="<?= base_url() ?>/assets/plugins/jexcel/js/jexcel.js"></script>
+    <script type="text/javascript" src="<?= base_url() ?>/assets/plugins/jexcel/js/jsuites.js"></script>
+    <script>
+        window.guruKepsek = <?= json_encode([
+            'nama' => $setting->kepsek ?? '',
+            'nip' => $setting->nip ?? ''
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
 
-    var isi = 0;
-    if (kkm != null) {
-        isi = parseInt(kkm.kkm);
-    }
-    var pre_d = 0;
-    var pre_dsd = isi - 1;
-    var pre_c = isi;
-    var pre_csd = Math.floor(isi + (100 - isi) / 3);
-    var pre_b = pre_csd + 1;
-    var pre_bsd = Math.floor(pre_b + (100 - pre_b) / 2);
-    var pre_a = pre_bsd + 1;
-    var pre_asd = 100;
+        window.guruMapelAktif = <?= json_encode([
+            'nama' => $guru->nama_lengkap ?? $guru->nama_guru ?? '',
+            'nip' => $guru->nip ?? ''
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
 
-    var arrIndic1 = [];
-    for (let i = 0; i < 8; i++) {
-        var asp1 = arrKiKd[1];
-        var idP = 'P' + (i + 1);
-        if (asp1[idMapel + idKelas + '1' + (i + 1)] != null && asp1[idMapel + idKelas + '1' + (i + 1)].materi_kikd !== '') {
-            idP = asp1[idMapel + idKelas + '1' + (i + 1)].materi_kikd;
+        var tpActive = '<?= $tp_active->id_tp ?>';
+        var smtActive = '<?= $smt_active->id_smt ?>';
+        var arrSiswa = JSON.parse(JSON.stringify(<?= json_encode($siswa) ?>));
+        var arrNilai = JSON.parse(JSON.stringify(<?= json_encode($nilai) ?>));
+        var arrKiKd = JSON.parse(JSON.stringify(<?= json_encode($kikd) ?>));
+        var kkm = JSON.parse(JSON.stringify(<?= json_encode($kkm) ?>));
+        var idMapel = '<?= $mapel['id_mapel'] ?>';
+        var idKelas = '<?= $kelas['id_kelas'] ?>';
+        var namaMapel = '<?= $mapel['nama_mapel'] ?>';
+        var namaKelas = '<?= $kelas['nama_kelas'] ?>';
+
+        var isi = 0;
+        if (kkm != null) {
+            isi = parseInt(kkm.kkm);
         }
-        arrIndic1.push(idP);
-    }
-    var arrIndic2 = [];
-    for (let i = 0; i < 8; i++) {
-        var asp2 = arrKiKd[2];
-        var idK = 'K' + (i + 1);
-        if (asp2[idMapel + idKelas + '2' + (i + 1)] != null && asp2[idMapel + idKelas + '2' + (i + 1)].materi_kikd !== '') {
-            idK = asp2[idMapel + idKelas + '2' + (i + 1)].materi_kikd;
-        }
-        arrIndic2.push(idK);
-    }
+        var pre_d = 0;
+        var pre_dsd = isi - 1;
+        var pre_c = isi;
+        var pre_csd = Math.floor(isi + (100 - isi) / 3);
+        var pre_b = pre_csd + 1;
+        var pre_bsd = Math.floor(pre_b + (100 - pre_b) / 2);
+        var pre_a = pre_bsd + 1;
+        var pre_asd = 100;
 
-    var cols = [];
-
-    var mp1 = 'P1';
-    var mp2 = 'P2';
-    var mp3 = 'P3';
-    var mp4 = 'P4';
-    var mp5 = 'P5';
-    var mp6 = 'P6';
-    var mp7 = 'P7';
-    var mp8 = 'P8';
-
-    $(function () {
-        bsCustomFileInput.init();
-    });
-
-    function inRange(n, start, end) {
-        return n >= start && n <= end;
-    }
-
-    function sortByNilai(arr, key) {
-        return arr.sort(function (a, b) {
-            var x = a[key];
-            var y = b[key];
-            return ((x > y) ? -1 : ((x < y) ? 1 : 0));
-        });
-    }
-
-    function preCalcKetr(n1, n2, n3, pos, posdesk) {
-        var res = '';
-        if (n2 != null) {
-            if (inRange(n2, pre_a, pre_asd)) {
-                if (pos > 0) {
-                    if (inRange(n1, pre_a, pre_asd)) {
-                        if (inRange(n3, pre_a, pre_asd)) {
-                            res += ', ' + arrIndic2[posdesk];
-                        } else {
-                            res += ' dan ' + arrIndic2[posdesk];
-                        }
-                    } else {
-                        res += ', sangat baik kemampuan dalam ' + arrIndic2[posdesk];
-                    }
-                } else {
-                    res += ' sangat baik dalam ' + arrIndic2[posdesk];
-                }
-            } else if (inRange(n2, pre_b, pre_bsd)) {
-                if (pos > 0) {
-                    if (inRange(n1, pre_b, pre_bsd)) {
-                        if (inRange(n3, pre_b, pre_bsd)) {
-                            res += ', ' + arrIndic2[posdesk];
-                        } else {
-                            res += ' dan ' + arrIndic2[posdesk];
-                        }
-                    } else {
-                        res += ', baik kemampuan dalam ' + arrIndic2[posdesk];
-                    }
-                } else {
-                    res += ' baik dalam ' + arrIndic2[posdesk];
-                }
-            } else if (inRange(n2, pre_c, pre_csd)) {
-                if (pos > 0) {
-                    if (inRange(n1, pre_c, pre_csd)) {
-                        if (inRange(n3, pre_c, pre_csd)) {
-                            res += ', ' + arrIndic2[posdesk];
-                        } else {
-                            res += ' dan ' + arrIndic2[posdesk];
-                        }
-                    } else {
-                        res += ', cukup kemampuan dalam ' + arrIndic2[posdesk];
-                    }
-                } else {
-                    res += ' cukup dalam ' + arrIndic2[posdesk];
-                }
-            } else if (inRange(n2, pre_d, pre_dsd)) {
-                if (pos > 0) {
-                    if (inRange(n1, pre_d, pre_dsd)) {
-                        if (inRange(n3, pre_d, pre_dsd)) {
-                            res += ', ' + arrIndic2[posdesk];
-                        } else {
-                            res += ' dan ' + arrIndic2[posdesk];
-                        }
-                    } else {
-                        res += ', kurang kemampuan dalam ' + arrIndic2[posdesk];
-                    }
-                } else {
-                    res += ' kurang dalam ' + arrIndic2[posdesk];
-                }
+        var arrIndic1 = [];
+        for (let i = 0; i < 8; i++) {
+            var asp1 = arrKiKd[1];
+            var idP = 'P' + (i + 1);
+            if (asp1[idMapel + idKelas + '1' + (i + 1)] != null && asp1[idMapel + idKelas + '1' + (i + 1)].materi_kikd !== '') {
+                idP = asp1[idMapel + idKelas + '1' + (i + 1)].materi_kikd;
             }
+            arrIndic1.push(idP);
         }
-
-        if (n3 == null) {
-            res += '.';
-        }
-        return res;
-    }
-
-    function preCalcPeng(n1, n2, n3, pos, posdesk) {
-        var res = '';
-        if (n2 != null) {
-            if (inRange(n2, pre_a, pre_asd)) {
-                if (pos > 0) {
-                    if (inRange(n1, pre_a, pre_asd)) {
-                        if (inRange(n3, pre_a, pre_asd)) {
-                            res += ', ' + arrIndic1[posdesk];
-                        } else {
-                            res += ' dan ' + arrIndic1[posdesk];
-                        }
-                    } else {
-                        res += ', sangat baik kemampuan dalam ' + arrIndic1[posdesk];
-                    }
-                } else {
-                    res += ' sangat baik dalam ' + arrIndic1[posdesk];
-                }
-            } else if (inRange(n2, pre_b, pre_bsd)) {
-                if (pos > 0) {
-                    if (inRange(n1, pre_b, pre_bsd)) {
-                        if (inRange(n3, pre_b, pre_bsd)) {
-                            res += ', ' + arrIndic1[posdesk];
-                        } else {
-                            res += ' dan ' + arrIndic1[posdesk];
-                        }
-                    } else {
-                        res += ', baik kemampuan dalam ' + arrIndic1[posdesk];
-                    }
-                } else {
-                    res += ' baik dalam ' + arrIndic1[posdesk];
-                }
-            } else if (inRange(n2, pre_c, pre_csd)) {
-                if (pos > 0) {
-                    if (inRange(n1, pre_c, pre_csd)) {
-                        if (inRange(n3, pre_c, pre_csd)) {
-                            res += ', ' + arrIndic1[posdesk];
-                        } else {
-                            res += ' dan ' + arrIndic1[posdesk];
-                        }
-                    } else {
-                        res += ', cukup kemampuan dalam ' + arrIndic1[posdesk];
-                    }
-                } else {
-                    res += ' cukup dalam ' + arrIndic1[posdesk];
-                }
-            } else if (inRange(n2, pre_d, pre_dsd)) {
-                if (pos > 0) {
-                    if (inRange(n1, pre_d, pre_dsd)) {
-                        if (inRange(n3, pre_d, pre_dsd)) {
-                            res += ', ' + arrIndic1[posdesk];
-                        } else {
-                            res += ' dan ' + arrIndic1[posdesk];
-                        }
-                    } else {
-                        res += ', kurang kemampuan dalam ' + arrIndic1[posdesk];
-                    }
-                } else {
-                    res += ' kurang dalam ' + arrIndic1[posdesk];
-                }
+        var arrIndic2 = [];
+        for (let i = 0; i < 8; i++) {
+            var asp2 = arrKiKd[2];
+            var idK = 'K' + (i + 1);
+            if (asp2[idMapel + idKelas + '2' + (i + 1)] != null && asp2[idMapel + idKelas + '2' + (i + 1)].materi_kikd !== '') {
+                idK = asp2[idMapel + idKelas + '2' + (i + 1)].materi_kikd;
             }
+            arrIndic2.push(idK);
         }
 
-        if (n3 == null) {
-            res += '.';
-        }
-        return res;
-    }
+        var cols = [];
 
-    function setDeskPengetahuan(desk) {
-        cols = [];
-        for (let j = 0; j < desk.length; j++) {
-            var item = {};
-            item['pos'] = j;
-            item['nilai'] = desk[j];
-            item['desk'] = arrIndic1[j];
-            cols.push(item)
-        }
-        cols = sortByNilai(cols, 'nilai');
-        cols = $.grep(cols, function (n, i) {
-            return (n != null && n.nilai !== '');
-        });
-        //console.log('grepped', cols);
+        var mp1 = 'P1';
+        var mp2 = 'P2';
+        var mp3 = 'P3';
+        var mp4 = 'P4';
+        var mp5 = 'P5';
+        var mp6 = 'P6';
+        var mp7 = 'P7';
+        var mp8 = 'P8';
 
-        var result = cols.length > 1 ? 'Memiliki kemampuan' : '';
-        if (cols.length > 0) {
-            var count = cols.length > 2 ? 2 : cols.length;
-            for (let i = 0; i < count; i++) {
-                if (cols[i].nilai != null && cols[i].nilai !== '' && cols[i].nilai > 0) {
-                    if (i === 0) {
-                        if (cols[i + 1] != null) {
-                            result += preCalcPeng(null, cols[i].nilai, cols[i + 1].nilai, i, cols[i].pos);
-                        }
-                    } else if (i === cols.length - 1) {
-                        if (cols[i - 1] != null) {
-                            result += preCalcPeng(cols[i - 1].nilai, cols[i].nilai, null, i, cols[i].pos);
-                        }
-                    } else {
-                        if (cols[i - 1] != null && cols[i + 1] != null) {
-                            result += preCalcPeng(cols[i - 1].nilai, cols[i].nilai, cols[i + 1].nilai, i, cols[i].pos);
-                        }
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    function setDeskKeterampilan(desk) {
-        cols = [];
-        for (let j = 0; j < desk.length; j++) {
-            var item = {};
-            item['pos'] = j;
-            item['nilai'] = desk[j];
-            item['desk'] = arrIndic2[j];
-            cols.push(item)
-        }
-        cols = sortByNilai(cols, 'nilai');
-        cols = $.grep(cols, function (n, i) {
-            return (n != null && n.nilai !== '');
-        });
-        //console.log(cols);
-
-        var result = cols.length > 1 ? 'Memiliki keterampilan' : '';
-        if (cols.length > 0) {
-            var count = cols.length > 2 ? 2 : cols.length;
-            for (let i = 0; i < count; i++) {
-                if (cols[i].nilai != null && cols[i].nilai !== '' && cols[i].nilai > 0) {
-                    if (i === 0) {
-                        if (cols[i + 1] != null) {
-                            result += preCalcKetr(null, cols[i].nilai, cols[i + 1].nilai, i, cols[i].pos);
-                        }
-                    } else if (i === cols.length - 1) {
-                        if (cols[i - 1] != null) {
-                            result += preCalcKetr(cols[i - 1].nilai, cols[i].nilai, null, i, cols[i].pos);
-                        }
-                    } else {
-                        if (cols[i - 1] != null && cols[i + 1] != null) {
-                            result += preCalcKetr(cols[i - 1].nilai, cols[i].nilai, cols[i + 1].nilai, i, cols[i].pos);
-                        }
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    $(document).ready(function () {
-        //console.log(idKelas);
-        //console.log(arrNilai);
-        //console.log('a' + pre_a + ' b' + pre_b + ' bd' + pre_bsd + ' c' + pre_c + ' cd' + pre_csd + ' dd' + pre_dsd);
-        var dataSiswa = [];
-        var row = 1;
-        $.each(arrSiswa, function (i, v) {
-            var noInduk = v.nisn == null || v.nisn == '' ? v.nis : v.nisn;
-            var nilai = arrNilai[v.id_siswa];
-            var p1 = nilai.p1 == '0' ? '' : nilai.p1;
-            var p2 = nilai.p2 == '0' ? '' : nilai.p2;
-            var p3 = nilai.p3 == '0' ? '' : nilai.p3;
-            var p4 = nilai.p4 == '0' ? '' : nilai.p4;
-            var p5 = nilai.p5 == '0' ? '' : nilai.p5;
-            var p6 = nilai.p6 == '0' ? '' : nilai.p6;
-            var p7 = nilai.p7 == '0' ? '' : nilai.p7;
-            var p8 = nilai.p8 == '0' ? '' : nilai.p8;
-
-            var k1 = nilai.k1 == '0' ? '' : nilai.k1;
-            var k2 = nilai.k2 == '0' ? '' : nilai.k2;
-            var k3 = nilai.k3 == '0' ? '' : nilai.k3;
-            var k4 = nilai.k4 == '0' ? '' : nilai.k4;
-            var k5 = nilai.k5 == '0' ? '' : nilai.k5;
-            var k6 = nilai.k6 == '0' ? '' : nilai.k6;
-            var k7 = nilai.k7 == '0' ? '' : nilai.k7;
-            var k8 = nilai.k8 == '0' ? '' : nilai.k8;
-
-            dataSiswa.push(
-                [
-                    noInduk, v.nama, p1, p2, p3, p4, p5, p6, p7, p8,
-                    '=COUNTA(C' + row + ':J' + row + ')',
-                    '=IF(COUNT(C' + row + ':J' + row + ')<2,"",ROUND(SUM(C' + row + ':J' + row + ')/K' + row + ',0))',
-                    '=IF(L' + row + '>' + pre_bsd + ',"A",IF(L' + row + '>' + pre_csd + ',"B",IF(L' + row + '>' + pre_dsd + ',"C",IF(L' + row + '<' + pre_c + ',"D",""))))',
-                    setDeskPengetahuan([p1, p2, p3, p4, p5, p6, p7, p8]),
-                    k1, k2, k3, k4, k5, k6, k7, k8,
-                    '=COUNTA(O' + row + ':V' + row + ')',
-                    '=IF(COUNT(O' + row + ':V' + row + ')<2,"",ROUND(SUM(O' + row + ':V' + row + ')/W' + row + ',0))',
-                    '=IF(X' + row + '>' + pre_bsd + ',"A",IF(X' + row + '>' + pre_csd + ',"B",IF(X' + row + '>' + pre_dsd + ',"C",IF(X' + row + '<' + pre_c + ',"D",""))))',
-                    setDeskKeterampilan([k1, k2, k3, k4, k5, k6, k7, k8]),
-                    v.id_siswa,
-                    '=SUM(C' + row + ':J' + row + ')',
-                    '=SUM(O' + row + ':V' + row + ')',
-                    '=SUM(AB' + row + ':AC' + row + ')'
-                ]
-            );
-            row++;
+        $(function () {
+            bsCustomFileInput.init();
         });
 
-        var arrCol = [];
-
-        var pno = 1;
-        var kno = 1;
-        var char = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        for (let i = 0; i < 30; i++) {
-            var item = {};
-
-            if (i === 0) {
-                item['title'] = 'NIS/NISN\n' + char.charAt(i);
-                item['width'] = 160;
-            } else if (i === 1) {
-                item['title'] = 'NAMA SISWA\n' + char.charAt(i);
-                item['width'] = 250;
-            } else if (i < 10) {
-                item['title'] = 'P-' + pno + '\n' + char.charAt(i);
-                item['width'] = 35;
-                pno++;
-            } else if (i === 10) {
-                item['title'] = 'JML\n' + char.charAt(i);
-                item['width'] = 1;
-            } else if (i === 11) {
-                item['title'] = 'RATA\n' + char.charAt(i);
-                item['width'] = 50;
-            } else if (i === 12) {
-                item['title'] = 'PRED\n' + char.charAt(i);
-                item['width'] = 50;
-            } else if (i === 13) {
-                item['title'] = 'DESKRIPSI\n' + char.charAt(i);
-                item['width'] = 200;
-                item['wordWrap'] = true;
-            } else if (i < 22) {
-                item['title'] = 'K-' + kno + '\n' + char.charAt(i);
-                item['width'] = 35;
-                kno++;
-            } else if (i === 22) {
-                item['title'] = 'JML\n' + char.charAt(i);
-                item['width'] = 1;
-            } else if (i === 23) {
-                item['title'] = 'RATA\n' + char.charAt(i);
-                item['width'] = 50;
-            } else if (i === 24) {
-                item['title'] = 'PRED\n' + char.charAt(i);
-                item['width'] = 50;
-            } else if (i === 25) {
-                item['title'] = 'DESKRIPSI\n' + char.charAt(i);
-                item['width'] = 200;
-                item['wordWrap'] = true;
-            } else if (i === 26) {
-                item['title'] = 'ID';
-                item['width'] = 1;
-            } else if (i > 26) {
-                item['width'] = 1;
-            }
-
-            arrCol.push(item);
+        function inRange(n, start, end) {
+            return n >= start && n <= end;
         }
 
-        var tableSiswa = $('#t-siswa').jexcel({
-            data: dataSiswa,
-            minDimensions: [30],
-            //defaultColWidth: 100,
-            tableOverflow: true,
-            tableWidth: '' + $('#t-siswa').width() + 'px',
-            tableHeight: (120 * dataSiswa.length) + 'px',
-            search: true,
-            freezeColumns: 2,
-            columnResize: false,
-            columns: arrCol,
-            nestedHeaders: [
-                [
-                    {
-                        title: 'Nilai Harian',
-                        colspan: '30',
-                    },
+        function sortByNilai(arr, key) {
+            return arr.sort(function (a, b) {
+                var x = a[key];
+                var y = b[key];
+                return ((x > y) ? -1 : ((x < y) ? 1 : 0));
+            });
+        }
+
+        function preCalcKetr(n1, n2, n3, pos, posdesk) {
+            var res = '';
+            if (n2 != null) {
+                if (inRange(n2, pre_a, pre_asd)) {
+                    if (pos > 0) {
+                        if (inRange(n1, pre_a, pre_asd)) {
+                            if (inRange(n3, pre_a, pre_asd)) {
+                                res += ', ' + arrIndic2[posdesk];
+                            } else {
+                                res += ' dan ' + arrIndic2[posdesk];
+                            }
+                        } else {
+                            res += ', sangat baik kemampuan dalam ' + arrIndic2[posdesk];
+                        }
+                    } else {
+                        res += ' sangat baik dalam ' + arrIndic2[posdesk];
+                    }
+                } else if (inRange(n2, pre_b, pre_bsd)) {
+                    if (pos > 0) {
+                        if (inRange(n1, pre_b, pre_bsd)) {
+                            if (inRange(n3, pre_b, pre_bsd)) {
+                                res += ', ' + arrIndic2[posdesk];
+                            } else {
+                                res += ' dan ' + arrIndic2[posdesk];
+                            }
+                        } else {
+                            res += ', baik kemampuan dalam ' + arrIndic2[posdesk];
+                        }
+                    } else {
+                        res += ' baik dalam ' + arrIndic2[posdesk];
+                    }
+                } else if (inRange(n2, pre_c, pre_csd)) {
+                    if (pos > 0) {
+                        if (inRange(n1, pre_c, pre_csd)) {
+                            if (inRange(n3, pre_c, pre_csd)) {
+                                res += ', ' + arrIndic2[posdesk];
+                            } else {
+                                res += ' dan ' + arrIndic2[posdesk];
+                            }
+                        } else {
+                            res += ', cukup kemampuan dalam ' + arrIndic2[posdesk];
+                        }
+                    } else {
+                        res += ' cukup dalam ' + arrIndic2[posdesk];
+                    }
+                } else if (inRange(n2, pre_d, pre_dsd)) {
+                    if (pos > 0) {
+                        if (inRange(n1, pre_d, pre_dsd)) {
+                            if (inRange(n3, pre_d, pre_dsd)) {
+                                res += ', ' + arrIndic2[posdesk];
+                            } else {
+                                res += ' dan ' + arrIndic2[posdesk];
+                            }
+                        } else {
+                            res += ', kurang kemampuan dalam ' + arrIndic2[posdesk];
+                        }
+                    } else {
+                        res += ' kurang dalam ' + arrIndic2[posdesk];
+                    }
+                }
+            }
+
+            if (n3 == null) {
+                res += '.';
+            }
+            return res;
+        }
+
+        function preCalcPeng(n1, n2, n3, pos, posdesk) {
+            var res = '';
+            if (n2 != null) {
+                if (inRange(n2, pre_a, pre_asd)) {
+                    if (pos > 0) {
+                        if (inRange(n1, pre_a, pre_asd)) {
+                            if (inRange(n3, pre_a, pre_asd)) {
+                                res += ', ' + arrIndic1[posdesk];
+                            } else {
+                                res += ' dan ' + arrIndic1[posdesk];
+                            }
+                        } else {
+                            res += ', sangat baik kemampuan dalam ' + arrIndic1[posdesk];
+                        }
+                    } else {
+                        res += ' sangat baik dalam ' + arrIndic1[posdesk];
+                    }
+                } else if (inRange(n2, pre_b, pre_bsd)) {
+                    if (pos > 0) {
+                        if (inRange(n1, pre_b, pre_bsd)) {
+                            if (inRange(n3, pre_b, pre_bsd)) {
+                                res += ', ' + arrIndic1[posdesk];
+                            } else {
+                                res += ' dan ' + arrIndic1[posdesk];
+                            }
+                        } else {
+                            res += ', baik kemampuan dalam ' + arrIndic1[posdesk];
+                        }
+                    } else {
+                        res += ' baik dalam ' + arrIndic1[posdesk];
+                    }
+                } else if (inRange(n2, pre_c, pre_csd)) {
+                    if (pos > 0) {
+                        if (inRange(n1, pre_c, pre_csd)) {
+                            if (inRange(n3, pre_c, pre_csd)) {
+                                res += ', ' + arrIndic1[posdesk];
+                            } else {
+                                res += ' dan ' + arrIndic1[posdesk];
+                            }
+                        } else {
+                            res += ', cukup kemampuan dalam ' + arrIndic1[posdesk];
+                        }
+                    } else {
+                        res += ' cukup dalam ' + arrIndic1[posdesk];
+                    }
+                } else if (inRange(n2, pre_d, pre_dsd)) {
+                    if (pos > 0) {
+                        if (inRange(n1, pre_d, pre_dsd)) {
+                            if (inRange(n3, pre_d, pre_dsd)) {
+                                res += ', ' + arrIndic1[posdesk];
+                            } else {
+                                res += ' dan ' + arrIndic1[posdesk];
+                            }
+                        } else {
+                            res += ', kurang kemampuan dalam ' + arrIndic1[posdesk];
+                        }
+                    } else {
+                        res += ' kurang dalam ' + arrIndic1[posdesk];
+                    }
+                }
+            }
+
+            if (n3 == null) {
+                res += '.';
+            }
+            return res;
+        }
+
+        function setDeskPengetahuan(desk) {
+            cols = [];
+            for (let j = 0; j < desk.length; j++) {
+                var item = {};
+                item['pos'] = j;
+                item['nilai'] = desk[j];
+                item['desk'] = arrIndic1[j];
+                cols.push(item)
+            }
+            cols = sortByNilai(cols, 'nilai');
+            cols = $.grep(cols, function (n, i) {
+                return (n != null && n.nilai !== '');
+            });
+            //console.log('grepped', cols);
+
+            var result = cols.length > 1 ? 'Memiliki kemampuan' : '';
+            if (cols.length > 0) {
+                var count = cols.length > 2 ? 2 : cols.length;
+                for (let i = 0; i < count; i++) {
+                    if (cols[i].nilai != null && cols[i].nilai !== '' && cols[i].nilai > 0) {
+                        if (i === 0) {
+                            if (cols[i + 1] != null) {
+                                result += preCalcPeng(null, cols[i].nilai, cols[i + 1].nilai, i, cols[i].pos);
+                            }
+                        } else if (i === cols.length - 1) {
+                            if (cols[i - 1] != null) {
+                                result += preCalcPeng(cols[i - 1].nilai, cols[i].nilai, null, i, cols[i].pos);
+                            }
+                        } else {
+                            if (cols[i - 1] != null && cols[i + 1] != null) {
+                                result += preCalcPeng(cols[i - 1].nilai, cols[i].nilai, cols[i + 1].nilai, i, cols[i].pos);
+                            }
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        function setDeskKeterampilan(desk) {
+            cols = [];
+            for (let j = 0; j < desk.length; j++) {
+                var item = {};
+                item['pos'] = j;
+                item['nilai'] = desk[j];
+                item['desk'] = arrIndic2[j];
+                cols.push(item)
+            }
+            cols = sortByNilai(cols, 'nilai');
+            cols = $.grep(cols, function (n, i) {
+                return (n != null && n.nilai !== '');
+            });
+            //console.log(cols);
+
+            var result = cols.length > 1 ? 'Memiliki keterampilan' : '';
+            if (cols.length > 0) {
+                var count = cols.length > 2 ? 2 : cols.length;
+                for (let i = 0; i < count; i++) {
+                    if (cols[i].nilai != null && cols[i].nilai !== '' && cols[i].nilai > 0) {
+                        if (i === 0) {
+                            if (cols[i + 1] != null) {
+                                result += preCalcKetr(null, cols[i].nilai, cols[i + 1].nilai, i, cols[i].pos);
+                            }
+                        } else if (i === cols.length - 1) {
+                            if (cols[i - 1] != null) {
+                                result += preCalcKetr(cols[i - 1].nilai, cols[i].nilai, null, i, cols[i].pos);
+                            }
+                        } else {
+                            if (cols[i - 1] != null && cols[i + 1] != null) {
+                                result += preCalcKetr(cols[i - 1].nilai, cols[i].nilai, cols[i + 1].nilai, i, cols[i].pos);
+                            }
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        $(document).ready(function () {
+            //console.log(idKelas);
+            //console.log(arrNilai);
+            //console.log('a' + pre_a + ' b' + pre_b + ' bd' + pre_bsd + ' c' + pre_c + ' cd' + pre_csd + ' dd' + pre_dsd);
+            var dataSiswa = [];
+            var row = 1;
+            $.each(arrSiswa, function (i, v) {
+                var noInduk = v.nisn == null || v.nisn == '' ? v.nis : v.nisn;
+                var nilai = arrNilai[v.id_siswa];
+                var p1 = nilai.p1 == '0' ? '' : nilai.p1;
+                var p2 = nilai.p2 == '0' ? '' : nilai.p2;
+                var p3 = nilai.p3 == '0' ? '' : nilai.p3;
+                var p4 = nilai.p4 == '0' ? '' : nilai.p4;
+                var p5 = nilai.p5 == '0' ? '' : nilai.p5;
+                var p6 = nilai.p6 == '0' ? '' : nilai.p6;
+                var p7 = nilai.p7 == '0' ? '' : nilai.p7;
+                var p8 = nilai.p8 == '0' ? '' : nilai.p8;
+
+                var k1 = nilai.k1 == '0' ? '' : nilai.k1;
+                var k2 = nilai.k2 == '0' ? '' : nilai.k2;
+                var k3 = nilai.k3 == '0' ? '' : nilai.k3;
+                var k4 = nilai.k4 == '0' ? '' : nilai.k4;
+                var k5 = nilai.k5 == '0' ? '' : nilai.k5;
+                var k6 = nilai.k6 == '0' ? '' : nilai.k6;
+                var k7 = nilai.k7 == '0' ? '' : nilai.k7;
+                var k8 = nilai.k8 == '0' ? '' : nilai.k8;
+
+                dataSiswa.push(
+                    [
+                        noInduk, v.nama, p1, p2, p3, p4, p5, p6, p7, p8,
+                        '=COUNTA(C' + row + ':J' + row + ')',
+                        '=IF(COUNT(C' + row + ':J' + row + ')<2,"",ROUND(SUM(C' + row + ':J' + row + ')/K' + row + ',0))',
+                        '=IF(L' + row + '>' + pre_bsd + ',"A",IF(L' + row + '>' + pre_csd + ',"B",IF(L' + row + '>' + pre_dsd + ',"C",IF(L' + row + '<' + pre_c + ',"D",""))))',
+                        setDeskPengetahuan([p1, p2, p3, p4, p5, p6, p7, p8]),
+                        k1, k2, k3, k4, k5, k6, k7, k8,
+                        '=COUNTA(O' + row + ':V' + row + ')',
+                        '=IF(COUNT(O' + row + ':V' + row + ')<2,"",ROUND(SUM(O' + row + ':V' + row + ')/W' + row + ',0))',
+                        '=IF(X' + row + '>' + pre_bsd + ',"A",IF(X' + row + '>' + pre_csd + ',"B",IF(X' + row + '>' + pre_dsd + ',"C",IF(X' + row + '<' + pre_c + ',"D",""))))',
+                        setDeskKeterampilan([k1, k2, k3, k4, k5, k6, k7, k8]),
+                        v.id_siswa,
+                        '=SUM(C' + row + ':J' + row + ')',
+                        '=SUM(O' + row + ':V' + row + ')',
+                        '=SUM(AB' + row + ':AC' + row + ')'
+                    ]
+                );
+                row++;
+            });
+
+            var arrCol = [];
+
+            var pno = 1;
+            var kno = 1;
+            var char = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            for (let i = 0; i < 30; i++) {
+                var item = {};
+
+                if (i === 0) {
+                    item['title'] = 'NIS/NISN\n' + char.charAt(i);
+                    item['width'] = 160;
+                } else if (i === 1) {
+                    item['title'] = 'NAMA SISWA\n' + char.charAt(i);
+                    item['width'] = 250;
+                } else if (i < 10) {
+                    item['title'] = 'P-' + pno + '\n' + char.charAt(i);
+                    item['width'] = 35;
+                    pno++;
+                } else if (i === 10) {
+                    item['title'] = 'JML\n' + char.charAt(i);
+                    item['width'] = 1;
+                } else if (i === 11) {
+                    item['title'] = 'RATA\n' + char.charAt(i);
+                    item['width'] = 50;
+                } else if (i === 12) {
+                    item['title'] = 'PRED\n' + char.charAt(i);
+                    item['width'] = 50;
+                } else if (i === 13) {
+                    item['title'] = 'DESKRIPSI\n' + char.charAt(i);
+                    item['width'] = 200;
+                    item['wordWrap'] = true;
+                } else if (i < 22) {
+                    item['title'] = 'K-' + kno + '\n' + char.charAt(i);
+                    item['width'] = 35;
+                    kno++;
+                } else if (i === 22) {
+                    item['title'] = 'JML\n' + char.charAt(i);
+                    item['width'] = 1;
+                } else if (i === 23) {
+                    item['title'] = 'RATA\n' + char.charAt(i);
+                    item['width'] = 50;
+                } else if (i === 24) {
+                    item['title'] = 'PRED\n' + char.charAt(i);
+                    item['width'] = 50;
+                } else if (i === 25) {
+                    item['title'] = 'DESKRIPSI\n' + char.charAt(i);
+                    item['width'] = 200;
+                    item['wordWrap'] = true;
+                } else if (i === 26) {
+                    item['title'] = 'ID';
+                    item['width'] = 1;
+                } else if (i > 26) {
+                    item['width'] = 1;
+                }
+
+                arrCol.push(item);
+            }
+
+            var tableSiswa = $('#t-siswa').jexcel({
+                data: dataSiswa,
+                minDimensions: [30],
+                //defaultColWidth: 100,
+                tableOverflow: true,
+                tableWidth: '' + $('#t-siswa').width() + 'px',
+                tableHeight: (120 * dataSiswa.length) + 'px',
+                search: true,
+                freezeColumns: 2,
+                columnResize: false,
+                columns: arrCol,
+                nestedHeaders: [
+                    [
+                        {
+                            title: 'Nilai Harian',
+                            colspan: '30',
+                        },
+                    ],
                 ],
-            ],
-            updateTable: function (instance, cell, col, row, val, label, cellName) {
-                if (col === 0) {
-                    cell.className = '';
-                    cell.style.backgroundColor = '#f8d7da';
-                    cell.style.textAlign = 'center';
-                    cell.classList.add('readonly');
-                }
-
-                if (col === 1) {
-                    cell.className = '';
-                    cell.style.backgroundColor = '#f8d7da';
-                    cell.style.textAlign = 'left';
-                    cell.classList.add('readonly');
-                }
-
-                if (col === 10 || col === 11 || col === 12 || col === 13 ||
-                    col === 22 || col === 23 || col === 24 || col === 25 ||
-                    col === 26 || col === 27 || col === 28 || col === 29) {
-                    cell.className = '';
-                    cell.style.backgroundColor = '#fff3cd';
-                    cell.classList.add('readonly');
-                }
-
-                if (col === 2 || col === 3 || col === 4 || col === 5 || col === 6 ||
-                    col === 7 || col === 8 || col === 9 || col === 14 || col === 15 ||
-                    col === 16 || col === 17 || col === 18 || col === 19 || col === 20 || col === 21) {
-                    cell.style.backgroundColor = '#b9f6ca';
-                }
-
-                if (col === 13 || col === 25) {
-                    cell.style.fontSize = 'small';
-                    cell.style.textAlign = 'left';
-                }
-            },
-            onchange: function (instance, cell, col, row, value, label) {
-                //var cellName = jexcel.getColumnNameFromId([col,row]);
-                var d = [];
-                if (col === 10) {
-                    d = [];
-                    for (let i = 2; i < 10; i++) {
-                        var values1 = $(`td[data-x="${i}"][data-y="${row}"]`).text();
-                        d.push(values1);
+                updateTable: function (instance, cell, col, row, val, label, cellName) {
+                    if (col === 0) {
+                        cell.className = '';
+                        cell.style.backgroundColor = '#f8d7da';
+                        cell.style.textAlign = 'center';
+                        cell.classList.add('readonly');
                     }
-                    $(`td[data-x="13"][data-y="${row}"]`).text(setDeskPengetahuan(d));
-                }
 
-                if (col === 22) {
-                    d = [];
-                    for (let i = 14; i < 22; i++) {
-                        var values2 = $(`td[data-x="${i}"][data-y="${row}"]`).text();
-                        d.push(values2);
+                    if (col === 1) {
+                        cell.className = '';
+                        cell.style.backgroundColor = '#f8d7da';
+                        cell.style.textAlign = 'left';
+                        cell.classList.add('readonly');
                     }
-                    //console.log(setDesk(d));
-                    $(`td[data-x="25"][data-y="${row}"]`).text(setDeskKeterampilan(d));
-                }
-            }
-        });
 
-        function cellRef(cel) {
-            var x = cel.replace(/[A-Za-z]/g, "");
-            x = x.charCodeAt(0) - 65;
-            var y = cel.replace(/\D/g, "");
-            y = y - 1;
+                    if (col === 10 || col === 11 || col === 12 || col === 13 ||
+                        col === 22 || col === 23 || col === 24 || col === 25 ||
+                        col === 26 || col === 27 || col === 28 || col === 29) {
+                        cell.className = '';
+                        cell.style.backgroundColor = '#fff3cd';
+                        cell.classList.add('readonly');
+                    }
 
-            return x + "," + y;
-        }
+                    if (col === 2 || col === 3 || col === 4 || col === 5 || col === 6 ||
+                        col === 7 || col === 8 || col === 9 || col === 14 || col === 15 ||
+                        col === 16 || col === 17 || col === 18 || col === 19 || col === 20 || col === 21) {
+                        cell.style.backgroundColor = '#b9f6ca';
+                    }
 
-        $('#upload').on('click', function (e) {
-            const input = $('#custom-file')
-            const files = input[0].files
-            console.log('files',files)
-            if (!files.length) {
-                swal.fire({
-                    title: "INFO",
-                    text: 'Tidak ada file untuk diupload',
-                    icon: "info"
-                });
-            } else {
-                parseFile(files[0]);
-            }
-        })
-
-        /*
-        $('#uploadharian').submit('click', function (e) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-
-            var form = new FormData($('#uploadharian')[0]);
-
-            $.ajax({
-                type: "POST",
-                enctype: 'multipart/form-data',
-                url: base_url + 'rapor/uploadharian/' + idMapel + '/' + idKelas,
-                data: form,
-                processData: false,
-                contentType: false,
-                cache: false,
-                timeout: 600000,
-                success: function (data) {
-                    console.log(data);
-                    window.location.href = base_url + 'rapor/inputharian/' + idMapel + '/' + idKelas
+                    if (col === 13 || col === 25) {
+                        cell.style.fontSize = 'small';
+                        cell.style.textAlign = 'left';
+                    }
                 },
-                error: function (e) {
-                    console.log("error", e.responseText);
-                    showDangerToast(e.responseText);
-                }
-            });
-        });
-         */
-
-        $('#uploadnilai').on('submit', function (e) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-
-            swal.fire({
-                title: "Menyimpan nilai harian",
-                text: "Silahkan tunggu....",
-                allowEscapeKey: false,
-                allowOutsideClick: false,
-                onOpen: () => {
-                    swal.showLoading();
-                }
-            });
-
-            var tbl = $('table.jexcel tr').get().map(function (row) {
-                return $(row).find('td').get().map(function (cell) {
-                    return $(cell).html().replace(/\&nbsp;/g, '').trim();
-                });
-            });
-            tbl.shift();
-            tbl.shift();
-            var inputs = '';
-            $.each(tbl, function (idx, s) {
-                var idSiswa = s[27];
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][id_nilai_harian]" value="' + idMapel + idKelas + idSiswa + tpActive + smtActive + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][id_siswa]" value="' + idSiswa + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][id_tp]" value="' + tpActive + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][id_smt]" value="' + smtActive + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][id_mapel]" value="' + idMapel + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][id_kelas]" value="' + idKelas + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][p1]" value="' + s[3] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][p2]" value="' + s[4] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][p3]" value="' + s[5] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][p4]" value="' + s[6] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][p5]" value="' + s[7] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][p6]" value="' + s[8] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][p7]" value="' + s[9] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][p8]" value="' + s[10] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][p_rata_rata]" value="' + s[12] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][p_predikat]" value="' + s[13] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][p_deskripsi]" value="' + s[14] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][k1]" value="' + s[15] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][k2]" value="' + s[16] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][k3]" value="' + s[17] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][k4]" value="' + s[18] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][k5]" value="' + s[19] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][k6]" value="' + s[20] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][k7]" value="' + s[21] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][k8]" value="' + s[22] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][k_rata_rata]" value="' + s[24] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][k_predikat]" value="' + s[25] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][k_deskripsi]" value="' + s[26] + '" class="form-control col-1">';
-                inputs += '<input type="text" name="siswa[' + idSiswa + '][jml]" value="' + s[30] + '" class="form-control col-1">';
-            });
-            $('#for-upload').html(inputs);
-
-            $.ajax({
-                type: "POST",
-                url: base_url + 'rapor/importharian',
-                data: $(this).serialize(),
-                cache: false,
-                success: function (data) {
-                    //console.log(data);
-                    swal.fire({
-                        title: "Sukses",
-                        html: "<b>" + data.updated + "<b> nilai berhasil disimpan",
-                        icon: "success",
-                        showCancelButton: false,
-                        confirmButtonColor: "#3085d6",
-                        confirmButtonText: "OK"
-                    }).then(result => {
-                        if (result.value) {
-                            window.location.href = base_url + 'rapor/inputharian/' + idMapel + '/' + idKelas
+                onchange: function (instance, cell, col, row, value, label) {
+                    //var cellName = jexcel.getColumnNameFromId([col,row]);
+                    var d = [];
+                    if (col === 10) {
+                        d = [];
+                        for (let i = 2; i < 10; i++) {
+                            var values1 = $(`td[data-x="${i}"][data-y="${row}"]`).text();
+                            d.push(values1);
                         }
+                        $(`td[data-x="13"][data-y="${row}"]`).text(setDeskPengetahuan(d));
+                    }
+
+                    if (col === 22) {
+                        d = [];
+                        for (let i = 14; i < 22; i++) {
+                            var values2 = $(`td[data-x="${i}"][data-y="${row}"]`).text();
+                            d.push(values2);
+                        }
+                        //console.log(setDesk(d));
+                        $(`td[data-x="25"][data-y="${row}"]`).text(setDeskKeterampilan(d));
+                    }
+                }
+            });
+
+            function cellRef(cel) {
+                var x = cel.replace(/[A-Za-z]/g, "");
+                x = x.charCodeAt(0) - 65;
+                var y = cel.replace(/\D/g, "");
+                y = y - 1;
+
+                return x + "," + y;
+            }
+
+            $('#upload').on('click', function (e) {
+                const input = $('#custom-file')
+                const files = input[0].files
+                console.log('files', files)
+                if (!files.length) {
+                    Swal.fire({
+                        title: "INFO",
+                        text: 'Tidak ada file untuk diupload',
+                        icon: "info"
                     });
-                },
-                error: function (e) {
-                    console.log("error", e.responseText);
-                    swal.fire({
-                        title: "Error",
-                        html: "Gagal menyimpan",
-                        icon: "error",
-                        showCancelButton: false,
-                        confirmButtonColor: "#3085d6",
-                        confirmButtonText: "OK"
-                    })
+                } else {
+                    parseFile(files[0]);
+                }
+            })
+
+            function toNumber(value) {
+                if (value === null || value === undefined) return null;
+                var cleaned = String(value).replace(/[^0-9,.-]/g, '').replace(',', '.');
+                if (cleaned === '') return null;
+                var parsed = parseFloat(cleaned);
+                return isNaN(parsed) ? null : parsed;
+            }
+
+            function toText(value) {
+                return value === null || value === undefined ? '' : String(value).trim();
+            }
+
+            function getPredikat(nilai) {
+                if (nilai === null || nilai === undefined || nilai === '') {
+                    return '';
+                }
+                if (nilai > pre_bsd) return 'A';
+                if (nilai > pre_csd) return 'B';
+                if (nilai > pre_dsd) return 'C';
+                if (nilai < pre_c) return 'D';
+                return '';
+            }
+
+            function calculateAverage(values) {
+                var sum = 0;
+                var count = 0;
+                for (var i = 0; i < values.length; i++) {
+                    var v = toNumber(values[i]);
+                    if (v !== null) {
+                        sum += v;
+                        count++;
+                    }
+                }
+                return count > 0 ? Math.round(sum / count) : null;
+            }
+
+            $("#download-excel").on("click", async function () {
+                const namaMapel = window.namaMapel || '<?= $mapel['nama_mapel'] ?>';
+                const namaKelas = window.namaKelas || '<?= $kelas['nama_kelas'] ?>';
+
+                const tableData = $('#t-siswa').jexcel('getData');
+
+                if (!tableData || tableData.length === 0) {
+                    Swal.fire({
+                        title: "ERROR",
+                        text: "DATA TIDAK TERSEDIA",
+                        icon: "error"
+                    });
+                    return;
+                }
+
+                // 1. Identify Active Columns
+                let activeP = [];
+                for (let i = 0; i < 8; i++) {
+                    let hasData = false;
+                    for (let r = 0; r < tableData.length; r++) {
+                        const val = tableData[r][2 + i];
+                        if (val !== null && val !== undefined && val !== "" && val !== 0 && val !== "0") {
+                            hasData = true;
+                            break;
+                        }
+                    }
+                    if (hasData) activeP.push(i + 1); // 1-based index P1...P8
+                }
+
+                let activeK = [];
+                for (let i = 0; i < 8; i++) {
+                    let hasData = false;
+                    for (let r = 0; r < tableData.length; r++) {
+                        const val = tableData[r][14 + i];
+                        if (val !== null && val !== undefined && val !== "" && val !== 0 && val !== "0") {
+                            hasData = true;
+                            break;
+                        }
+                    }
+                    if (hasData) activeK.push(i + 1); // 1-based index K1...K8
+                }
+
+                // 2. Build Column Settings
+                const baseColumns = [
+                    { header: 'No.', key: 'no', width: 5, alignment: { horizontal: 'center', vertical: 'middle' } },
+                    { header: 'NISN', key: 'nis', width: 14, alignment: { horizontal: 'center', vertical: 'middle' } },
+                    { header: 'Nama Siswa', key: 'nama', width: 25, alignment: { horizontal: 'left', vertical: 'middle', wrapText: true } }
+                ];
+
+                let pColumns = [];
+                activeP.forEach(p => {
+                    pColumns.push({ header: 'P' + p, key: 'p' + p, width: 5, alignment: { horizontal: 'center', vertical: 'middle' } });
+                });
+                pColumns.push({ header: 'Rata', key: 'rataP', width: 6, alignment: { horizontal: 'center', vertical: 'middle' } });
+                pColumns.push({ header: 'Pred', key: 'predP', width: 6, alignment: { horizontal: 'center', vertical: 'middle' } });
+                pColumns.push({ header: 'Deskripsi Pengetahuan', key: 'deskP', width: 35, alignment: { horizontal: 'left', vertical: 'top', wrapText: true } });
+
+                let kColumns = [];
+                activeK.forEach(k => {
+                    kColumns.push({ header: 'K' + k, key: 'k' + k, width: 5, alignment: { horizontal: 'center', vertical: 'middle' } });
+                });
+                kColumns.push({ header: 'Rata', key: 'rataK', width: 6, alignment: { horizontal: 'center', vertical: 'middle' } });
+                kColumns.push({ header: 'Pred', key: 'predK', width: 6, alignment: { horizontal: 'center', vertical: 'middle' } });
+                kColumns.push({ header: 'Deskripsi Keterampilan', key: 'deskK', width: 35, alignment: { horizontal: 'left', vertical: 'top', wrapText: true } });
+
+                let allCols = [...baseColumns, ...pColumns, ...kColumns];
+
+                // 3. Prepare Dataset
+                const dataset = tableData.map(function (row, idx) {
+                    var pValues = row.slice(2, 10);
+                    var avgP = calculateAverage(pValues);
+                    var predP = getPredikat(avgP);
+
+                    var kValues = row.slice(14, 22);
+                    var avgK = calculateAverage(kValues);
+                    var predK = getPredikat(avgK);
+
+                    let item = {
+                        no: idx + 1,
+                        nis: toText(row[0]),
+                        nama: toText(row[1]),
+                        rataP: avgP,
+                        predP: predP,
+                        deskP: toText(row[13]),
+                        rataK: avgK,
+                        predK: predK,
+                        deskK: toText(row[25])
+                    };
+
+                    activeP.forEach(p => {
+                        item['p' + p] = toNumber(row[1 + p]);
+                    });
+
+                    activeK.forEach(k => {
+                        item['k' + k] = toNumber(row[13 + k]);
+                    });
+
+                    return item;
+                });
+
+                try {
+                    const workbook = new ExcelJS.Workbook();
+                    const worksheet = workbook.addWorksheet('Nilai Harian');
+
+                    worksheet.pageSetup = {
+                        paperSize: 9,
+                        orientation: 'landscape',
+                        margins: {
+                            left: 0.5, right: 0.5,
+                            top: 0.5, bottom: 0.5,
+                            header: 0.3, footer: 0.3
+                        },
+                        fitToPage: false,
+                    };
+
+                    // Apply column widths and alignments
+                    allCols.forEach((col, index) => {
+                        const column = worksheet.getColumn(index + 1);
+                        column.width = col.width;
+                        column.alignment = col.alignment;
+                    });
+
+                    const lastColNum = allCols.length;
+                    const lastColLetter = worksheet.getColumn(lastColNum).letter;
+
+                    // Title Section
+                    worksheet.mergeCells(`A1:${lastColLetter}1`);
+                    worksheet.getCell('A1').value = 'REKAP NILAI HARIAN SISWA';
+                    worksheet.getCell('A1').font = { bold: true, size: 16 };
+                    worksheet.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' };
+
+                    worksheet.mergeCells(`A2:${lastColLetter}2`);
+                    worksheet.getCell('A2').value = `Mata Pelajaran: ${namaMapel}`;
+                    worksheet.getCell('A2').font = { bold: true, size: 12 };
+                    worksheet.getCell('A2').alignment = { horizontal: 'center', vertical: 'middle' };
+
+                    worksheet.mergeCells(`A3:${lastColLetter}3`);
+                    worksheet.getCell('A3').value = `Kelas: ${namaKelas}`;
+                    worksheet.getCell('A3').font = { bold: true, size: 12 };
+                    worksheet.getCell('A3').alignment = { horizontal: 'center', vertical: 'middle' };
+
+                    worksheet.addRow([]);
+
+                    // HeadersGroup Row
+                    let groupingRowValues = new Array(lastColNum).fill('');
+                    groupingRowValues[0] = 'NO';
+                    groupingRowValues[1] = 'DATA SISWA';
+                    groupingRowValues[3] = 'NILAI PENGETAHUAN'; // Start of P section (Col 4)
+
+                    let kSectionStartIdx = 3 + pColumns.length; // 0-based index
+                    groupingRowValues[kSectionStartIdx] = 'NILAI KETERAMPILAN';
+
+                    const groupingRow = worksheet.addRow(groupingRowValues);
+                    groupingRow.font = { bold: true };
+                    groupingRow.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+
+                    // Merges for Grouping Row
+                    // Data Siswa: Cols 2-3
+                    worksheet.mergeCells(5, 2, 5, 3);
+
+                    // Nilai Pengetahuan: Col 4 to (4 + pColumns.length - 1)
+                    worksheet.mergeCells(5, 4, 5, 3 + pColumns.length);
+
+                    // Nilai Keterampilan
+                    let startK = 4 + pColumns.length;
+                    let endK = startK + kColumns.length - 1;
+                    worksheet.mergeCells(5, startK, 5, endK);
+
+                    groupingRow.eachCell({ includeEmpty: true }, function (cell) {
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'D3D3D3' } };
+                        cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+                    });
+
+                    // Specific Headers Row
+                    const headerRow = worksheet.addRow(allCols.map(c => c.header));
+                    headerRow.font = { bold: true };
+                    headerRow.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+                    headerRow.eachCell({ includeEmpty: true }, function (cell) {
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'E0E0E0' } };
+                        cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+                    });
+
+                    // Helper to calculate ranges for coloring
+                    let pStart = 4;
+                    let pEnd = 3 + activeP.length;
+                    let pSumStart = pEnd + 1;
+                    let pSumEnd = pSumStart + 2;
+
+                    let kStart = pSumEnd + 1;
+                    let kEnd = kStart + activeK.length - 1;
+                    let kSumStart = kEnd + 1;
+                    let kSumEnd = kSumStart + 2;
+
+                    // Add Data rows
+                    dataset.forEach(item => {
+                        let rowVal = [item.no, item.nis, item.nama];
+                        activeP.forEach(p => rowVal.push(item['p' + p]));
+                        rowVal.push(item.rataP, item.predP, item.deskP);
+                        activeK.forEach(k => rowVal.push(item['k' + k]));
+                        rowVal.push(item.rataK, item.predK, item.deskK);
+
+                        let newRow = worksheet.addRow(rowVal);
+
+                        newRow.eachCell({ includeEmpty: true }, function (cell, colNumber) {
+                            cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+
+                            // Dynamic Coloring
+                            if (colNumber >= 1 && colNumber <= 3) {
+                                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF8D7DA' } }; // Pink
+                            } else if (colNumber >= pStart && colNumber <= pEnd) {
+                                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFB9F6CA' } }; // Green P
+                            } else if (colNumber >= pSumStart && colNumber <= pSumEnd) {
+                                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF3CD' } }; // Yellow P
+                            } else if (colNumber >= kStart && colNumber <= kEnd) {
+                                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFB9F6CA' } }; // Green K
+                            } else if (colNumber >= kSumStart && colNumber <= kSumEnd) {
+                                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF3CD' } }; // Yellow K
+                            }
+                        });
+                    });
+
+                    // Signatures
+                    const signatureStartRow = worksheet.lastRow.number + 2;
+
+                    const namaKepala = window.guruKepsek?.nama ?? '';
+                    const nipKepala = window.guruKepsek?.nip ?? '';
+                    const namaGuruMapel = window.guruMapelAktif?.nama ?? '';
+                    const nipGuruMapel = window.guruMapelAktif?.nip ?? '';
+
+                    let sigRightStart = lastColNum - 3;
+                    if (sigRightStart < 4) sigRightStart = 4;
+                    let sigRightEnd = lastColNum;
+
+                    // Left Signature (School Principal)
+                    worksheet.mergeCells(signatureStartRow, 1, signatureStartRow, 3);
+                    worksheet.getCell(`A${signatureStartRow}`).value = 'Mengetahui,';
+                    worksheet.getCell(`A${signatureStartRow}`).alignment = { horizontal: 'center' };
+
+                    // Right Signature (Date)
+                    worksheet.mergeCells(signatureStartRow, sigRightStart, signatureStartRow, sigRightEnd);
+                    const firstSigRightCell = worksheet.getRow(signatureStartRow).getCell(sigRightStart);
+                    firstSigRightCell.value = `Nunuanah, ${new Date().toLocaleDateString('id-ID')}`;
+                    firstSigRightCell.alignment = { horizontal: 'center' };
+
+                    // Roles
+                    const rowKepala = signatureStartRow + 1;
+                    worksheet.mergeCells(rowKepala, 1, rowKepala, 3);
+                    worksheet.getCell(`A${rowKepala}`).value = 'Kepala Sekolah';
+
+                    worksheet.mergeCells(rowKepala, sigRightStart, rowKepala, sigRightEnd);
+                    const titleSigRightCell = worksheet.getRow(rowKepala).getCell(sigRightStart);
+                    titleSigRightCell.value = 'Guru Mata Pelajaran';
+                    titleSigRightCell.alignment = { horizontal: 'center' };
+
+                    // Names
+                    const rowName = rowKepala + 4;
+                    worksheet.mergeCells(rowName, 1, rowName, 3);
+                    worksheet.getCell(`A${rowName}`).value = namaKepala ? namaKepala : '(________________________)';
+
+                    worksheet.mergeCells(rowName, sigRightStart, rowName, sigRightEnd);
+                    const nameSigRightCell = worksheet.getRow(rowName).getCell(sigRightStart);
+                    nameSigRightCell.value = namaGuruMapel ? namaGuruMapel : '(________________________)';
+                    nameSigRightCell.alignment = { horizontal: 'center' };
+
+                    // NIPs
+                    const rowNip = rowName + 1;
+                    worksheet.mergeCells(rowNip, 1, rowNip, 3);
+                    worksheet.getCell(`A${rowNip}`).value = nipKepala ? `NIP. ${nipKepala}` : 'NIP. __________';
+
+                    worksheet.mergeCells(rowNip, sigRightStart, rowNip, sigRightEnd);
+                    const nipSigRightCell = worksheet.getRow(rowNip).getCell(sigRightStart);
+                    nipSigRightCell.value = nipGuruMapel ? `NIP. ${nipGuruMapel}` : 'NIP. __________';
+                    nipSigRightCell.alignment = { horizontal: 'center' };
+
+
+                    const buffer = await workbook.xlsx.writeBuffer();
+                    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                    saveAs(blob, `Nilai_Harian_${namaMapel}_${namaKelas}.xlsx`);
+                } catch (error) {
+                    console.error('excel-export-error', error);
+                    Swal.fire({
+                        title: "ERROR",
+                        text: "Gagal menghasilkan file Excel",
+                        icon: "error"
+                    });
                 }
             });
-        });
 
-        $('#editkikd').on('submit', function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            e.stopImmediatePropagation();
-
-            swal.fire({
-                title: "Menyimpan indikator penilaian",
-                text: "Silahkan tunggu....",
-                allowEscapeKey: false,
-                allowOutsideClick: false,
-                onOpen: () => {
-                    swal.showLoading();
-                }
+            /*
+            $('#uploadharian').submit('click', function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+    
+                var form = new FormData($('#uploadharian')[0]);
+    
+                $.ajax({
+                    type: "POST",
+                    enctype: 'multipart/form-data',
+                    url: base_url + 'rapor/uploadharian/' + idMapel + '/' + idKelas,
+                    data: form,
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    timeout: 600000,
+                    success: function (data) {
+                        console.log(data);
+                        window.location.href = base_url + 'rapor/inputharian/' + idMapel + '/' + idKelas
+                    },
+                    error: function (e) {
+                        console.log("error", e.responseText);
+                        showDangerToast(e.responseText);
+                    }
+                });
             });
+             */
 
-            $.ajax({
-                url: base_url + "rapor/savekikd",
-                type: "POST",
-                data: $(this).serialize(),
-                success: function (data) {
-                    //console.log("response:", data);
-                    if (data.status) {
-                        swal.fire({
+            $('#uploadnilai').on('submit', function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+                Swal.fire({
+                    title: "Menyimpan nilai harian",
+                    text: "Silahkan tunggu....",
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                                Swal.showLoading();
+                            }
+                });
+
+                var tbl = $('table.jexcel tr').get().map(function (row) {
+                    return $(row).find('td').get().map(function (cell) {
+                        return $(cell).html().replace(/\&nbsp;/g, '').trim();
+                    });
+                });
+                tbl.shift();
+                tbl.shift();
+                var inputs = '';
+                $.each(tbl, function (idx, s) {
+                    var idSiswa = s[27];
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][id_nilai_harian]" value="' + idMapel + idKelas + idSiswa + tpActive + smtActive + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][id_siswa]" value="' + idSiswa + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][id_tp]" value="' + tpActive + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][id_smt]" value="' + smtActive + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][id_mapel]" value="' + idMapel + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][id_kelas]" value="' + idKelas + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][p1]" value="' + s[3] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][p2]" value="' + s[4] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][p3]" value="' + s[5] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][p4]" value="' + s[6] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][p5]" value="' + s[7] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][p6]" value="' + s[8] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][p7]" value="' + s[9] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][p8]" value="' + s[10] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][p_rata_rata]" value="' + s[12] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][p_predikat]" value="' + s[13] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][p_deskripsi]" value="' + s[14] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][k1]" value="' + s[15] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][k2]" value="' + s[16] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][k3]" value="' + s[17] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][k4]" value="' + s[18] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][k5]" value="' + s[19] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][k6]" value="' + s[20] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][k7]" value="' + s[21] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][k8]" value="' + s[22] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][k_rata_rata]" value="' + s[24] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][k_predikat]" value="' + s[25] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][k_deskripsi]" value="' + s[26] + '" class="form-control col-1">';
+                    inputs += '<input type="text" name="siswa[' + idSiswa + '][jml]" value="' + s[30] + '" class="form-control col-1">';
+                });
+                $('#for-upload').html(inputs);
+
+                $.ajax({
+                    type: "POST",
+                    url: base_url + 'rapor/importharian',
+                    data: $(this).serialize(),
+                    cache: false,
+                    success: function (data) {
+                        //console.log(data);
+                        Swal.fire({
                             title: "Sukses",
-                            html: "Indikator penilaian berhasil disimpan",
+                            html: "<b>" + data.updated + "<b> nilai berhasil disimpan",
                             icon: "success",
                             showCancelButton: false,
                             confirmButtonColor: "#3085d6",
@@ -858,191 +1153,240 @@
                                 window.location.href = base_url + 'rapor/inputharian/' + idMapel + '/' + idKelas
                             }
                         });
-                    } else {
-                        swal.fire({
+                    },
+                    error: function (e) {
+                        console.log("error", e.responseText);
+                        Swal.fire({
                             title: "Error",
                             html: "Gagal menyimpan",
-                            icon: "success",
+                            icon: "error",
                             showCancelButton: false,
                             confirmButtonColor: "#3085d6",
                             confirmButtonText: "OK"
                         })
                     }
-                }, error: function (xhr, status, error) {
-                    console.log("response:", xhr.responseText);
-                    swal.fire({
-                        title: "Error",
-                        html: "Gagal menyimpan",
-                        icon: "error",
-                        showCancelButton: false,
-                        confirmButtonColor: "#3085d6",
-                        confirmButtonText: "OK"
-                    })
-                }
+                });
+            });
+
+            $('#editkikd').on('submit', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+                Swal.fire({
+                    title: "Menyimpan indikator penilaian",
+                    text: "Silahkan tunggu....",
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                                Swal.showLoading();
+                            }
+                });
+
+                $.ajax({
+                    url: base_url + "rapor/savekikd",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        //console.log("response:", data);
+                        if (data.status) {
+                            Swal.fire({
+                                title: "Sukses",
+                                html: "Indikator penilaian berhasil disimpan",
+                                icon: "success",
+                                showCancelButton: false,
+                                confirmButtonColor: "#3085d6",
+                                confirmButtonText: "OK"
+                            }).then(result => {
+                                if (result.value) {
+                                    window.location.href = base_url + 'rapor/inputharian/' + idMapel + '/' + idKelas
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Error",
+                                html: "Gagal menyimpan",
+                                icon: "success",
+                                showCancelButton: false,
+                                confirmButtonColor: "#3085d6",
+                                confirmButtonText: "OK"
+                            })
+                        }
+                    }, error: function (xhr, status, error) {
+                        console.log("response:", xhr.responseText);
+                        Swal.fire({
+                            title: "Error",
+                            html: "Gagal menyimpan",
+                            icon: "error",
+                            showCancelButton: false,
+                            confirmButtonColor: "#3085d6",
+                            confirmButtonText: "OK"
+                        })
+                    }
+                });
             });
         });
-    });
 
-    async function downloadTemplate(res) {
-        const response = await fetch(base_url + 'uploads/import/format/template_harian_client.xlsx')
-        const arrayBuffer = await response.arrayBuffer()
-        const excelTemplate = await JsExcelTemplate.fromArrayBuffer(arrayBuffer)
-        excelTemplate.set("mapel", namaMapel);
-        excelTemplate.set("kelas", namaKelas);
-        excelTemplate.set("kikd", res.kikd);
-        excelTemplate.set("siswa", res.siswa);
+        async function downloadTemplate(res) {
+            const response = await fetch(base_url + 'uploads/import/format/template_harian_client.xlsx')
+            const arrayBuffer = await response.arrayBuffer()
+            const excelTemplate = await JsExcelTemplate.fromArrayBuffer(arrayBuffer)
+            excelTemplate.set("mapel", namaMapel);
+            excelTemplate.set("kelas", namaKelas);
+            excelTemplate.set("kikd", res.kikd);
+            excelTemplate.set("siswa", res.siswa);
 
-        const blob = await excelTemplate.toBlob()
-        saveAs(blob, `Nilai Harian ${namaMapel} ${namaKelas}.xlsx`);
-    }
+            const blob = await excelTemplate.toBlob()
+            saveAs(blob, `Nilai Harian ${namaMapel} ${namaKelas}.xlsx`);
+        }
 
-    async function processDownload(idMapel, idKelas) {
-        $.ajax({
-            url: base_url + "rapor/downloadnilaiharian/"+idMapel+"/"+idKelas,
-            method: "GET",
-            success: function (result) {
-                console.log("result", result);
-                downloadTemplate(result)
-            }, error: function (xhr, status, error) {
-                console.log("error", xhr.responseText);
-                const err = JSON.parse(xhr.responseText)
-                swal.fire({
-                    title: "Error",
-                    text: err,
-                    icon: "error"
-                });
-            }
-        });
-    }
-
-    function getDataFromExcel(file) {
-        return new Promise((resolve, reject) => {
-            const wb = new ExcelJS.Workbook();
-            const reader = new FileReader()
-            reader.onload = async () => {
-                try {
-                    const buffer = reader.result;
-                    wb.xlsx.load(buffer).then(workbook => {
-                        let dataFiles = {}
-                        workbook.eachSheet((sheet, id) => {
-                            let cols = {
-                                'name': sheet.name,
-                                'header': [],
-                                'rows': []
-                            }
-                            let head = []
-                            sheet.eachRow({includeEmpty: true}, (row, rowIndex) => {
-                                let obj = {}
-                                for (let i = 0; i < row.values.length; i++) {
-                                    if (rowIndex === 2) {
-                                        let val = row.values[i] ? (row.values[i] === 'N I S N' ? 'NISN' : row.values[i].replaceAll(' ', '').replaceAll('.', '')) : ''
-                                        if (val.includes('/')) val = val.split('/')[1]
-                                        head.push(val.toLowerCase())
-                                        if (row.values[i]) {
-                                            let h = {
-                                                label: row.values[i],
-                                                value: val.toLowerCase(),
-                                            }
-                                            cols.header.push(h)
-                                        }
-                                    } else {
-                                        obj[head[i]] = row.values[i]
-                                    }
-                                }
-                                cols.rows.push(obj)
-                            })
-                            cols.rows = removeEmptyObjects(cols.rows)
-                            dataFiles[sheet.name] = cols
-                        })
-                        resolve(dataFiles)
-                    })
-                } catch (err) {
-                    reject(err)
-                }
-            }
-            reader.onerror = (error) => {
-                reject(error)
-            };
-            reader.readAsArrayBuffer(file)
-        });
-    }
-
-    function removeEmptyObjects(array) {
-        return array.filter(element => {
-            //console.log('cols', element)
-            delete element.undefined
-            return Object.keys(element).length !== 0;
-        });
-    }
-
-    function uploadNilaiHarian(jsonData) {
-        swal.fire({
-            title: "Menyimpan nilai harian",
-            text: "Silahkan tunggu....",
-            allowEscapeKey: false,
-            allowOutsideClick: false,
-            onOpen: () => {
-                swal.showLoading();
-            }
-        });
-
-        let formData = new FormData($('#uploadharian')[0])
-
-        const nilaiSiswa = jsonData.NILAI.rows
-        nilaiSiswa.forEach(function (siswa, ind) {
-            for (const key in siswa) {
-                if (key && key !== 'no') {
-                    formData.append('siswa['+ind+']['+key+']', siswa[key])
-                }
-            }
-        })
-        const kikd = jsonData.KIKD.rows
-        kikd.forEach(function (kd, ind) {
-            for (const key in kd) {
-                console.log('key', key, kd[key])
-                if (key) {
-                    formData.append('kikd['+ind+']['+key+']', kd[key])
-                }
-            }
-        })
-
-        $.ajax({
-            type: "POST",
-            url: base_url + 'rapor/uploadnilaiharian/',
-            data: formData,
-            processData: false,
-            contentType: false,
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-                //console.log(data);
-                window.location.href = base_url + 'rapor/inputharian/' + idMapel + '/' + idKelas
-            },
-            error: function (e) {
-                console.log("error", e.responseText);
-                showDangerToast(e.responseText);
-            }
-        });
-    }
-
-    async function parseFile(file) {
-        const jsonData = await getDataFromExcel(file)
-        console.log('parse', jsonData)
-        if (jsonData) {
-            swal.fire({
-                title: "UPLOAD",
-                html: "Nilai yang sudah ada akan ditimpa. Lanjutkan?",
-                icon: "warning",
-                showCancelButton: 'Batal',
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK"
-            }).then(result => {
-                if (result.value) {
-                    uploadNilaiHarian(jsonData)
+        async function processDownload(idMapel, idKelas) {
+            $.ajax({
+                url: base_url + "rapor/downloadnilaiharian/" + idMapel + "/" + idKelas,
+                method: "GET",
+                success: function (result) {
+                    console.log("result", result);
+                    downloadTemplate(result)
+                }, error: function (xhr, status, error) {
+                    console.log("error", xhr.responseText);
+                    const err = JSON.parse(xhr.responseText)
+                    Swal.fire({
+                        title: "Error",
+                        text: err,
+                        icon: "error"
+                    });
                 }
             });
         }
-    }
+
+        function getDataFromExcel(file) {
+            return new Promise((resolve, reject) => {
+                const wb = new ExcelJS.Workbook();
+                const reader = new FileReader()
+                reader.onload = async () => {
+                    try {
+                        const buffer = reader.result;
+                        wb.xlsx.load(buffer).then(workbook => {
+                            let dataFiles = {}
+                            workbook.eachSheet((sheet, id) => {
+                                let cols = {
+                                    'name': sheet.name,
+                                    'header': [],
+                                    'rows': []
+                                }
+                                let head = []
+                                sheet.eachRow({ includeEmpty: true }, (row, rowIndex) => {
+                                    let obj = {}
+                                    for (let i = 0; i < row.values.length; i++) {
+                                        if (rowIndex === 2) {
+                                            let val = row.values[i] ? (row.values[i] === 'N I S N' ? 'NISN' : row.values[i].replaceAll(' ', '').replaceAll('.', '')) : ''
+                                            if (val.includes('/')) val = val.split('/')[1]
+                                            head.push(val.toLowerCase())
+                                            if (row.values[i]) {
+                                                let h = {
+                                                    label: row.values[i],
+                                                    value: val.toLowerCase(),
+                                                }
+                                                cols.header.push(h)
+                                            }
+                                        } else {
+                                            obj[head[i]] = row.values[i]
+                                        }
+                                    }
+                                    cols.rows.push(obj)
+                                })
+                                cols.rows = removeEmptyObjects(cols.rows)
+                                dataFiles[sheet.name] = cols
+                            })
+                            resolve(dataFiles)
+                        })
+                    } catch (err) {
+                        reject(err)
+                    }
+                }
+                reader.onerror = (error) => {
+                    reject(error)
+                };
+                reader.readAsArrayBuffer(file)
+            });
+        }
+
+        function removeEmptyObjects(array) {
+            return array.filter(element => {
+                //console.log('cols', element)
+                delete element.undefined
+                return Object.keys(element).length !== 0;
+            });
+        }
+
+        function uploadNilaiHarian(jsonData) {
+            Swal.fire({
+                title: "Menyimpan nilai harian",
+                text: "Silahkan tunggu....",
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            let formData = new FormData($('#uploadharian')[0])
+
+            const nilaiSiswa = jsonData.NILAI.rows
+            nilaiSiswa.forEach(function (siswa, ind) {
+                for (const key in siswa) {
+                    if (key && key !== 'no') {
+                        formData.append('siswa[' + ind + '][' + key + ']', siswa[key])
+                    }
+                }
+            })
+            const kikd = jsonData.KIKD.rows
+            kikd.forEach(function (kd, ind) {
+                for (const key in kd) {
+                    console.log('key', key, kd[key])
+                    if (key) {
+                        formData.append('kikd[' + ind + '][' + key + ']', kd[key])
+                    }
+                }
+            })
+
+            $.ajax({
+                type: "POST",
+                url: base_url + 'rapor/uploadnilaiharian/',
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+                    //console.log(data);
+                    window.location.href = base_url + 'rapor/inputharian/' + idMapel + '/' + idKelas
+                },
+                error: function (e) {
+                    console.log("error", e.responseText);
+                    showDangerToast(e.responseText);
+                }
+            });
+        }
+
+        async function parseFile(file) {
+            const jsonData = await getDataFromExcel(file)
+            console.log('parse', jsonData)
+            if (jsonData) {
+                Swal.fire({
+                    title: "UPLOAD",
+                    html: "Nilai yang sudah ada akan ditimpa. Lanjutkan?",
+                    icon: "warning",
+                    showCancelButton: 'Batal',
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK"
+                }).then(result => {
+                    if (result.value) {
+                        uploadNilaiHarian(jsonData)
+                    }
+                });
+            }
+        }
 
 
-</script>
+    </script>

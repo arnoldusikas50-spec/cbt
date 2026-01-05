@@ -174,15 +174,11 @@ class Dbclear extends MY_Controller
             'newline' => "\n"               // Newline character used in backup file
         ];
 
-        $backup = $this->dbutil->backup($prefs);
+        $backup = $this->dbutil->backup(array($prefs));
         $this->load->helper('file');
         write_file('./backups/backup_' . $table . '_' . date("Y_m_d_H_i_s") . '.sql', $backup);
-        
-        $this->db->query('SET FOREIGN_KEY_CHECKS = 0');
         $this->db->truncate($table);
-        $this->db->query('SET FOREIGN_KEY_CHECKS = 1');
-        
-        $this->output_json(['type' => 'database', 'message' => 'Data tabel '.$table.' berhasil dihapus']);
+        $this->output_json(['type' => 'database', 'message' => 'Database berhasil dihapus']);
     }
 
 	public function truncate()

@@ -3,15 +3,7 @@
 
 ?>
 <div class="alert alert-default-light">
-   <!--  <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="text-maroon"><?= $judul ?></h1>
-                </div>
-            </div>
-        </div>
-    </section> --> <!-- ikasmedia -->
+
 
     <section class="content">
         <div class="container-fluid">
@@ -23,17 +15,18 @@
                 <div class="card-body alert-default-light">
                     <div class="col-lg-12 p-0 mt-2">
                         <div class="alert alert-default-warning align-content-center" role="alert">
-                            <div class="row py-1" id="update-info">Pengecekan Internal Sistem Aplikasi CBT . . .</div>
+                            <div class="row py-1" id="update-info">Pengecekan Internal Sistem Aplikasi CBT by Ikasmedia
+                                . . .</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="overlay d-none" id="loading">
                     <!-- <div class="spinner-grow"></div> -->
-                     <button class="btn btn-primary" type="button" disabled>
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"> </span>
-                            Loading...
-                            </button>
+                    <button class="btn btn-primary" type="button" disabled>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"> </span>
+                        Loading...
+                    </button>
                 </div>
             </div>
         </div>
@@ -75,16 +68,16 @@
         kbmLog: 'logmateri',
     }
 
-    request.onerror = function(event) {
+    request.onerror = function (event) {
         console.log("Gagal membuka database", event);
     };
 
-    request.onsuccess = function(event) {
+    request.onsuccess = function (event) {
         db = event.target.result;
         console.log("Database berhasil dibuka");
     };
 
-    request.onupgradeneeded = function(event) {
+    request.onupgradeneeded = function (event) {
         db = event.target.result;
         if (!db.objectStoreNames.contains(table.masterTp)) {
             const soalStore = db.createObjectStore(table.masterTp, { keyPath: "id_tp" });
@@ -172,15 +165,15 @@
     function deleteDatabase() {
         const deleteRequest = indexedDB.deleteDatabase("GarudaCbtSoal");
 
-        deleteRequest.onsuccess = function() {
+        deleteRequest.onsuccess = function () {
             console.log("Database 'DatabaseSoal' berhasil dihapus.");
         };
 
-        deleteRequest.onerror = function(event) {
+        deleteRequest.onerror = function (event) {
             console.error("Gagal menghapus database:", event.target.errorCode);
         };
 
-        deleteRequest.onblocked = function() {
+        deleteRequest.onblocked = function () {
             console.warn("Penghapusan database diblokir. Pastikan tidak ada koneksi terbuka ke database ini.");
         };
     }
@@ -260,7 +253,7 @@
                     }
                 });
                 if (msg) {
-                    currentStep ++;
+                    currentStep++;
                     setProgressBar(msg, 2, 2)
                 }
             }, 500)
@@ -268,7 +261,7 @@
     }
 
     function alertDialog() {
-        swal.fire({
+        Swal.fire({
             title: "Update Database",
             html: "Database akan diperbarui, BACKUP sebelum anda melakukan update!<br />Tindakan ini tidak bisa dikembalikan!",
             icon: "warning",
@@ -278,7 +271,7 @@
             confirmButtonText: "Update!"
         }).then(result => {
             if (result.value) {
-                swal.fire({
+                Swal.fire({
                     text: "Silahkan tunggu....",
                     allowEscapeKey: false,
                     allowOutsideClick: false,
@@ -358,7 +351,7 @@
             updateProgressBar('overall-bar', (step / totalSteps) * 100);
             const overallPercent = Math.round((step / totalSteps) * 100);
             document.getElementById('overall-label').textContent = `Sedang proses: ${overallPercent}%`;
-            step ++
+            step++
         }
 
         Swal.fire('Selesai!', 'Semua proses telah selesai.', 'success');
@@ -403,7 +396,7 @@
     }
 
     async function cekUpdate() {
-        swal.fire({
+        Swal.fire({
             html: "Memeriksa System dan Internal Database . . .",
             allowEscapeKey: false,
             allowOutsideClick: false,
@@ -479,7 +472,7 @@
                                     <p>Database sudah terbaru, tidak perlu update.</p>
                                     </div>
                                 <div class="col-12">
-                                    <button class="btn btn-danger float-right" id="update-version">OK</button>
+                                    <button class="btn btn-danger float-end" id="update-version">OK</button>
                                 </div>`;
         } else {
             html = `            <div class="col-14">
@@ -491,7 +484,7 @@
                                          <li>
                                             <strong>Update Database Versi Public ke Database Versi Donasi </strong>
                                         </li>
-										 <li>
+                                         <li>
                                             <strong>Database : <font color='green'><?= INIT_BARU ?></font> </strong>
                                         </li>
                                         <li>
@@ -513,7 +506,7 @@
                                             <strong><font color='green'>Fixed bugs</font></strong>
                                         </li>
                                         <li>
-                                            <strong><font color='red'>Commit Source: </font><font color='green'><?= APP_COMMIT ?></font></strong>
+                                            <strong><font color='red'>Custom MOD </font><font color='green'><?= APP_COMMIT ?></font></strong>
                                         </li>
                                         <li>
                                             <strong><font color='blue'>Add Import Siswa per-kelas</font></strong>
@@ -542,7 +535,7 @@
                                     </ul>
                                 </div>
                                 <div class="col-12">
-                                    <button class="btn btn-danger float-right" id="update-aplikasi">Update Aplikasi
+                                    <button class="btn btn-danger float-end" id="update-aplikasi">Update Aplikasi
                                     </button>
                                 </div>`;
         }
@@ -565,7 +558,7 @@
             deleteDatabase()
             window.location.href = base_url;
         } else {
-            swal.fire({
+            Swal.fire({
                 title: "Gagal",
                 text: 'Ada kesalahan database',
                 icon: "error"
@@ -578,7 +571,7 @@
             title: 'Proses Migrasi Database . . .',
             html: `
         <div class="progress-container">
-        <img src="<?= base_url() ?>/assets/img/icongaruda.gif" width="60" height="60">
+        <img src="<?= base_url() ?>assets/img/ikasmedia.png" width="60" height="60">
           <div class="progress-label" id="overall-label">Sedang proses: ...</div>
           <div class="progress-bar"><div id="overall-bar" class="progress-bar-inner"></div></div>
 
@@ -604,7 +597,7 @@
         // Hitung persentase progress bar sub
         const subPercent = (currentPage / totalPages) * 100;
         updateProgressBar('sub-bar', subPercent);
-        document.getElementById('sub-label').innerText = `${msg}... ${Math.round(subPercent)}% (${currentPage}/${totalPages})`;``
+        document.getElementById('sub-label').innerText = `${msg}... ${Math.round(subPercent)}% (${currentPage}/${totalPages})`; ``
     }
 
     async function runAntrianUpdate() {
@@ -637,27 +630,27 @@
 
             if (isNeedConvertRekap) {
                 totalSteps += 6;
-                const tp = await ajaxGet('migrate/get_table?table='+table.masterTp, 'Memuat tahun pelajaran');
+                const tp = await ajaxGet('migrate/get_table?table=' + table.masterTp, 'Memuat tahun pelajaran');
                 clearItems(table.masterTp)
                 addItems(table.masterTp, tp.data)
 
-                const smt = await ajaxGet('migrate/get_table?table='+table.masterSmt, 'Memuat data semester');
+                const smt = await ajaxGet('migrate/get_table?table=' + table.masterSmt, 'Memuat data semester');
                 clearItems(table.masterSmt)
                 addItems(table.masterSmt, smt.data)
 
-                const mapel = await ajaxGet('migrate/get_table?table='+table.masterMapel, 'Memuat data mapel');
+                const mapel = await ajaxGet('migrate/get_table?table=' + table.masterMapel, 'Memuat data mapel');
                 clearItems(table.masterMapel)
                 addItems(table.masterMapel, mapel.data)
 
-                const guru = await ajaxGet('migrate/get_table?table='+table.masterGuru, 'Memuat data guru');
+                const guru = await ajaxGet('migrate/get_table?table=' + table.masterGuru, 'Memuat data guru');
                 clearItems(table.masterGuru)
                 addItems(table.masterGuru, guru.data)
 
-                const ruang = await ajaxGet('migrate/get_table?table='+table.cbtRuang, 'Memuat data ruangan');
+                const ruang = await ajaxGet('migrate/get_table?table=' + table.cbtRuang, 'Memuat data ruangan');
                 clearItems(table.cbtRuang)
                 addItems(table.cbtRuang, ruang.data)
 
-                const sesi = await ajaxGet('migrate/get_table?table='+table.cbtSesi, 'Memuat data sesi');
+                const sesi = await ajaxGet('migrate/get_table?table=' + table.cbtSesi, 'Memuat data sesi');
                 clearItems(table.cbtSesi)
                 addItems(table.cbtSesi, sesi.data)
 
@@ -668,7 +661,7 @@
                 await getTable('Memuat soal cbt', totalSoals, table.cbtSoal)
                 await getTable('Memuat pengawas cbt', totalPengawas, table.cbtPengawas)
 
-                await getPagingTable('get_rekap_jadwal', table.rekapJadwal,"Memuat rekap jadwal ujian", totalRekapJadwal)
+                await getPagingTable('get_rekap_jadwal', table.rekapJadwal, "Memuat rekap jadwal ujian", totalRekapJadwal)
                 await getPagingTable('get_rekap_nilai', table.rekapNilai, "Memuat rekap nilai ujian", totalRekapNilai)
             }
 
@@ -715,7 +708,7 @@
             if (isNeedConvertCbt || isNeedConvertRekap) {
                 const result = await getAllItemsAndGroupByJadwalAndSiswa("Menyiapkan jadwal CBT")
                 await convertSoalSiswa("Konversi data ujian siswa", result)
-                await postConvertedSoalSiswa("Menyimpan data Ujian", ) //finished
+                await postConvertedSoalSiswa("Menyimpan data Ujian",) //finished
             }
 
             if (isNeedConvertRekap) {
@@ -726,7 +719,7 @@
                 await postConvertedRekapNilai("Menyimpan rekap ujian siswa")
             }
 
-            swal.fire({
+            Swal.fire({
                 title: "Selesai",
                 text: 'Berhasil Update Database',
                 icon: "success",
@@ -741,7 +734,7 @@
         } catch (error) {
             console.log("Error occurred: ", error);
             console.log("Execution stopped.");
-            swal.fire({
+            Swal.fire({
                 title: "Gagal",
                 text: 'Gagal mengambil data',
                 icon: "error"
@@ -765,7 +758,7 @@
             for (let j = i; j < i + batchSize && j < pages; j++) {
                 const pagePost = j + 1
                 batch.push(
-                    ajaxGet('migrate/'+url+'?page=' + pagePost + '&limit=' + limitAntrian)
+                    ajaxGet('migrate/' + url + '?page=' + pagePost + '&limit=' + limitAntrian)
                 )
             }
 
@@ -802,7 +795,7 @@
             for (let j = i; j < i + batchSize && j < pages; j++) {
                 const pagePost = j + 1
                 batch.push(
-                    ajaxGet('migrate/get_table?page='+ pagePost + '&limit='+limitAntrian + '&table='+table)
+                    ajaxGet('migrate/get_table?page=' + pagePost + '&limit=' + limitAntrian + '&table=' + table)
                 )
             }
 
@@ -875,10 +868,10 @@
 
         let totalSub = 0;
         for (let i = 0; i < pages; i++) {
-            let pagePost = i+1;
+            let pagePost = i + 1;
             const materies = await getTablePagination(table.kbmMateri, pagePost, limitPost);
             let formData = new FormData($('#post_converted')[0]);
-            for (let i=0; i < materies.length; i++) {
+            for (let i = 0; i < materies.length; i++) {
                 const ids = {
                     id_kelas: materies[i].id_kelas || 0,
                     id_mapel: materies[i].id_mapel || 0,
@@ -903,11 +896,11 @@
 
         let totalSub = 0;
         for (let i = 0; i < pages; i++) {
-            let pagePost = i+1;
+            let pagePost = i + 1;
             currentStep++;
             const materies = await getTablePagination(table.kbmLog, pagePost, limitPost);
             let formData = new FormData($('#post_converted')[0]);
-            for (let i=0; i < materies.length; i++) {
+            for (let i = 0; i < materies.length; i++) {
                 const ids = {
                     id_mapel: materies[i].id_mapel || 0,
                     id_materi: materies[i].id_materi || 0,
@@ -1111,7 +1104,7 @@
 
         let totalSub = 0;
         for (let i = 0; i < pages; i++) {
-            let pagePost = i+1;
+            let pagePost = i + 1;
             currentStep++;
             const jadwals = await getJadwalKbmWithPagination(pagePost, limitPost);
             let formData = new FormData($('#post_converted')[0]);
@@ -1129,7 +1122,7 @@
                 formData.append(`mapel[${id}][ids]`, JSON.stringify(ids))
                 formData.append(`mapel[${id}][dari]`, detail.dari || 0)
                 formData.append(`mapel[${id}][sampai]`, detail.sampai || 0)
-                id ++
+                id++
             }
             //const totalDataCount = Array.from(formData.values()).length;
             //console.log('convertMapel', totalDataCount)
@@ -1150,7 +1143,7 @@
 
             const cursorRequest = objectStore.openCursor(); // Membuka kursusor untuk traversal
 
-            cursorRequest.onsuccess = function(event) {
+            cursorRequest.onsuccess = function (event) {
                 const cursor = event.target.result;
 
                 if (cursor) {
@@ -1170,7 +1163,7 @@
                 }
             };
 
-            cursorRequest.onerror = function(event) {
+            cursorRequest.onerror = function (event) {
                 reject("Gagal mengambil data: " + event.target.errorCode);
             };
         });
@@ -1187,7 +1180,7 @@
 
             const cursorRequest = objectStore.openCursor(); // Membuka kursusor untuk traversal
 
-            cursorRequest.onsuccess = function(event) {
+            cursorRequest.onsuccess = function (event) {
                 const cursor = event.target.result;
 
                 if (cursor) {
@@ -1207,7 +1200,7 @@
                 }
             };
 
-            cursorRequest.onerror = function(event) {
+            cursorRequest.onerror = function (event) {
                 reject("Gagal mengambil data: " + event.target.errorCode);
             };
         });
@@ -1219,12 +1212,12 @@
             const objectStore = transaction.objectStore(tabel);
             const request = objectStore.getAll(); // Mengambil semua data
 
-            request.onsuccess = function(event) {
+            request.onsuccess = function (event) {
                 const allItems = event.target.result;
                 resolve(allItems);
             };
 
-            request.onerror = function(event) {
+            request.onerror = function (event) {
                 reject("Gagal membaca data: " + event.target.errorCode);
             };
         })
@@ -1236,7 +1229,7 @@
 
         let totalSub = 0;
         for (let i = 0; i < pages; i++) {
-            let pagePost = i+1;
+            let pagePost = i + 1;
             currentStep++
             const allJadwal = await getTablePagination(table.kbmJadwal, pagePost, limitPost);
             let formData = new FormData($('#post_converted')[0]);
@@ -1255,7 +1248,7 @@
                 formData.append(`kbm[${id}][kbm_jam_pel]`, jad.kbm_jam_pel || 0)
                 formData.append(`kbm[${id}][istirahat]`, JSON.stringify(jad.istirahat || ''))
                 formData.append(`kbm[${id}][libur]`, jad.libur || 0)
-                id ++
+                id++
             }
             await ajaxPost("migrate/convert_kbm", formData)
             setProgressBar(msg, pagePost, pages);
@@ -1268,7 +1261,7 @@
             const objectStore = transaction.objectStore(table.soalSiswa);
             const request = objectStore.getAll(); // Mengambil semua data
 
-            request.onsuccess = function(event) {
+            request.onsuccess = function (event) {
                 const allItems = event.target.result;
 
                 // Mengelompokkan pertama berdasarkan id_jadwal
@@ -1306,7 +1299,7 @@
                 resolve(resultArray); // Mengembalikan array data yang sudah dikelompokkan
             };
 
-            request.onerror = function(event) {
+            request.onerror = function (event) {
                 reject("Gagal membaca data: " + event.target.errorCode);
             };
         });
@@ -1401,8 +1394,8 @@
 
         let totalSub = 0;
         for (let i = 0; i < pages; i++) {
-            let pagePost = i+1;
-            currentStep ++;
+            let pagePost = i + 1;
+            currentStep++;
             const siswas = await getStudentsWithPagination(pagePost, limitPost)
             let formData = new FormData($('#post_converted')[0]);
             let id = 0
@@ -1422,7 +1415,7 @@
                 formData.append(`siswa[${id}][mulai]`, siswa.mulai || 0)
                 formData.append(`siswa[${id}][selesai]`, siswa.selesai || 0)
                 formData.append(`siswa[${id}][lama_ujian]`, siswa.lama_ujian || 0)
-                id ++
+                id++
             }
             //const totalDataCount = Array.from(formData.values()).length;
             //console.log('convertSoalSiswa', totalDataCount)
@@ -1443,7 +1436,7 @@
 
             const cursorRequest = objectStore.openCursor(); // Membuka kursusor untuk traversal
 
-            cursorRequest.onsuccess = function(event) {
+            cursorRequest.onsuccess = function (event) {
                 const cursor = event.target.result;
 
                 if (cursor) {
@@ -1463,7 +1456,7 @@
                 }
             };
 
-            cursorRequest.onerror = function(event) {
+            cursorRequest.onerror = function (event) {
                 reject("Gagal mengambil data: " + event.target.errorCode);
             };
         });
@@ -1552,7 +1545,7 @@
         //console.log('newJadwal', arrNewJadwal);
         clearItems(table.rekapJadwal);
         addItems(table.rekapJadwal, arrNewJadwal);
-        currentStep ++;
+        currentStep++;
         setProgressBar(msg, 2, 2)
     }
 
@@ -1587,7 +1580,7 @@
             }
 
             let newFields;
-            if (soalSiswa ) {
+            if (soalSiswa) {
                 newFields = {
                     'id_rekap_nilai': rekap?.id_rekap_nilai || '',
                     'id_siswa': rekap?.id_siswa || '',
@@ -1730,7 +1723,7 @@
 
         let totalSub = 0;
         for (let i = 0; i < pages; i++) {
-            let pagePost = i+1;
+            let pagePost = i + 1;
             currentStep++;
             const jadwals = await getTablePagination(table.rekapJadwal, pagePost, limitPost)
             let formData = new FormData($('#post_converted')[0]);
@@ -1782,7 +1775,7 @@
 
         let totalSub = 0;
         for (let i = 0; i < pages; i++) {
-            let pagePost = i+1;
+            let pagePost = i + 1;
             const jadwals = await getTablePagination(table.rekapNilai, pagePost, limitPost)
             let formData = new FormData($('#post_converted')[0]);
             let index = 0;
@@ -1817,7 +1810,7 @@
             const result = await ajaxPost('migrate/convert_rekap_nilai', formData)
             totalSub += jadwals.length
             const totalData = totalSub === totalRekapNilai ? 27 : 25
-            currentStep ++;
+            currentStep++;
             setProgressBar(msg, pagePost, pages)
         }
     }
@@ -1828,12 +1821,12 @@
             const objectStore = transaction.objectStore(table);
             const request = objectStore.getAll(); // Mengambil semua data
 
-            request.onsuccess = function(event) {
+            request.onsuccess = function (event) {
                 const allItems = event.target.result;
                 resolve(allItems);
             };
 
-            request.onerror = function(event) {
+            request.onerror = function (event) {
                 reject("Gagal membaca data: " + event.target.errorCode);
             };
         })
@@ -1847,16 +1840,16 @@
         items.forEach(item => {
             const request = objectStore.add(item);
 
-            request.onsuccess = function(event) {};
+            request.onsuccess = function (event) { };
 
-            request.onerror = function(event) {
+            request.onerror = function (event) {
                 console.log(`Gagal menambahkan data: ${item}`, event);
             };
         });
 
-        transaction.oncomplete = function() {};
+        transaction.oncomplete = function () { };
 
-        transaction.onerror = function(event) {
+        transaction.onerror = function (event) {
             console.log("Terjadi kesalahan pada transaksi", event);
         };
     }
@@ -1866,9 +1859,9 @@
         const objectStore = transaction.objectStore(table);
         const request = objectStore.clear(); // Menghapus semua data
 
-        request.onsuccess = function(event) {};
+        request.onsuccess = function (event) { };
 
-        request.onerror = function(event) {
+        request.onerror = function (event) {
             console.log("Gagal menghapus semua data", event);
         };
     }

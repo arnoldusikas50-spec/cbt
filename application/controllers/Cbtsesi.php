@@ -7,7 +7,7 @@ class Cbtsesi extends MY_Controller {
 		parent::__construct();
 		if (!$this->auth->logged_in()) {
 			redirect('auth');
-		} else if (!$this->auth->is_admin() && !$this->auth->in_group('panitia')) {
+		} else if (!$this->auth->is_admin()) {
 			show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
 		}
 		$this->load->library(['datatables', 'form_validation']); // Load Library Ignited-Datatables
@@ -32,8 +32,7 @@ class Cbtsesi extends MY_Controller {
 		$data['smt'] = $this->dashboard->getSemester();
 		$data['smt_active'] = $this->dashboard->getSemesterActive();
 
-        $role_id = $this->auth->is_admin() ? 1 : 4;
-		$this->render_view($role_id, 'cbt/sesi/data', $data);
+		$this->render_view(1, 'cbt/sesi/data', $data);
 	}
 
     public function data() {
@@ -74,8 +73,7 @@ class Cbtsesi extends MY_Controller {
 			'sesi'		=> $this->cbt->getSesiById($id),
 		];
 
-        $role_id = $this->auth->is_admin() ? 1 : 4;
-		$this->render_view($role_id, 'cbt/sesi/edit', $data);
+		$this->render_view(1, 'cbt/sesi/edit', $data);
 	}
 
 	public function delete() {
@@ -101,8 +99,6 @@ class Cbtsesi extends MY_Controller {
 		$data['smt'] = $this->dashboard->getSemester();
 		$data['smt_active'] = $this->dashboard->getSemesterActive();
 
-        $role_id = $this->auth->is_admin() ? 1 : 4;
-		$this->render_view($role_id, 'cbt/sesisiswa/data', $data);
+		$this->render_view(1, 'cbt/sesisiswa/data', $data);
 	}
 }
-

@@ -4,10 +4,10 @@ $(document).ready(function () {
 	$('.select2').select2();
 	$('.tgl').datetimepicker({
 		icons:
-			{
-				next: 'fa fa-angle-right',
-				previous: 'fa fa-angle-left'
-			},
+		{
+			next: 'bi bi-angle-right',
+			previous: 'bi bi-angle-left'
+		},
 		timepicker: false,
 		format: 'Y-m-d',
 		widgetPositioning: {
@@ -64,7 +64,7 @@ $(document).ready(function () {
 				});
 
 				if (data) {
-					swal.fire({
+					Swal.fire({
 						title: "Sukses",
 						text: "Jadwal berhasil disimpan",
 						icon: "success",
@@ -73,7 +73,7 @@ $(document).ready(function () {
 						window.location.href = base_url + 'cbtjadwal';
 					});
 				} else {
-					swal.fire({
+					Swal.fire({
 						title: "ERROR",
 						text: "Data Tidak Tersimpan",
 						icon: "error",
@@ -82,7 +82,7 @@ $(document).ready(function () {
 				}
 			}, error: function (xhr, status, error) {
 				console.log("error", xhr.responseText);
-				swal.fire({
+				Swal.fire({
 					title: "ERROR",
 					text: "Data Tidak Tersimpan",
 					icon: "error",

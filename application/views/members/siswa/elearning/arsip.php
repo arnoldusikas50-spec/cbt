@@ -1,9 +1,13 @@
 <?php
+/**
 
+ * Date: 23/08/20
+ * Time: 23:18
+ */
 
 ?>
 
-<div class="content-wrapper" style="margin-top: -20px;">
+<main class="app-main" style="margin-top: -20px;">
     <div class="sticky">
     </div>
     <section class="content overlap p-3"> <!-- ikasmedia -->
@@ -65,7 +69,7 @@
                         </div>
                         <div class="card-body">
                             <div class="row mb-3 d-none" id="filter-by">
-                                <div class="col-6 pl-3">
+                                <div class="col-6 ps-3">
                                     <label>Filter Mapel:</label>
                                     <?php echo form_dropdown(
                                         '',
@@ -74,7 +78,7 @@
                                         'id="filter-mapel" class="form-control form-control-sm"'
                                     ); ?>
                                 </div>
-                                <div class="col-6 pr-3">
+                                <div class="col-6 pe-3">
                                     <label>Filter Hari:</label>
                                     <?php
                                     $arrHari = [
@@ -94,7 +98,7 @@
                                     ); ?>
                                 </div>
                                 <!--
-                                <div class="col text-right pr-3">
+                                <div class="col text-end pe-3">
                                     <div>
                                         Cari
                                         <input type="text" class="form-control form-control-sm w-50 d-inline-block" id="cariMapel" placeholder="Cari Mata Pelajaran">
@@ -340,7 +344,7 @@
                 mergeJson(data);
             }, error: function (xhr, status, error) {
                 $('#loading').addClass('d-none');
-                swal.fire({
+                Swal.fire({
                     title: "ERROR",
                     text: xhr.responseText,
                     icon: "error",
@@ -439,7 +443,7 @@
                     const trTanggal = document.createElement('tr');
                     trTanggal.classList.add('group', 'bg-gray-light');
                     trTanggal.innerHTML = `
-                    <th rowspan="2" class="text-sm pl-2 align-middle border-left-bold border-rigt-bold border-top-bold" colspan="2">${tglLengkap}</th>
+                    <th rowspan="2" class="text-sm ps-2 align-middle border-left-bold border-rigt-bold border-top-bold" colspan="2">${tglLengkap}</th>
                     <th colspan="2" class="text-sm text-center align-middle border-rigt-bold border-top-bold alert alert-default-success">Materi</th>
                     <th colspan="2" class="text-sm text-center align-middle border-rigt-bold border-top-bold alert alert-default-primary">Tugas</th>`;
 
@@ -622,7 +626,7 @@
                             year: 'numeric'
                         })}`;
                         trTanggal.innerHTML = `
-                    <th rowspan="2" class="text-sm pl-2 align-middle border-left-bold border-rigt-bold border-top-bold" colspan="2">${tglLengkap}</th>
+                    <th rowspan="2" class="text-sm ps-2 align-middle border-left-bold border-rigt-bold border-top-bold" colspan="2">${tglLengkap}</th>
                     <th colspan="2" class="text-sm text-center align-middle border-rigt-bold border-top-bold" data-value="status-materi">Materi</th>
                     <th colspan="2" class="text-sm text-center align-middle border-rigt-bold border-top-bold" data-value="status-tugas">Tugas</th>`;
 
@@ -841,3 +845,5 @@
     }
 
 </script>
+
+

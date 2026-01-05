@@ -28,7 +28,7 @@
             <div class="col-8">
                 <h4>UPDATE DATABASE</h4>
             </div>
-            <div class="col-4 text-right">
+            <div class="col-4 text-end">
                 <a href="<?= base_url() ?>" class="btn btn-success">
                     <svg style="margin-bottom: 5px" width="20" height="20" xmlns="http://www.w3.org/2000/svg"
                          xml:space="preserve" version="1.0" shape-rendering="geometricPrecision"
@@ -39,7 +39,7 @@
                         <path fill="#FFFFFF"
                               d="M24.01 55.4c7.39,49.12 66.11,44.11 77.13,9.65 2.88,2.25 6.63,1.22 9.62,0.31 -8.28,-8.6 0.17,-26.97 -9.18,-26.71l-44.28 1.35c2.7,12.27 7.85,18.66 23.32,19.96 -12.65,18.88 -45.34,10.32 -56.61,-4.56z"></path>
                 </svg>
-                    <span class="ml-2">Ke Aplikasi</span>
+                    <span class="ms-2">Ke Aplikasi</span>
                 </a>
             </div>
         </div>
@@ -72,7 +72,7 @@
                 <div class="spinner-border text-danger" role="status">
                     <span class="sr-only">Loading</span>
                 </div>
-                <span id="spinner-info" class="ml-2">
+                <span id="spinner-info" class="ms-2">
                     Mengambil informasi ....
                 </span>
             </div>
@@ -119,7 +119,7 @@
             },
             error: function (xhr, status, error) {
                 console.log("error", xhr.responseText);
-                swal.fire({
+                Swal.fire({
                     title: "ERROR",
                     text: "Ada kesalahan",
                     icon: "error"
@@ -150,7 +150,7 @@
             },
             error: function (xhr, status, error) {
                 console.log("error", xhr.responseText);
-                swal.fire({
+                Swal.fire({
                     title: "ERROR",
                     html: xhr.responseText,
                     icon: "error"
@@ -176,3 +176,4 @@
     }
 
 </script>
+

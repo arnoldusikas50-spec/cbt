@@ -1,35 +1,38 @@
 <?php
 
 
-class Walisiswa extends MY_Controller {
+class Walisiswa extends MY_Controller
+{
 
-	public function __construct(){
-		parent::__construct();
-		if (!$this->auth->logged_in()){
-			redirect('auth');
-		}else if ( !$this->auth->is_admin() && !$this->auth->in_group('guru') ){
-			show_error('Hanya Administrator dan guru yang diberi hak untuk mengakses halaman ini, <a href="'.base_url('dashboard').'">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
-		}
-		$this->load->library(['datatables', 'form_validation']);// Load Library Ignited-Datatables
-		$this->load->model('Master_model', 'master');
-		$this->load->model('Dashboard_model', 'dashboard');
-		$this->load->model('Cbt_model', 'cbt');
-		$this->form_validation->set_error_delimiters('','');
-	}
+    public function __construct()
+    {
+        parent::__construct();
+        if (!$this->auth->logged_in()) {
+            redirect('auth');
+        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru')) {
+            show_error('Hanya Administrator dan guru yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
+        }
+        $this->load->library(['datatables', 'form_validation']);// Load Library Ignited-Datatables
+        $this->load->model('Master_model', 'master');
+        $this->load->model('Dashboard_model', 'dashboard');
+        $this->load->model('Cbt_model', 'cbt');
+        $this->form_validation->set_error_delimiters('', '');
+    }
 
-	public function index() {
-		$user = $this->auth->user();
+    public function index()
+    {
+        $user = $this->auth->user();
         $tp = $this->master->getTahunActive();
         $smt = $this->master->getSemesterActive();
         $guru = $this->dashboard->getDataGuruByUsername($user->username, $tp->id_tp, $smt->id_smt);
         $kelas = $this->master->getKelasById($guru->wali_kelas);
 
-		$data = [
-			'user' => $user,
-			'judul'	=> 'Daftar Siswa',
-			'subjudul'=> 'Siswa Kelas '. $kelas->nama_kelas,
-            'setting'		=> $this->dashboard->getSetting()
-		];
+        $data = [
+            'user' => $user,
+            'judul' => 'Daftar Siswa',
+            'subjudul' => 'Siswa Kelas ' . $kelas->nama_kelas,
+            'setting' => $this->dashboard->getSetting()
+        ];
         $data['guru'] = $guru;
         $data['tp'] = $this->dashboard->getTahun();
         $data['tp_active'] = $tp;
@@ -41,9 +44,10 @@ class Walisiswa extends MY_Controller {
         $data['siswas'] = $this->master->getDataSiswaByKelas($tp->id_tp, $smt->id_smt, $guru->wali_kelas, 0, 0);
 
         $this->render_view(2, 'members/guru/wali/kelas', $data);
-	}
+    }
 
-    public function dataKelas(){
+    public function dataKelas()
+    {
         $user = $this->auth->user();
         $tp = $this->dashboard->getTahunActive();
         $smt = $this->dashboard->getSemesterActive();
@@ -52,7 +56,8 @@ class Walisiswa extends MY_Controller {
         $this->output_json($this->master->getDataSiswaByKelas($tp->id_tp, $smt->id_smt, $guru->wali_kelas), false);
     }
 
-    public function list() {
+    public function list()
+    {
         $page = $this->input->post('page', true);
         $limit = $this->input->post('limit', true);
         $search = $this->input->post('search', true);
@@ -79,14 +84,15 @@ class Walisiswa extends MY_Controller {
         $this->output_json($data);
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $siswa = $this->master->getSiswaById($id);
         $inputData = [
             [
                 'label' => 'Nama Lengkap',
                 'name' => 'nama',
                 'value' => $siswa->nama,
-                'icon' => 'far fa-user',
+                'icon' => 'bi bi-user',
                 'req' => 'required',
                 'class' => '',
                 'type' => 'text'
@@ -95,7 +101,7 @@ class Walisiswa extends MY_Controller {
                 'label' => 'NIS',
                 'name' => 'nis',
                 'value' => $siswa->nis,
-                'icon' => 'far fa-id-card',
+                'icon' => 'bi bi-id-card',
                 'req' => 'required',
                 'class' => '',
                 'type' => 'number'
@@ -104,7 +110,7 @@ class Walisiswa extends MY_Controller {
                 'name' => 'nisn',
                 'label' => 'NISN',
                 'value' => $siswa->nisn,
-                'icon' => 'far fa-id-card',
+                'icon' => 'bi bi-id-card',
                 'req' => '',
                 'class' => '',
                 'type' => 'text'
@@ -113,7 +119,7 @@ class Walisiswa extends MY_Controller {
                 'label' => 'Jenis Kelamin',
                 'name' => 'jenis_kelamin',
                 'value' => $siswa->jenis_kelamin,
-                'icon' => 'fas fa-venus-mars',
+                'icon' => 'bi bi-venus-mars',
                 'req' => 'required',
                 'class' => '',
                 'type' => 'text'
@@ -122,7 +128,7 @@ class Walisiswa extends MY_Controller {
                 'name' => 'kelas_awal',
                 'label' => 'Diterima di kelas',
                 'value' => $siswa->kelas_awal,
-                'icon' => 'fas fa-graduation-cap',
+                'icon' => 'bi bi-graduation-cap',
                 'req' => 'required',
                 'class' => '',
                 'type' => 'text'
@@ -131,7 +137,7 @@ class Walisiswa extends MY_Controller {
                 'name' => 'tahun_masuk',
                 'label' => 'Tgl diterima',
                 'value' => $siswa->tahun_masuk,
-                'icon' => 'tahun far fa-calendar-alt',
+                'icon' => 'tahun bi bi-calendar-alt',
                 'req' => 'required',
                 'class' => 'tahun',
                 'type' => 'text'
@@ -140,7 +146,7 @@ class Walisiswa extends MY_Controller {
                 'name' => 'sekolah_asal',
                 'label' => 'Sekolah Asal',
                 'value' => $siswa->sekolah_asal,
-                'icon' => 'fas fa-graduation-cap',
+                'icon' => 'bi bi-graduation-cap',
                 'req' => '',
                 'class' => '',
                 'type' => 'text'
@@ -151,7 +157,7 @@ class Walisiswa extends MY_Controller {
                 'name' => 'status_keluarga',
                 'label' => 'Status dalam Keluarga',
                 'value' => $siswa->status_keluarga == '' ? '1' : $siswa->status_keluarga,
-                'icon' => 'far fa-user',
+                'icon' => 'bi bi-user',
                 'class' => '',
                 'type' => 'text'
             ],
@@ -159,7 +165,7 @@ class Walisiswa extends MY_Controller {
                 'name' => 'anak_ke',
                 'label' => 'Anak ke',
                 'value' => $siswa->anak_ke,
-                'icon' => 'far fa-user',
+                'icon' => 'bi bi-user',
                 'class' => '',
                 'type' => 'number'
             ],
@@ -167,7 +173,7 @@ class Walisiswa extends MY_Controller {
                 'name' => 'tempat_lahir',
                 'label' => 'Tempat Lahir',
                 'value' => $siswa->tempat_lahir,
-                'icon' => 'far fa-map',
+                'icon' => 'bi bi-map',
                 'class' => '',
                 'type' => 'text'
             ],
@@ -175,25 +181,25 @@ class Walisiswa extends MY_Controller {
                 'name' => 'tanggal_lahir',
                 'label' => 'Tanggal Lahir',
                 'value' => $siswa->tanggal_lahir,
-                'icon' => 'far fa-calendar',
+                'icon' => 'bi bi-calendar',
                 'class' => 'tahun',
                 'type' => 'text'
             ],
-            ['class' => '', 'name' => 'agama', 'label' => 'Agama', 'value' => $siswa->agama, 'icon' => 'far fa-calendar', 'type' => 'text'],
-            ['class' => '', 'name' => 'alamat', 'label' => 'Alamat', 'value' => $siswa->alamat, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'rt', 'label' => 'Rt', 'value' => $siswa->rt, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'rw', 'label' => 'Rw', 'value' => $siswa->rw, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'kelurahan', 'label' => 'Kelurahan/Desa', 'value' => $siswa->kelurahan, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'kecamatan', 'label' => 'Kecamatan', 'value' => $siswa->kecamatan, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'kabupaten', 'label' => 'Kabupaten/Kota', 'value' => $siswa->kabupaten, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'provinsi', 'label' => 'Provinsi', 'value' => $siswa->provinsi, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'kode_pos', 'label' => 'Kode Pos', 'value' => $siswa->kode_pos, 'icon' => 'far fa-user', 'type' => 'text'],
-            ['class' => '', 'name' => 'hp', 'label' => 'Hp', 'value' => $siswa->hp, 'icon' => 'far fa-user', 'type' => 'text']
+            ['class' => '', 'name' => 'agama', 'label' => 'Agama', 'value' => $siswa->agama, 'icon' => 'bi bi-calendar', 'type' => 'text'],
+            ['class' => '', 'name' => 'alamat', 'label' => 'Alamat', 'value' => $siswa->alamat, 'icon' => 'bi bi-user', 'type' => 'text'],
+            ['class' => '', 'name' => 'rt', 'label' => 'Rt', 'value' => $siswa->rt, 'icon' => 'bi bi-user', 'type' => 'text'],
+            ['class' => '', 'name' => 'rw', 'label' => 'Rw', 'value' => $siswa->rw, 'icon' => 'bi bi-user', 'type' => 'text'],
+            ['class' => '', 'name' => 'kelurahan', 'label' => 'Kelurahan/Desa', 'value' => $siswa->kelurahan, 'icon' => 'bi bi-user', 'type' => 'text'],
+            ['class' => '', 'name' => 'kecamatan', 'label' => 'Kecamatan', 'value' => $siswa->kecamatan, 'icon' => 'bi bi-user', 'type' => 'text'],
+            ['class' => '', 'name' => 'kabupaten', 'label' => 'Kabupaten/Kota', 'value' => $siswa->kabupaten, 'icon' => 'bi bi-user', 'type' => 'text'],
+            ['class' => '', 'name' => 'provinsi', 'label' => 'Provinsi', 'value' => $siswa->provinsi, 'icon' => 'bi bi-user', 'type' => 'text'],
+            ['class' => '', 'name' => 'kode_pos', 'label' => 'Kode Pos', 'value' => $siswa->kode_pos, 'icon' => 'bi bi-user', 'type' => 'text'],
+            ['class' => '', 'name' => 'hp', 'label' => 'Hp', 'value' => $siswa->hp, 'icon' => 'bi bi-user', 'type' => 'text']
         ];
 
-        $inputOrtu = [['name' => 'nama_ayah', 'label' => 'Nama Ayah', 'value' => $siswa->nama_ayah, 'icon' => 'far fa-user', 'type' => 'text'], ['name' => 'pendidikan_ayah', 'label' => 'Pendidikan Ayah', 'value' => $siswa->pendidikan_ayah, 'icon' => 'far fa-user', 'type' => 'text'], ['name' => 'pekerjaan_ayah', 'label' => 'Pekerjaan Ayah', 'value' => $siswa->pekerjaan_ayah, 'icon' => 'far fa-user', 'type' => 'text'], ['name' => 'nohp_ayah', 'label' => 'No. HP Ayah', 'value' => $siswa->nohp_ayah, 'icon' => 'far fa-user', 'type' => 'number'], ['name' => 'alamat_ayah', 'label' => 'Alamat Ayah', 'value' => $siswa->alamat_ayah, 'icon' => 'far fa-user', 'type' => 'text'], ['name' => 'nama_ibu', 'label' => 'Nama Ibu', 'value' => $siswa->nama_ibu, 'icon' => 'far fa-user', 'type' => 'text'], ['name' => 'pendidikan_ibu', 'label' => 'Pendidikan Ibu', 'value' => $siswa->pendidikan_ibu, 'icon' => 'far fa-user', 'type' => 'text'], ['name' => 'pekerjaan_ibu', 'label' => 'Pekerjaan Ibu', 'value' => $siswa->pekerjaan_ibu, 'icon' => 'far fa-user', 'type' => 'text'], ['name' => 'nohp_ibu', 'label' => 'No. HP Ibu', 'value' => $siswa->nohp_ibu, 'icon' => 'far fa-user', 'type' => 'number'], ['name' => 'alamat_ibu', 'label' => 'Alamat Ibu', 'value' => $siswa->alamat_ibu, 'icon' => 'far fa-user', 'type' => 'text']];
+        $inputOrtu = [['name' => 'nama_ayah', 'label' => 'Nama Ayah', 'value' => $siswa->nama_ayah, 'icon' => 'bi bi-user', 'type' => 'text'], ['name' => 'pendidikan_ayah', 'label' => 'Pendidikan Ayah', 'value' => $siswa->pendidikan_ayah, 'icon' => 'bi bi-user', 'type' => 'text'], ['name' => 'pekerjaan_ayah', 'label' => 'Pekerjaan Ayah', 'value' => $siswa->pekerjaan_ayah, 'icon' => 'bi bi-user', 'type' => 'text'], ['name' => 'nohp_ayah', 'label' => 'No. HP Ayah', 'value' => $siswa->nohp_ayah, 'icon' => 'bi bi-user', 'type' => 'number'], ['name' => 'alamat_ayah', 'label' => 'Alamat Ayah', 'value' => $siswa->alamat_ayah, 'icon' => 'bi bi-user', 'type' => 'text'], ['name' => 'nama_ibu', 'label' => 'Nama Ibu', 'value' => $siswa->nama_ibu, 'icon' => 'bi bi-user', 'type' => 'text'], ['name' => 'pendidikan_ibu', 'label' => 'Pendidikan Ibu', 'value' => $siswa->pendidikan_ibu, 'icon' => 'bi bi-user', 'type' => 'text'], ['name' => 'pekerjaan_ibu', 'label' => 'Pekerjaan Ibu', 'value' => $siswa->pekerjaan_ibu, 'icon' => 'bi bi-user', 'type' => 'text'], ['name' => 'nohp_ibu', 'label' => 'No. HP Ibu', 'value' => $siswa->nohp_ibu, 'icon' => 'bi bi-user', 'type' => 'number'], ['name' => 'alamat_ibu', 'label' => 'Alamat Ibu', 'value' => $siswa->alamat_ibu, 'icon' => 'bi bi-user', 'type' => 'text']];
 
-        $inputWali = [['name' => 'nama_wali', 'label' => 'Nama Wali', 'value' => $siswa->nama_wali, 'icon' => 'far fa-user', 'type' => 'text'], ['name' => 'pendidikan_wali', 'label' => 'Pendidikan Wali', 'value' => $siswa->pendidikan_wali, 'icon' => 'far fa-user', 'type' => 'text'], ['name' => 'pekerjaan_wali', 'label' => 'Pekerjaan Wali', 'value' => $siswa->pekerjaan_wali, 'icon' => 'far fa-user', 'type' => 'text'], ['name' => 'alamat_wali', 'label' => 'Alamat Wali', 'value' => $siswa->alamat_wali, 'icon' => 'far fa-user', 'type' => 'text'], ['name' => 'nohp_wali', 'label' => 'No. HP Wali', 'value' => $siswa->nohp_wali, 'icon' => 'far fa-user', 'type' => 'number']];
+        $inputWali = [['name' => 'nama_wali', 'label' => 'Nama Wali', 'value' => $siswa->nama_wali, 'icon' => 'bi bi-user', 'type' => 'text'], ['name' => 'pendidikan_wali', 'label' => 'Pendidikan Wali', 'value' => $siswa->pendidikan_wali, 'icon' => 'bi bi-user', 'type' => 'text'], ['name' => 'pekerjaan_wali', 'label' => 'Pekerjaan Wali', 'value' => $siswa->pekerjaan_wali, 'icon' => 'bi bi-user', 'type' => 'text'], ['name' => 'alamat_wali', 'label' => 'Alamat Wali', 'value' => $siswa->alamat_wali, 'icon' => 'bi bi-user', 'type' => 'text'], ['name' => 'nohp_wali', 'label' => 'No. HP Wali', 'value' => $siswa->nohp_wali, 'icon' => 'bi bi-user', 'type' => 'number']];
         $user = $this->auth->user();
         $data = ['user' => $user, 'judul' => 'Siswa', 'subjudul' => 'Edit Data Siswa', 'siswa' => $siswa, 'setting' => $this->dashboard->getSetting()];
 
@@ -213,10 +219,11 @@ class Walisiswa extends MY_Controller {
         $this->render_view(2, 'members/guru/wali/edit', $data);
     }
 
-    public function updateData() {
+    public function updateData()
+    {
         $id_siswa = $this->input->post('id_siswa', true);
-        $nis           = $this->input->post('nis', true);
-        $nisn          = $this->input->post('nisn', true);
+        $nis = $this->input->post('nis', true);
+        $nisn = $this->input->post('nisn', true);
 
         $siswa = $this->master->getSiswaById($id_siswa);
         $u_nis = $siswa->nis == $nis ? "" : "|is_unique[master_siswa.nis]";
@@ -231,46 +238,46 @@ class Walisiswa extends MY_Controller {
             $data['text'] = 'Data Sudah ada, Pastikan NIS, dan NISN belum digunakan siswa lain';
         } else {
             $input = [
-                'nisn'   => $this->input->post('nisn', true),
-                'nis'     => $this->input->post('nis', true),
-                'nama'   => $this->input->post('nama', true),
-                'jenis_kelamin'   => $this->input->post('jenis_kelamin', true),
-                'tempat_lahir'   => $this->input->post('tempat_lahir', true),
-                'tanggal_lahir'   => $this->input->post('tanggal_lahir', true),
-                'agama'   => $this->input->post('agama', true),
-                'status_keluarga'   => $this->input->post('status_keluarga', true),
-                'anak_ke'   => $this->input->post('anak_ke', true),
-                'alamat'   => $this->input->post('alamat', true),
-                'rt'   =>	$this->input->post('rt', true),
-                'rw'   =>	$this->input->post('rw', true),
-                'kelurahan'   => $this->input->post('kelurahan', true),
-                'kecamatan'   => $this->input->post('kecamatan', true),
-                'kabupaten'   => $this->input->post('kabupaten', true),
-                'provinsi'   =>	$this->input->post('provinsi', true),
-                'kode_pos'   =>	$this->input->post('kode_pos', true),
-                'hp'   =>	$this->input->post('hp', true),
-                'nama_ayah'   =>	$this->input->post('nama_ayah', true),
-                'nohp_ayah'   =>	$this->input->post('nohp_ayah', true),
-                'pendidikan_ayah'   =>	$this->input->post('pendidikan_ayah', true),
-                'pekerjaan_ayah'   =>	$this->input->post('pekerjaan_ayah', true),
-                'alamat_ayah'   =>	$this->input->post('alamat_ayah', true),
-                'nama_ibu'   =>	$this->input->post('nama_ibu', true),
-                'nohp_ibu'   =>	$this->input->post('nohp_ibu', true),
-                'pendidikan_ibu'   =>	$this->input->post('pendidikan_ibu', true),
-                'pekerjaan_ibu'   =>	$this->input->post('pekerjaan_ibu', true),
-                'alamat_ibu'   =>	$this->input->post('alamat_ibu', true),
-                'nama_wali'   =>	$this->input->post('nama_wali', true),
-                'pendidikan_wali'   =>	$this->input->post('pendidikan_wali', true),
-                'pekerjaan_wali'   =>	$this->input->post('pekerjaan_wali', true),
-                'nohp_wali'   =>	$this->input->post('nohp_wali', true),
-                'alamat_wali'   =>	$this->input->post('alamat_wali', true),
-                'tahun_masuk'   =>	$this->input->post('tahun_masuk', true),
-                'kelas_awal'   =>	$this->input->post('kelas_awal', true),
-                'tgl_lahir_ayah'   =>	$this->input->post('tgl_lahir_ayah', true),
-                'tgl_lahir_ibu'   =>	$this->input->post('tgl_lahir_ibu', true),
-                'tgl_lahir_wali'   =>	$this->input->post('tgl_lahir_wali', true),
-                'sekolah_asal'   =>	$this->input->post('sekolah_asal', true),
-                'foto'   =>	'uploads/foto_siswa/'.$nis.'.jpg'
+                'nisn' => $this->input->post('nisn', true),
+                'nis' => $this->input->post('nis', true),
+                'nama' => $this->input->post('nama', true),
+                'jenis_kelamin' => $this->input->post('jenis_kelamin', true),
+                'tempat_lahir' => $this->input->post('tempat_lahir', true),
+                'tanggal_lahir' => $this->input->post('tanggal_lahir', true),
+                'agama' => $this->input->post('agama', true),
+                'status_keluarga' => $this->input->post('status_keluarga', true),
+                'anak_ke' => $this->input->post('anak_ke', true),
+                'alamat' => $this->input->post('alamat', true),
+                'rt' => $this->input->post('rt', true),
+                'rw' => $this->input->post('rw', true),
+                'kelurahan' => $this->input->post('kelurahan', true),
+                'kecamatan' => $this->input->post('kecamatan', true),
+                'kabupaten' => $this->input->post('kabupaten', true),
+                'provinsi' => $this->input->post('provinsi', true),
+                'kode_pos' => $this->input->post('kode_pos', true),
+                'hp' => $this->input->post('hp', true),
+                'nama_ayah' => $this->input->post('nama_ayah', true),
+                'nohp_ayah' => $this->input->post('nohp_ayah', true),
+                'pendidikan_ayah' => $this->input->post('pendidikan_ayah', true),
+                'pekerjaan_ayah' => $this->input->post('pekerjaan_ayah', true),
+                'alamat_ayah' => $this->input->post('alamat_ayah', true),
+                'nama_ibu' => $this->input->post('nama_ibu', true),
+                'nohp_ibu' => $this->input->post('nohp_ibu', true),
+                'pendidikan_ibu' => $this->input->post('pendidikan_ibu', true),
+                'pekerjaan_ibu' => $this->input->post('pekerjaan_ibu', true),
+                'alamat_ibu' => $this->input->post('alamat_ibu', true),
+                'nama_wali' => $this->input->post('nama_wali', true),
+                'pendidikan_wali' => $this->input->post('pendidikan_wali', true),
+                'pekerjaan_wali' => $this->input->post('pekerjaan_wali', true),
+                'nohp_wali' => $this->input->post('nohp_wali', true),
+                'alamat_wali' => $this->input->post('alamat_wali', true),
+                'tahun_masuk' => $this->input->post('tahun_masuk', true),
+                'kelas_awal' => $this->input->post('kelas_awal', true),
+                'tgl_lahir_ayah' => $this->input->post('tgl_lahir_ayah', true),
+                'tgl_lahir_ibu' => $this->input->post('tgl_lahir_ibu', true),
+                'tgl_lahir_wali' => $this->input->post('tgl_lahir_wali', true),
+                'sekolah_asal' => $this->input->post('sekolah_asal', true),
+                'foto' => 'uploads/foto_siswa/' . $nis . '.jpg'
             ];
 
             $action = $this->master->update('master_siswa', $input, 'id_siswa', $id_siswa);
@@ -281,9 +288,10 @@ class Walisiswa extends MY_Controller {
         $this->output_json($data);
     }
 
-    function uploadFile($id_siswa){
+    function uploadFile($id_siswa)
+    {
         $siswa = $this->master->getSiswaById($id_siswa);
-        if(isset($_FILES["foto"]["name"])){
+        if (isset($_FILES["foto"]["name"])) {
 
             $config['upload_path'] = './uploads/foto_siswa/';
             $config['allowed_types'] = 'gif|jpg|png|jpeg|JPEG|JPG|PNG|GIF';
@@ -292,16 +300,16 @@ class Walisiswa extends MY_Controller {
             $config['file_name'] = $siswa->nis;
 
             $this->upload->initialize($config);
-            if(!$this->upload->do_upload('foto')){
+            if (!$this->upload->do_upload('foto')) {
                 $data['status'] = false;
                 $data['src'] = $this->upload->display_errors();
-            }else{
+            } else {
                 $result = $this->upload->data();
-                $data['src'] = base_url().'uploads/foto_siswa/'.$result['file_name'];
+                $data['src'] = base_url() . 'uploads/foto_siswa/' . $result['file_name'];
                 $data['filename'] = pathinfo($result['file_name'], PATHINFO_FILENAME);
                 $data['status'] = true;
 
-                $this->db->set('foto', 'uploads/foto_siswa/'.$result['file_name']);
+                $this->db->set('foto', 'uploads/foto_siswa/' . $result['file_name']);
                 $this->db->where('id_siswa', $id_siswa);
                 $this->db->update('master_siswa');
             }
@@ -316,7 +324,8 @@ class Walisiswa extends MY_Controller {
         $this->output_json($data);
     }
 
-    function deleteFile($id_siswa) {
+    function deleteFile($id_siswa)
+    {
         $src = $this->input->post('src');
         $file_name = str_replace(base_url(), '', $src ?? '');
         if ($file_name != 'assets/img/siswa.png') {
@@ -330,7 +339,8 @@ class Walisiswa extends MY_Controller {
         }
     }
 
-    public function delete() {
+    public function delete()
+    {
         $chk = $this->input->post('checked', true);
         if (!$chk) {
             $this->output_json(['status' => false]);

@@ -73,11 +73,11 @@ export default class GalleryModal {
 
         for (var i = 0; i < data.length; i++) {
 
-            var $image = $('<img class="col-md-12 thumbnail" title="'+ data[i].title +'"/>');
+            var $image = $('<img class="col-md-12 thumbnail" title="' + data[i].title + '"/>');
 
-            $image.get(0).onload = function() {
+            $image.get(0).onload = function () {
                 $(this).siblings('.loading').hide()
-                $(this).click(function(event) {
+                $(this).click(function (event) {
                     $(this).toggleClass(_this.select_class);
                 });
             }
@@ -85,11 +85,11 @@ export default class GalleryModal {
             $image.attr('src', data[i].src);
 
             var $item = $('<div class="col-md-2 img-item">'
-                            +'<i class="fa fa-check"></i>'
-                            +'<span class="loading">'
-                                +'<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>'
-                            +'</span>'
-                        +'</div>');
+                + '<i class="bi bi-check"></i>'
+                + '<span class="loading">'
+                + '<i class="bi bi-spinner fa-pulse fa-3x fa-fw"></i>'
+                + '</span>'
+                + '</div>');
 
             $item.prepend($image);
             $content.append($item)
@@ -110,11 +110,11 @@ export default class GalleryModal {
         }
     }
 
-    showLoading () {
+    showLoading() {
         this.$modal.find('.modal-footer .loading').show();
     }
 
-    hideLoading () {
+    hideLoading() {
         this.$modal.find('.modal-footer .loading').hide();
     }
 
@@ -123,10 +123,10 @@ export default class GalleryModal {
         var $modal = this.$modal;
         var $modal_body = $modal.find('.modal-body');
 
-        $modal.find("button#save").click(function(event) {
+        $modal.find("button#save").click(function (event) {
             var $selected_img = $modal.find('.img-item img.' + _this.select_class);
 
-            if (! $selected_img.length) {
+            if (!$selected_img.length) {
                 _this.showError(_this.options.noImageSelected_msg);
                 return;
             }
@@ -135,7 +135,7 @@ export default class GalleryModal {
 
             _this.event.trigger('beforeSave', [_this]);
 
-            $selected_img.each(function(index, el) {
+            $selected_img.each(function (index, el) {
                 _this.event.trigger('save', [_this, $(this)]);
 
                 $(this).removeClass(_this.select_class);
@@ -148,15 +148,15 @@ export default class GalleryModal {
             _this.event.trigger('close')
         })
 
-        $modal.find("button#select-all").click(function(event) {
+        $modal.find("button#select-all").click(function (event) {
             $modal.find('img').addClass(_this.select_class);
         });
 
-        $modal.find("button#deselect-all").click(function(event) {
+        $modal.find("button#deselect-all").click(function (event) {
             $modal.find('img').removeClass(_this.select_class);
         });
 
-        $modal_body.scroll(function() {
+        $modal_body.scroll(function () {
             var $images_list = $modal.find('.images-list');
             var is_near_bottom = $modal_body.scrollTop() + $modal_body.height() >= $images_list.height() - 100;
 
@@ -187,35 +187,35 @@ export default class GalleryModal {
 
         var bootsrap_version = parseInt($.fn.modal.Constructor.VERSION);
         var header_content = [
-            '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
+            '<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>',
             '<h4 class="modal-title">[gallery title]</h4>'
         ];
 
-        var modal_html = ''+
+        var modal_html = '' +
             '<div class="modal summernote-gallery fade" tabindex="-1" role="dialog">'
-                + '<div class="modal-lg modal-dialog ">'
-                    + '<div class="modal-content">'
-                        + '<div class="modal-header">'
-                            + (bootsrap_version == 3 ? header_content.join('') : header_content.reverse().join(''))
-                        + '</div>'
-                        + '<div class="modal-body">'
-                            + '<div class="row images-list">'
-                            + '</div>'
-                        + '</div>'
-                        + '<div class="modal-footer">'
-                            + '<span style="display: none;position: absolute;left: 10px;bottom: 10px;" class="loading" >'
-                                + '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>'
-                            + '</span >'
-                            + '<span style="display: inline-block; margin-right: 50px;">'
-                                + '<button type="button" id="deselect-all" class="btn btn-default">[Deselect-all]</button>'
-                                + '<button type="button" id="select-all" class="btn btn-default">[select-all]</button>'
-                            + '</span >'
-                            + '<button type="button" id="close" class="btn btn-default" data-dismiss="modal">[Close]</button>'
-                            + '<button type="button" id="save" class="btn btn-primary">[Add]</button>'
-                            + '<span class="message" ></span >'
-                        + '</div>'
-                    + '</div>'
-                + '</div>'
+            + '<div class="modal-lg modal-dialog ">'
+            + '<div class="modal-content">'
+            + '<div class="modal-header">'
+            + (bootsrap_version == 3 ? header_content.join('') : header_content.reverse().join(''))
+            + '</div>'
+            + '<div class="modal-body">'
+            + '<div class="row images-list">'
+            + '</div>'
+            + '</div>'
+            + '<div class="modal-footer">'
+            + '<span style="display: none;position: absolute;left: 10px;bottom: 10px;" class="loading" >'
+            + '<i class="bi bi-spinner fa-pulse fa-3x fa-fw"></i>'
+            + '</span >'
+            + '<span style="display: inline-block; margin-right: 50px;">'
+            + '<button type="button" id="deselect-all" class="btn btn-default">[Deselect-all]</button>'
+            + '<button type="button" id="select-all" class="btn btn-default">[select-all]</button>'
+            + '</span >'
+            + '<button type="button" id="close" class="btn btn-default" data-dismiss="modal">[Close]</button>'
+            + '<button type="button" id="save" class="btn btn-primary">[Add]</button>'
+            + '<span class="message" ></span >'
+            + '</div>'
+            + '</div>'
+            + '</div>'
             + '</div>';
 
         return modal_html;
@@ -223,52 +223,52 @@ export default class GalleryModal {
 
     addStyleToDom() {
         this.$css = $('<style>'
-                        +'.img-item{'
-                            +'position : relative;'
-                        +'}'
-                        +'.img-item .fa-check{'
-                            +'position : absolute;'
-                            +'top : -10px;'
-                            +'right : 5px;'
-                            +'font-size: 30px;'
-                            +'color: #337AB7;'
-                        +'}'
-                        +'.img-item .thumbnail{'
-                            +'min-height : 119.66px;'
-                        +'}'
-                        +'.img-item .loading{'
-                            +'position: absolute;'
-                            +'margin: auto;'
-                            +'top: -20px;'
-                            +'bottom: 0;'
-                            +'display: block;'
-                            +'left: 0;'
-                            +'right: 0;'
-                            +'width: 60px;'
-                            +'height: 42px;'
-                            +'text-align: center;'
-                        +'}'
-                        +'.modal.summernote-gallery .message{'
-                            +'display: block;'
-                            +'padding: 30px 0 20px 0;'
-                        +'}'
-                        +'.modal.summernote-gallery .message:empty{'
-                            +'display: block;'
-                            +'padding: 0px!important;'
-                        +'}'
-                        +'.modal.summernote-gallery .modal-body{'
-                            +'overflow: scroll;'
-                        +'}'
-                        +'.img-item .fa-check{'
-                            +'display : none;'
-                        +'}'
-                        +'.img-item .'+ this.select_class +' + .fa-check{'
-                            +'display : block;'
-                        +'}'
-                        +'.'+ this.select_class +'{'
-                            +'background-color: #5CB85C;'
-                        +'}'
-                    +'</style>');
+            + '.img-item{'
+            + 'position : relative;'
+            + '}'
+            + '.img-item .fa-check{'
+            + 'position : absolute;'
+            + 'top : -10px;'
+            + 'right : 5px;'
+            + 'font-size: 30px;'
+            + 'color: #337AB7;'
+            + '}'
+            + '.img-item .thumbnail{'
+            + 'min-height : 119.66px;'
+            + '}'
+            + '.img-item .loading{'
+            + 'position: absolute;'
+            + 'margin: auto;'
+            + 'top: -20px;'
+            + 'bottom: 0;'
+            + 'display: block;'
+            + 'left: 0;'
+            + 'right: 0;'
+            + 'width: 60px;'
+            + 'height: 42px;'
+            + 'text-align: center;'
+            + '}'
+            + '.modal.summernote-gallery .message{'
+            + 'display: block;'
+            + 'padding: 30px 0 20px 0;'
+            + '}'
+            + '.modal.summernote-gallery .message:empty{'
+            + 'display: block;'
+            + 'padding: 0px!important;'
+            + '}'
+            + '.modal.summernote-gallery .modal-body{'
+            + 'overflow: scroll;'
+            + '}'
+            + '.img-item .fa-check{'
+            + 'display : none;'
+            + '}'
+            + '.img-item .' + this.select_class + ' + .fa-check{'
+            + 'display : block;'
+            + '}'
+            + '.' + this.select_class + '{'
+            + 'background-color: #5CB85C;'
+            + '}'
+            + '</style>');
         this.$css.appendTo('body');
     }
 }

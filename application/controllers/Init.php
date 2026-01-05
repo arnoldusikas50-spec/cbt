@@ -17,7 +17,7 @@ class Init extends CI_Controller {
         if ($current_version < $latest_version) {
             $data = [
                 'judul'     => 'Menu Migrasi',
-                'subjudul'  => 'System Information GarudaCBT',
+                'subjudul'  => 'System Information CBT by Ikasmedia',
             ];
             $this->load->view('install/header', $data);
             $this->load->view('init');

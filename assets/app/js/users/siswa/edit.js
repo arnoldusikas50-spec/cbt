@@ -5,7 +5,7 @@ function submitajax(url, data, msg, btn) {
         type: 'POST',
         success: function (response) {
             if (response.status) {
-                swal.fire({
+                Swal.fire({
                     "title": "Berhasil",
                     "text": msg,
                     "type": "success"
@@ -23,7 +23,7 @@ function submitajax(url, data, msg, btn) {
                     });
                 }
                 if (response.msg) {
-                    swal.fire({
+                    Swal.fire({
                         "title": "Gagal",
                         "text": "Password lama tidak benar",
                         "type": "error"

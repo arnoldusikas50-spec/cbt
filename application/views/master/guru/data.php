@@ -1,168 +1,177 @@
 <?php
 /**
- * Created by IntelliJ IDEA.
- * User: AbangAzmi
+
  * Date: 14/06/2020
  * Time: 01.31
  */
 
 function sortByPosition($a, $b)
 {
-    if ($a->id_jabatan == $b->id_jabatan) return 0;
-    if ($a->id_jabatan == 0) return 1;
-    if ($b->id_jabatan == 0) return -1;
+    if ($a->id_jabatan == $b->id_jabatan)
+        return 0;
+    if ($a->id_jabatan == 0)
+        return 1;
+    if ($b->id_jabatan == 0)
+        return -1;
     return $a->id_jabatan > $b->id_jabatan ? 1 : -1;
 }
 
 ?>
 
-<div class="content-wrapper bg-white pt-4">
+<main class="app-main bg-white pt-4">
 
 
     <section class="content">
         <div class="container-fluid">
-            <div class="card card-default my-shadow mb-4">
-                <div class="card-header">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-transparent border-bottom">
                     <h6 class="card-title">Master <?= $subjudul ?></h6>
-                    <div class="card-tools">
-                    <button type="button" onclick="window.location.reload()" class="btn btn-sm btn-warning">
-                            <i class="fa fa-sync"></i> <span class="d-none d-sm-inline-block ml-1">Reload</span>
+                    <div class="card-tools ms-auto d-flex align-items-center gap-2">
+                        <button type="button" onclick="window.location.reload()" class="btn btn-sm btn-warning">
+                            <i class="bi bi-arrow-repeat"></i> <span class="d-none d-sm-inline-block ms-1">Reload</span>
                         </button>
-                        <a href="<?= base_url('dataguru/import') ?>" class="btn btn-sm bg-gradient-primary"><i
-                                    class="fas fa-upload"></i><span class="d-none d-sm-inline-block ml-1">Tambah Guru / Import</span></a>
-                        <a href="<?= base_url('dataguru/update') ?>" class="btn btn-sm bg-gradient-success"><i
-                                    class="fas fa-database"></i><span
-                                    class="d-none d-sm-inline-block ml-1">Update Data</span></a>
+                        <a href="<?= base_url('dataguru/import') ?>" class="btn btn-sm btn-primary shadow-sm"><i
+                                class="bi bi-upload"></i><span class="d-none d-sm-inline-block ms-1">Tambah Guru /
+                                Import</span></a>
+                        <a href="<?= base_url('dataguru/update') ?>" class="btn btn-sm btn-success shadow-sm"><i
+                                class="bi bi-database"></i><span class="d-none d-sm-inline-block ms-1">Update
+                                Data</span></a>
                     </div>
                 </div>
                 <div class="card-body">
                     <?php $totalGuru = count($gurus); ?>
                     <div class="mb-4">
-                        <div class="bg-light border rounded p-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                        <div
+                            class="bg-light border rounded p-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                             <div>
                                 <h5 class="mb-1 font-weight-bold">Manajemen Data Guru</h5>
                                 <div class="text-muted">Pantau profil guru, penugasan mapel, dan jabatan</div>
                             </div>
-                            <div class="mt-3 mt-md-0">
-                                <span class="badge badge-primary px-3 py-2 text-sm">Total Guru: <?= $totalGuru ?></span>
+                            <div class="mt-3 mt-md-0 d-flex flex-wrap align-items-center gap-2">
+                                <span class="badge bg-primary px-3 py-2 text-sm">Total Guru: <?= $totalGuru ?></span>
                             </div>
                         </div>
                     </div>
 
                     <div class="callout callout-info shadow-sm border border-info mb-4">
-                        <h5 class="mb-2 font-weight-bold"><i class="fas fa-info-circle mr-2"></i>Panduan Pengelolaan Guru</h5>
-                        <ul class="pl-3 mb-0">
-                            <li>Gunakan tombol <span class="badge badge-primary">Tambah Guru / Import</span> untuk menambah atau memperbarui data massal.</li>
-                            <li>Klik <b>Profile</b> untuk mengedit informasi dasar guru, atau <b>Jabatan</b> untuk mengatur penugasan.</li>
+                        <h5 class="mb-2 font-weight-bold"><i class="bi bi-info-circle me-2"></i>Panduan Pengelolaan
+                            Guru</h5>
+                        <ul class="ps-3 mb-0">
+                            <li>Gunakan tombol <span class="badge bg-primary">Tambah Guru / Import</span> untuk menambah
+                                atau memperbarui data massal.</li>
+                            <li>Klik <b>Profile</b> untuk mengedit informasi dasar guru, atau <b>Jabatan</b> untuk
+                                mengatur penugasan.</li>
                             <li>Ikon tong sampah akan menghapus guru setelah konfirmasi dan pengecekan relasi data.</li>
                         </ul>
                     </div>
 
                     <?php
-                    if ($totalGuru > 0) :
+                    if ($totalGuru > 0):
                         //usort($gurus, 'sortByPosition');
                         ?>
                         <table id="list-guru" class="table w-100 dataTable no-footer" role="grid"
-                               aria-describedby="guru_info"
-                               style="width: 0;">
-                            <thead class="alert alert-primary" style="display: none;">
-                            <tr role="row">
-                                <th class="align-middle p-0 sorting_asc" tabindex="0" aria-controls="listguru"
-                                    rowspan="1"
-                                    colspan="1" aria-label="Profil Guru: activate to sort column descending"
-                                    style="width: 0;" aria-sort="ascending">Profil Guru
-                                </th>
-                            </tr>
+                            aria-describedby="guru_info" style="width: 0;">
+                            <thead style="display: none;">
+                                <tr role="row">
+                                    <th class="align-middle p-0 sorting_asc" tabindex="0" aria-controls="listguru"
+                                        rowspan="1" colspan="1" aria-label="Profil Guru: activate to sort column descending"
+                                        style="width: 0;" aria-sort="ascending">Profil Guru
+                                    </th>
+                                </tr>
                             </thead>
                             <tbody class="row">
-                            <?php foreach ($gurus as $guru):
-                                $mapels_guru = $guru->mapel_kelas;
-                                $ekstras_guru = $guru->ekstra_kelas; ?>
-                                <tr role="row" class="col-md-6 col-xl-4 p-0 d-flex align-items-stretch">
-                                    <td class="sorting_1 flex-fill">
-                                        <div class="card card-primary card-outline m-0">
-                                            <div class="card-body d-flex flex-column justify-content-between">
-                                                <div class="media mb-3">
-                                                    <img class="d-flex mr-3 rounded-circle img-thumbnail thumb-lg"
-                                                         src="<?= isset($guru->foto) && file_exists($guru->foto) ? base_url().$guru->foto : base_url('assets/img/guru.png') ?>" alt="foto"/>
-                                                    <div class="media-body overflow-hidden">
-                                                        <p class="card-text mb-0 text-xs"><?= $guru->nip ?></p>
-                                                        <h6 class="card-text mb-0"><?= $guru->nama_guru ?></h6>
-                                                        <p class="card-text"><?= $guru->level . ' ' . $guru->nama_kelas ?></p>
-                                                        <?php
-                                                        $stts = '';
-                                                        $badge = '';
-                                                        if ($guru->active === '1') {
-                                                            $stts = 'Aktif';
-                                                            $badge = 'badge-success';
-                                                        } else {
-                                                            $stts = 'Nonaktif';
-                                                            $badge = 'badge-danger';
-                                                        } ?>
-                                                        <span class="badge badge-btn <?= $badge ?>"><?= $stts ?></span>
-                                                    </div>
-                                                </div>
-                                                <?php if ($mapels_guru != null || $ekstras_guru != null): ?>
-                                                    <div>
-                                                        <span>Pengampu:</span>
-                                                        <table class="table table-bordered">
-                                                            <tr>
-                                                                <th class="text-center">No.</th>
-                                                                <th class="text-center">Mata Pelajaran</th>
-                                                                <th class="text-center">Kelas</th>
-                                                            </tr>
+                                <?php foreach ($gurus as $guru):
+                                    $mapels_guru = $guru->mapel_kelas;
+                                    $ekstras_guru = $guru->ekstra_kelas; ?>
+                                    <tr role="row" class="col-md-6 col-xl-4 p-0 d-flex align-items-stretch">
+                                        <td class="sorting_1 flex-fill">
+                                            <div class="card card-primary card-outline m-0">
+                                                <div class="card-body d-flex flex-column justify-content-between">
+                                                    <div class="d-flex align-items-start mb-3">
+                                                        <div class="position-relative">
+                                                            <img class="rounded-circle img-thumbnail thumb-lg me-3"
+                                                                src="<?= isset($guru->foto) && file_exists($guru->foto) ? base_url() . $guru->foto : base_url('assets/img/guru.png') ?>"
+                                                                alt="foto"
+                                                                style="width: 80px; height: 80px; object-fit: cover;" />
+                                                        </div>
+                                                        <div class="flex-grow-1 overflow-hidden">
+                                                            <p class="text-xs text-muted mb-1 font-monospace"><?= $guru->nip ?>
+                                                            </p>
+                                                            <h6 class="fw-bold mb-1 text-truncate"
+                                                                title="<?= $guru->nama_guru ?>"><?= $guru->nama_guru ?></h6>
+                                                            <p class="text-sm text-secondary mb-2">
+                                                                <?= $guru->level . ' ' . $guru->nama_kelas ?>
+                                                            </p>
                                                             <?php
-                                                            $nn = 1;
-                                                            foreach ($mapels_guru as $mapel) :
-                                                                $all_kelas_mapel = $mapel->kelas_mapel;
-                                                                $kls_guru_mapel = '';
-                                                                foreach ($all_kelas_mapel as $kls_mpl) {
-                                                                    if (isset($kelass[$kls_mpl->kelas])) $kls_guru_mapel .= '<span class="badge badge-light border">' . $kelass[$kls_mpl->kelas]->nama_kelas . '</span> ';
-                                                                }
-                                                                ?>
-                                                                <tr>
-                                                                    <td class="text-center"><?= $nn ?></td>
-                                                                    <td><?= $mapel->nama_mapel ?></td>
-                                                                    <td class="text-center">
-                                                                        <?= $kls_guru_mapel ?>
-                                                                    </td>
-                                                                </tr>
-                                                                <?php $nn++; endforeach; ?>
-                                                            <?php
-                                                            foreach ($ekstras_guru as $ekstra) :
-                                                                $all_kelas_ekstra = $ekstra->kelas_ekstra;
-                                                                $kls_guru_ekstra = '';
-                                                                foreach ($all_kelas_ekstra as $kls_eks) {
-                                                                    if (isset($kelass[$kls_eks->kelas])) $kls_guru_ekstra .= '<span class="badge badge-light border">' . $kelass[$kls_eks->kelas]->nama_kelas . '</span> ';
-                                                                }
-                                                                ?>
-                                                                <tr>
-                                                                    <td class="text-center"><?= $nn ?></td>
-                                                                    <td><?= $ekstra->nama_ekstra ?></td>
-                                                                    <td class="text-center">
-                                                                        <?= $kls_guru_ekstra ?>
-                                                                    </td>
-                                                                </tr>
-                                                                <?php $nn++; endforeach; ?>
-                                                        </table>
+                                                            $stts = ($guru->active === '1') ? 'Aktif' : 'Nonaktif';
+                                                            $badge = ($guru->active === '1') ? 'bg-success' : 'bg-danger';
+                                                            ?>
+                                                            <span class="badge <?= $badge ?>"><?= $stts ?></span>
+                                                        </div>
                                                     </div>
-                                                <?php endif; ?>
-                                                <div class="row mt-auto">
-                                                    <a href="<?= base_url('dataguru/edit/' . $guru->id_guru) ?>"
-                                                       class="btn btn-sm btn-outline-primary"><i
-                                                                class="fa fa-pencil"></i> Profile</a>
-                                                    <a href="<?= base_url('dataguru/editJabatan/' . $guru->id_guru) ?>"
-                                                       class="btn btn-sm btn-outline-primary ml-1"><i
-                                                                class="fa fa-pencil"></i> Jabatan</a>
-                                                    <button onclick="hapus('<?= $guru->id_guru ?>')"
-                                                            class="btn btn-sm btn-outline-danger ml-auto"><i
-                                                                class="fa fa-trash"></i></button>
+                                                    <?php if ($mapels_guru != null || $ekstras_guru != null): ?>
+                                                        <div>
+                                                            <span>Pengampu:</span>
+                                                            <table class="table table-bordered">
+                                                                <tr>
+                                                                    <th class="text-center">No.</th>
+                                                                    <th class="text-center">Mata Pelajaran</th>
+                                                                    <th class="text-center">Kelas</th>
+                                                                </tr>
+                                                                <?php
+                                                                $nn = 1;
+                                                                foreach ($mapels_guru as $mapel):
+                                                                    $all_kelas_mapel = $mapel->kelas_mapel;
+                                                                    $kls_guru_mapel = '';
+                                                                    foreach ($all_kelas_mapel as $kls_mpl) {
+                                                                        if (isset($kelass[$kls_mpl->kelas]))
+                                                                            $kls_guru_mapel .= '<span class="badge bg-light border">' . $kelass[$kls_mpl->kelas]->nama_kelas . '</span> ';
+                                                                    }
+                                                                    ?>
+                                                                    <tr>
+                                                                        <td class="text-center"><?= $nn ?></td>
+                                                                        <td><?= $mapel->nama_mapel ?></td>
+                                                                        <td class="text-center">
+                                                                            <?= $kls_guru_mapel ?>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <?php $nn++; endforeach; ?>
+                                                                <?php
+                                                                foreach ($ekstras_guru as $ekstra):
+                                                                    $all_kelas_ekstra = $ekstra->kelas_ekstra;
+                                                                    $kls_guru_ekstra = '';
+                                                                    foreach ($all_kelas_ekstra as $kls_eks) {
+                                                                        if (isset($kelass[$kls_eks->kelas]))
+                                                                            $kls_guru_ekstra .= '<span class="badge bg-light border">' . $kelass[$kls_eks->kelas]->nama_kelas . '</span> ';
+                                                                    }
+                                                                    ?>
+                                                                    <tr>
+                                                                        <td class="text-center"><?= $nn ?></td>
+                                                                        <td><?= $ekstra->nama_ekstra ?></td>
+                                                                        <td class="text-center">
+                                                                            <?= $kls_guru_ekstra ?>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <?php $nn++; endforeach; ?>
+                                                            </table>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <div class="d-flex align-items-center mt-auto pt-3 border-top gap-2">
+                                                        <a href="<?= base_url('dataguru/edit/' . $guru->id_guru) ?>"
+                                                            class="btn btn-sm btn-info"><i class="bi bi-person me-1"></i>
+                                                            Profile</a>
+                                                        <a href="<?= base_url('dataguru/editJabatan/' . $guru->id_guru) ?>"
+                                                            class="btn btn-sm btn-warning"><i class="bi bi-briefcase me-1"></i>
+                                                            Jabatan</a>
+                                                        <button onclick="hapus('<?= $guru->id_guru ?>')"
+                                                            class="btn btn-sm btn-danger ms-auto"><i
+                                                                class="bi bi-trash"></i></button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
                             </tbody>
                         </table>
                     <?php else: ?>
@@ -174,77 +183,77 @@ function sortByPosition($a, $b)
             </div>
         </div>
     </section>
-</div>
-<?= form_open('', array('id' => 'hapus-guru')) ?>
-<?= form_close() ?>
+    </div>
+    <?= form_open('', array('id' => 'hapus-guru')) ?>
+    <?= form_close() ?>
 
-<script>
-    $('.thumb-lg').css({'width': '6rem', 'height': '6rem'});
+    <script>
+        $('.thumb-lg').css({ 'width': '6rem', 'height': '6rem' });
 
-    function hapus(idGuru) {
-        swal.fire({
-            title: "Anda yakin?",
-            text: "Data guru akan dihapus!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Hapus!"
-        }).then(result => {
-            if (result.value) {
-                $.ajax({
-                    url: base_url + 'dataguru/deleteguru',
-                    data: $('#hapus-guru').serialize() + '&id_guru=' + idGuru,
-                    type: "POST",
-                    success: function (respon) {
-                        console.log(respon);
-                        if (respon.status) {
-                            swal.fire({
-                                title: "Berhasil",
-                                text: "Data guru berhasil dihapus",
-                                icon: "success"
-                            }).then(result => {
-                                if (result.value) {
-                                    window.location.reload(true);
-                                }
-                            });
-                        } else {
-                            if (respon.count > 0) {
-                                window.location.href = base_url + 'dataguru/detail/' + idGuru
-                            } else {
-                                swal.fire({
-                                    title: "Gagal",
-                                    html: respon.message,
-                                    icon: "error"
+        function hapus(idGuru) {
+            Swal.fire({
+                title: "Anda yakin?",
+                text: "Data guru akan dihapus!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Hapus!"
+            }).then(result => {
+                if (result.value) {
+                    $.ajax({
+                        url: base_url + 'dataguru/deleteguru',
+                        data: $('#hapus-guru').serialize() + '&id_guru=' + idGuru,
+                        type: "POST",
+                        success: function (respon) {
+                            console.log(respon);
+                            if (respon.status) {
+                                Swal.fire({
+                                    title: "Berhasil",
+                                    text: "Data guru berhasil dihapus",
+                                    icon: "success"
+                                }).then(result => {
+                                    if (result.value) {
+                                        window.location.reload(true);
+                                    }
                                 });
+                            } else {
+                                if (respon.count > 0) {
+                                    window.location.href = base_url + 'dataguru/detail/' + idGuru
+                                } else {
+                                    Swal.fire({
+                                        title: "Gagal",
+                                        html: respon.message,
+                                        icon: "error"
+                                    });
+                                }
                             }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                title: "Gagal",
+                                text: "Ada data yang sedang digunakan",
+                                icon: "error"
+                            });
                         }
-                    },
-                    error: function () {
-                        swal.fire({
-                            title: "Gagal",
-                            text: "Ada data yang sedang digunakan",
-                            icon: "error"
-                        });
-                    }
-                });
-            }
-        });
-    }
-
-    $(document).ready(function () {
-        $("#list-guru").DataTable({
-            paging: false,
-            ordering: false,
-            info: false,
-        });
-        /*
-        $(`img.avatar`).each(function () {
-            $(this).on("error", function () {
-                console.log('foto', $(this).attr('src'));
-                $(this).attr("src", base_url + '/assets/img/siswa.png'); // default foto
+                    });
+                }
             });
+        }
+
+        $(document).ready(function () {
+            $("#list-guru").DataTable({
+                paging: false,
+                ordering: false,
+                info: false,
+            });
+            /*
+            $(`img.avatar`).each(function () {
+                $(this).on("error", function () {
+                    console.log('foto', $(this).attr('src'));
+                    $(this).attr("src", base_url + '/assets/img/siswa.png'); // default foto
+                });
+            });
+             */
         });
-         */
-    });
-</script>
+    </script>

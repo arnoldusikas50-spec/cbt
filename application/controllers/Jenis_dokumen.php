@@ -1,35 +1,39 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Jenis_dokumen extends MY_Controller {
+class Jenis_dokumen extends MY_Controller
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         if (!$this->auth->logged_in()) {
             redirect('auth');
         } else if (!$this->auth->is_admin() && !$this->auth->in_group('panitia')) {
-            show_error('Hanya Administrator dan Panitia yang diberi hak untuk mengakses halaman ini, <a href="'.base_url('dashboard').'">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
+            show_error('Hanya Administrator dan Panitia yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
         }
-        
+
         $this->load->model('Jenis_dokumen_model', 'jenis_dokumen');
         $this->load->library(['form_validation', 'upload']);
         $this->load->helper(['form', 'url']);
     }
 
-    public function index() {
+    public function index()
+    {
         $data['title'] = 'Jenis Dokumen';
         $data['subtitle'] = 'Manajemen Jenis Dokumen';
         $data['breadcrumb'] = [
             ['title' => 'Dashboard', 'link' => base_url('dashboard')],
             ['title' => 'Jenis Dokumen', 'link' => base_url('jenis_dokumen')]
         ];
-        
+
         $this->template->render('jenis_dokumen/index', $data);
     }
 
-    public function data() {
+    public function data()
+    {
         $this->load->library(['datatables', 'datatables_custom']);
-        
+
         $this->datatables->select('
             id_jenis_dokumen,
             kode_jenis,
@@ -41,47 +45,48 @@ class Jenis_dokumen extends MY_Controller {
             updated_at
         ');
         $this->datatables->from('master_jenis_dokumen');
-        
-        $this->datatables->add_column('status', function($row) {
-            $status = $row['is_active'] ? 
-                '<span class="badge badge-success">Aktif</span>' : 
+
+        $this->datatables->add_column('status', function ($row) {
+            $status = $row['is_active'] ?
+                '<span class="badge badge-success">Aktif</span>' :
                 '<span class="badge badge-danger">Tidak Aktif</span>';
             return $status;
         });
-        
-        $this->datatables->add_column('action', function($row) {
+
+        $this->datatables->add_column('action', function ($row) {
             $btn = '';
             if ($this->auth->is_admin() || $this->auth->in_group('panitia')) {
-                $btn .= '<button type="button" class="btn btn-sm btn-info btn-edit" data-id="'.$row['id_jenis_dokumen'].'">
-                    <i class="fas fa-edit"></i>
+                $btn .= '<button type="button" class="btn btn-sm btn-info btn-edit" data-id="' . $row['id_jenis_dokumen'] . '">
+                    <i class="bi bi-pencil"></i>
                 </button> ';
-                
-                $btn .= '<button type="button" class="btn btn-sm btn-'.($row['is_active'] ? 'warning' : 'success').' btn-toggle" data-id="'.$row['id_jenis_dokumen'].'">
-                    <i class="fas fa-'.($row['is_active'] ? 'eye-slash' : 'eye').'"></i>
+
+                $btn .= '<button type="button" class="btn btn-sm btn-' . ($row['is_active'] ? 'warning' : 'success') . ' btn-toggle" data-id="' . $row['id_jenis_dokumen'] . '">
+                    <i class="bi bi-' . ($row['is_active'] ? 'eye-slash' : 'eye') . '"></i>
                 </button> ';
-                
-                $btn .= '<button type="button" class="btn btn-sm btn-danger btn-delete" data-id="'.$row['id_jenis_dokumen'].'">
-                    <i class="fas fa-trash"></i>
+
+                $btn .= '<button type="button" class="btn btn-sm btn-danger btn-delete" data-id="' . $row['id_jenis_dokumen'] . '">
+                    <i class="bi bi-trash"></i>
                 </button>';
             }
             return $btn;
         });
-        
+
         echo $this->datatables->generate();
     }
 
-    public function add() {
+    public function add()
+    {
         $this->form_validation->set_rules('kode_jenis', 'Kode Jenis', 'required|trim|min_length[2]|max_length[20]|callback_check_kode');
         $this->form_validation->set_rules('nama_jenis', 'Nama Jenis', 'required|trim|min_length[3]|max_length[100]|callback_check_nama');
         $this->form_validation->set_rules('deskripsi', 'Deskripsi', 'trim|max_length[500]');
-        
+
         if ($this->form_validation->run() == FALSE) {
             $errors = [
                 'kode_jenis' => form_error('kode_jenis'),
                 'nama_jenis' => form_error('nama_jenis'),
                 'deskripsi' => form_error('deskripsi')
             ];
-            
+
             $this->output_json([
                 'status' => false,
                 'errors' => $errors,
@@ -95,7 +100,7 @@ class Jenis_dokumen extends MY_Controller {
                 'is_active' => 1,
                 'created_by' => $this->session->userdata('user_id')
             ];
-            
+
             if ($this->jenis_dokumen->insert($data)) {
                 $this->output_json([
                     'status' => true,
@@ -110,9 +115,10 @@ class Jenis_dokumen extends MY_Controller {
         }
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $jenis_dokumen = $this->jenis_dokumen->get_by_id($id);
-        
+
         if (!$jenis_dokumen) {
             $this->output_json([
                 'status' => false,
@@ -120,27 +126,28 @@ class Jenis_dokumen extends MY_Controller {
             ]);
             return;
         }
-        
+
         $this->output_json([
             'status' => true,
             'data' => $jenis_dokumen
         ]);
     }
 
-    public function update() {
+    public function update()
+    {
         $id = $this->input->post('id_jenis_dokumen');
-        
-        $this->form_validation->set_rules('kode_jenis', 'Kode Jenis', 'required|trim|min_length[2]|max_length[20]|callback_check_kode_edit['.$id.']');
-        $this->form_validation->set_rules('nama_jenis', 'Nama Jenis', 'required|trim|min_length[3]|max_length[100]|callback_check_nama_edit['.$id.']');
+
+        $this->form_validation->set_rules('kode_jenis', 'Kode Jenis', 'required|trim|min_length[2]|max_length[20]|callback_check_kode_edit[' . $id . ']');
+        $this->form_validation->set_rules('nama_jenis', 'Nama Jenis', 'required|trim|min_length[3]|max_length[100]|callback_check_nama_edit[' . $id . ']');
         $this->form_validation->set_rules('deskripsi', 'Deskripsi', 'trim|max_length[500]');
-        
+
         if ($this->form_validation->run() == FALSE) {
             $errors = [
                 'kode_jenis' => form_error('kode_jenis'),
                 'nama_jenis' => form_error('nama_jenis'),
                 'deskripsi' => form_error('deskripsi')
             ];
-            
+
             $this->output_json([
                 'status' => false,
                 'errors' => $errors,
@@ -153,7 +160,7 @@ class Jenis_dokumen extends MY_Controller {
                 'deskripsi' => $this->input->post('deskripsi'),
                 'updated_by' => $this->session->userdata('user_id')
             ];
-            
+
             if ($this->jenis_dokumen->update($id, $data)) {
                 $this->output_json([
                     'status' => true,
@@ -168,9 +175,10 @@ class Jenis_dokumen extends MY_Controller {
         }
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $jenis_dokumen = $this->jenis_dokumen->get_by_id($id);
-        
+
         if (!$jenis_dokumen) {
             $this->output_json([
                 'status' => false,
@@ -178,7 +186,7 @@ class Jenis_dokumen extends MY_Controller {
             ]);
             return;
         }
-        
+
         if ($this->jenis_dokumen->delete($id)) {
             $this->output_json([
                 'status' => true,
@@ -192,9 +200,10 @@ class Jenis_dokumen extends MY_Controller {
         }
     }
 
-    public function toggle_status($id) {
+    public function toggle_status($id)
+    {
         $jenis_dokumen = $this->jenis_dokumen->get_by_id($id);
-        
+
         if (!$jenis_dokumen) {
             $this->output_json([
                 'status' => false,
@@ -202,12 +211,12 @@ class Jenis_dokumen extends MY_Controller {
             ]);
             return;
         }
-        
+
         if ($this->jenis_dokumen->toggle_status($id)) {
             $status_text = $jenis_dokumen->is_active ? 'dinonaktifkan' : 'diaktifkan';
             $this->output_json([
                 'status' => true,
-                'message' => 'Jenis dokumen berhasil '.$status_text.'.'
+                'message' => 'Jenis dokumen berhasil ' . $status_text . '.'
             ]);
         } else {
             $this->output_json([
@@ -218,7 +227,8 @@ class Jenis_dokumen extends MY_Controller {
     }
 
     // Form validation callbacks
-    public function check_kode($kode) {
+    public function check_kode($kode)
+    {
         if ($this->jenis_dokumen->check_kode_exists($kode)) {
             $this->form_validation->set_message('check_kode', 'Kode jenis sudah digunakan.');
             return FALSE;
@@ -226,7 +236,8 @@ class Jenis_dokumen extends MY_Controller {
         return TRUE;
     }
 
-    public function check_nama($nama) {
+    public function check_nama($nama)
+    {
         if ($this->jenis_dokumen->check_nama_exists($nama)) {
             $this->form_validation->set_message('check_nama', 'Nama jenis sudah digunakan.');
             return FALSE;
@@ -234,7 +245,8 @@ class Jenis_dokumen extends MY_Controller {
         return TRUE;
     }
 
-    public function check_kode_edit($kode, $id) {
+    public function check_kode_edit($kode, $id)
+    {
         if ($this->jenis_dokumen->check_kode_exists($kode, $id)) {
             $this->form_validation->set_message('check_kode_edit', 'Kode jenis sudah digunakan.');
             return FALSE;
@@ -242,7 +254,8 @@ class Jenis_dokumen extends MY_Controller {
         return TRUE;
     }
 
-    public function check_nama_edit($nama, $id) {
+    public function check_nama_edit($nama, $id)
+    {
         if ($this->jenis_dokumen->check_nama_exists($nama, $id)) {
             $this->form_validation->set_message('check_nama_edit', 'Nama jenis sudah digunakan.');
             return FALSE;

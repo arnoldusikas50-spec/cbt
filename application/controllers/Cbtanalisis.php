@@ -9,8 +9,8 @@ class Cbtanalisis extends MY_Controller
         parent::__construct();
         if (!$this->auth->logged_in()) {
             redirect('auth');
-        } else if ( !$this->auth->is_admin() && !$this->auth->in_group('panitia') && !$this->auth->in_group('guru')){
-            show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
+        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru') && !$this->auth->in_group('panitia') && $this->session->userdata('role') != '4') {
+            show_error('Hanya Administrator, Guru, dan Panitia yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
         }
         $this->load->library(['datatables', 'form_validation']); // Load Library Ignited-Datatables
         //$this->load->model('Master_model', 'master');
@@ -20,50 +20,6 @@ class Cbtanalisis extends MY_Controller
 
     public function index()
     {
-        $this->load->model('Dashboard_model', 'dashboard');
-        $this->load->model('Cbt_model', 'cbt');
-        $this->load->model('Dropdown_model', 'dropdown');
-
-        $user = $this->auth->user();
-        $data = [
-            'user' 			=> $user,
-            'judul' => 'Analisis Hasil Ujian',
-            'subjudul' => 'Analisis',
-            'profile'		=> null,
-            'setting'		=> $this->dashboard->getSetting()
-        ];
-
-        $tp_smt = $this->getTpSmt();
-        $tp = $tp_smt->tp_active;
-        $smt = $tp_smt->smt_active;
-        $data['tp'] = $tp_smt->tp;
-        $data['smt'] = $tp_smt->smt;
-        $data['tp_active'] = $tp;
-        $data['smt_active'] = $smt;
-
-        $jadwals = $this->cbt->getAllJadwalByJenis($tp->id_tp, $smt->id_smt);
-        foreach ($jadwals as $tgl => $mapels) {
-            foreach ($mapels as $id_mapel => $jdwls) {
-                foreach ($jdwls as $index => $jdwl) {
-                    $jdwl->bank_kelas = $this->maybe_unserialize($jdwl->bank_kelas);
-                }
-            }
-        }
-        $data['jadwal'] = $jadwals;
-        $data['jenis_ujian'] = $this->cbt->getAllJenisUjian();
-        $data['mapel'] = $this->dropdown->getAllMapel();
-        $data['kelas'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
-        $data['guru'] = $this->dropdown->getAllGuru();
-
-        if ($this->auth->is_admin()) {
-            $this->render_view(1, 'cbt/analisis/data', $data);
-        } elseif ($this->auth->in_group('panitia')) {
-            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
-            $this->render_view(4, 'cbt/analisis/data', $data);
-        } else {
-            $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
-            $this->render_view(2, 'cbt/analisis/data', $data);
-        }
     }
 
     public function analisis()
@@ -94,17 +50,13 @@ class Cbtanalisis extends MY_Controller
         $data['jadwal_selected'] = $jadwal;
 
         $rekap = $this->rekap_jadwal
-            ->where(['id_jadwal'=>$jadwal])
+            ->where(['id_jadwal' => $jadwal])
             ->get();
 
-        if (!$rekap) {
-            redirect('cbtanalisis');
-        }
-
         $rekap_siswa = $this->rekap_siswa
-            ->where(['id_jadwal'=>$jadwal])
-            ->fields('jawaban')
-            ->with_siswa(['fields'=>'id_siswa,nama,nis,agama'])
+            ->where(['id_jadwal' => $jadwal])
+            ->fields('jawaban, nilai_input')
+            ->with_siswa(['fields' => 'id_siswa,nama,nis,agama'])
             ->get_all();
 
         $rekap->jadwal = $this->maybe_unserialize($rekap->jadwal);
@@ -126,13 +78,32 @@ class Cbtanalisis extends MY_Controller
         $rekap->soal_jodohkan = $this->maybe_unserialize($rekap->soal_jodohkan);
         $rekap->soal_isian = $this->maybe_unserialize($rekap->soal_isian);
         $rekap->soal_esai = $this->maybe_unserialize($rekap->soal_esai);
+        $rekap->soal_urutan = $this->maybe_unserialize($rekap->soal_urutan ?? '[]');
+        $rekap->soal_cloze = $this->maybe_unserialize($rekap->soal_cloze ?? '[]');
 
         $jawabanSiswa = [];
+        $jawabanSiswa = [];
         $jawabanSoal = [];
+
+        $mapSoalNonPG = [];
+        $maxScoresNonPG = []; // Assuming max score 1 for normalized analysis
+        foreach ($rekap->soal_urutan as $s) {
+            $mapSoalNonPG[$s->id_soal] = ['type' => '6', 'kunci' => $this->maybe_unserialize($s->jawaban)];
+            $maxScoresNonPG[$s->id_soal] = 1;
+        }
+        foreach ($rekap->soal_cloze as $s) {
+            $mapSoalNonPG[$s->id_soal] = ['type' => '7', 'kunci' => $this->maybe_unserialize($s->jawaban)];
+            $maxScoresNonPG[$s->id_soal] = 1;
+        }
+
+        $scoresNonPG = [];
+        $totalUserScores = [];
         if ($rekap_siswa) {
-            foreach ($rekap_siswa as $ks=>$rekapsiswa) {
-                if ($rekap->bank_soal->soal_agama != '-' && $rekap->bank_soal->soal_agama != '0'
-                    && $rekap->bank_soal->soal_agama !== $rekapsiswa->siswa->agama) {
+            foreach ($rekap_siswa as $ks => $rekapsiswa) {
+                if (
+                    $rekap->bank_soal->soal_agama != '-' && $rekap->bank_soal->soal_agama != '0'
+                    && $rekap->bank_soal->soal_agama !== $rekapsiswa->siswa->agama
+                ) {
                     unset($rekap_siswa->{$ks});
                 } else {
                     $jawabans = $this->maybe_unserialize($rekapsiswa->jawaban);
@@ -146,35 +117,67 @@ class Cbtanalisis extends MY_Controller
                             $jawabanSoal[$jawaban->id_soal]['jawab_b'][] = $jawab_siswa;
                         } elseif ($jawab_siswa == 'C') {
                             $jawabanSoal[$jawaban->id_soal]['jawab_c'][] = $jawab_siswa;
-                        } elseif ($jawab_siswa == 'D') {
-                            $jawabanSoal[$jawaban->id_soal]['jawab_d'][] = $jawab_siswa;
                         } elseif ($jawab_siswa == 'E') {
                             $jawabanSoal[$jawaban->id_soal]['jawab_e'][] = $jawab_siswa;
                         }
+
+                        // Scoring Non-PG
+                        if (isset($mapSoalNonPG[$jawaban->id_soal])) {
+                            $info = $mapSoalNonPG[$jawaban->id_soal];
+                            $pts = 0;
+                            if ($info['type'] == '6') {
+                                // Ordering: Strict Match equivalent checking
+                                // Jawaban siswa array, kunci array of objects/array
+                                // Need to verify structure. Assuming direct comparison works for now or serialize comparison
+                                $pts = (serialize($jawab_siswa) === serialize($info['kunci'])) ? 1 : 0;
+                            } elseif ($info['type'] == '7') {
+                                // Cloze
+                                $kunci = $info['kunci']; // array of correct answers
+                                if (is_array($jawab_siswa) && is_array($kunci)) {
+                                    $matches = 0;
+                                    $count = count($kunci);
+                                    foreach ($kunci as $k => $v) {
+                                        // $v might be object or string depending on structure
+                                        $txtKunci = is_string($v) ? $v : ($v['jawaban'] ?? '');
+                                        $txtJawab = $jawab_siswa[$k] ?? '';
+                                        if (strtoupper(trim($txtJawab)) === strtoupper(trim($txtKunci)))
+                                            $matches++;
+                                    }
+                                    $pts = $count > 0 ? $matches / $count : 0;
+                                }
+                            }
+                            $scoresNonPG[$jawaban->id_soal][$rekapsiswa->id_siswa] = $pts;
+                        }
                     }
                     $jawabanSiswa[] = $answers;
+                    // Use total input value or calculated score if available
+                    $totalUserScores[$rekapsiswa->id_siswa] = $rekapsiswa->nilai ?? 0;
                 }
 
             }
         }
-        $data['siswa'] = count((array)$rekap_siswa);
+        $data['siswa'] = count((array) $rekap_siswa);
 
         $kunci = [];
-        if (isset($rekap->soal_pg)) {
-            foreach ($rekap->soal_pg as $soal_pg) {
-                $kunci[$soal_pg->id_soal] = $soal_pg->jawaban;
-            }
+        foreach ($rekap->soal_pg as $soal_pg) {
+            $kunci[$soal_pg->id_soal] = $soal_pg->jawaban;
         }
 
         $normalizedSiswa = $this->normalizeData($jawabanSiswa, $kunci);
         $hasilAnalisis = $this->analyzeData($normalizedSiswa, $kunci, $rekap->bank_soal->opsi);
+
+        // Analyze Non PG
+        $hasilAnalisisNonPG = $this->analyzeNonPG($scoresNonPG, $maxScoresNonPG, $totalUserScores);
+        // Merge
+        $hasilAnalisis = $hasilAnalisis + $hasilAnalisisNonPG;
+
         $data['analisis'] = $hasilAnalisis;
         $data['soal_pg'] = array_filter($rekap->soal_pg, function ($soal) {
             return $soal->tampilkan == '1';
         });
         $data['soal_kompleks'] = array_filter($rekap->soal_kompleks, function ($soal) {
-                return $soal->tampilkan == '1';
-            });
+            return $soal->tampilkan == '1';
+        });
         $data['soal_jodohkan'] = array_filter($rekap->soal_jodohkan, function ($soal) {
             return $soal->tampilkan == '1';
         });
@@ -182,6 +185,12 @@ class Cbtanalisis extends MY_Controller
             return $soal->tampilkan == '1';
         });
         $data['soal_esai'] = array_filter($rekap->soal_esai, function ($soal) {
+            return $soal->tampilkan == '1';
+        });
+        $data['soal_urutan'] = array_filter($rekap->soal_urutan ?? [], function ($soal) {
+            return $soal->tampilkan == '1';
+        });
+        $data['soal_cloze'] = array_filter($rekap->soal_cloze ?? [], function ($soal) {
             return $soal->tampilkan == '1';
         });
         $data['jawab_siswa'] = $jawabanSoal;
@@ -198,7 +207,7 @@ class Cbtanalisis extends MY_Controller
 
         if ($this->auth->is_admin()) {
             $this->render_view(1, 'cbt/analisis/data_analisis', $data);
-        } elseif ($this->auth->in_group('panitia')) {
+        } elseif ($this->auth->in_group('panitia') || $this->session->userdata('role') == '4') {
             $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $this->render_view(4, 'cbt/analisis/data_analisis', $data);
         } else {
@@ -210,10 +219,12 @@ class Cbtanalisis extends MY_Controller
         }
     }
 
-    private function pearson($x, $y){
+    private function pearson($x, $y)
+    {
         $cx = count($x);
         $cy = count($y);
-        if ($cx == 0 || $cy == 0) return -1;
+        if ($cx == 0 || $cy == 0)
+            return -1;
         if ($cx < $cy) {
             $d = $cy - $cx;
             for ($i = 0; $i < $d; $i++) {
@@ -293,5 +304,81 @@ class Cbtanalisis extends MY_Controller
         return $denominator == 0 ? 0 : $numerator / $denominator;
     }
 
-}
+    private function analyzeNonPG($itemScores, $maxScores, $totalStudentScores)
+    {
+        $count = count($totalStudentScores);
+        if ($count == 0)
+            return [];
 
+        arsort($totalStudentScores);
+        $keys = array_keys($totalStudentScores);
+        $groupSize = ceil($count * 0.27);
+        $upperKeys = array_slice($keys, 0, $groupSize);
+        $lowerKeys = array_slice($keys, -$groupSize);
+
+        $results = [];
+        foreach ($itemScores as $idSoal => $scores) {
+            $max = $maxScores[$idSoal] ?? 1;
+            if ($max == 0)
+                $max = 1;
+
+            $sumUpper = 0;
+            foreach ($upperKeys as $uid) {
+                $sumUpper += $scores[$uid] ?? 0;
+            }
+            $meanUpper = $groupSize > 0 ? $sumUpper / $groupSize : 0;
+
+            $sumLower = 0;
+            foreach ($lowerKeys as $lid) {
+                $sumLower += $scores[$lid] ?? 0;
+            }
+            $meanLower = $groupSize > 0 ? $sumLower / $groupSize : 0;
+
+            $totalSum = array_sum($scores);
+            $meanTotal = $count > 0 ? $totalSum / $count : 0;
+
+            $difficulty = $meanTotal / $max;
+            $discrimination = ($meanUpper - $meanLower) / $max;
+
+            $diffLabel = $difficulty >= 0.70 ? 'Mudah' : ($difficulty < 0.30 ? 'Sulit' : 'Sedang');
+
+            if ($discrimination >= 0.70)
+                $discLabel = 'Sangat Baik';
+            elseif ($discrimination > 0.39)
+                $discLabel = 'Baik';
+            elseif ($discrimination < 0.20)
+                $discLabel = 'Jelek';
+            else
+                $discLabel = 'Cukup';
+
+            $results[$idSoal] = [
+                'tingkat_kesulitan' => round($difficulty, 2),
+                'level_kesulitan' => $diffLabel,
+                'daya_pembeda' => round($discrimination, 2),
+                'level_pembeda' => $discLabel,
+                'validitas' => 0,
+                'level_validitas' => '-'
+            ];
+
+            if ($count > 1) {
+                $x = [];
+                $y = [];
+                foreach ($totalStudentScores as $sid => $tot) {
+                    $x[] = $scores[$sid] ?? 0;
+                    $y[] = $tot;
+                }
+                $validity = $this->calculatePearsonCorrelation($x, $y);
+                $results[$idSoal]['validitas'] = round($validity, 2);
+
+                if ($validity >= 0.70)
+                    $valLabel = 'Sangat Valid';
+                elseif ($validity < 0.30)
+                    $valLabel = 'Tidak Valid';
+                else
+                    $valLabel = 'Valid';
+                $results[$idSoal]['level_validitas'] = $valLabel;
+            }
+        }
+        return $results;
+    }
+}

@@ -1,7 +1,6 @@
 <?php
 /**
- * Created by IntelliJ IDEA.
- * User: multazam
+
  * Date: 01/08/20
  * Time: 16:10
  */
@@ -412,10 +411,7 @@ class Rapor_model extends CI_Model {
     }
 
     public function getArrNilaiMapelHarianSiswa($ids_mapel, $ids_siswa, $id_tp, $id_smt) {
-        if (empty($ids_mapel) || empty($ids_siswa)) {
-            return [];
-        }
-        $this->db->select('p1, p2, p3, p4, p5, k1, k2, k3, k4, k5, id_mapel, id_siswa');
+        $this->db->select('p1,p2,p3,p4,p5,k1,k2,k3,k4,k5,id_mapel,id_siswa');
         $this->db->from('rapor_nilai_harian');
         $this->db->where_in('id_mapel', $ids_mapel);
         $this->db->where_in('id_siswa', $ids_siswa);
@@ -441,9 +437,6 @@ class Rapor_model extends CI_Model {
     }
 
     public function getArrNilaiMapelPtsSiswa($ids_mapel, $ids_siswa, $id_tp, $id_smt) {
-        if (empty($ids_mapel) || empty($ids_siswa)) {
-            return [];
-        }
         $this->db->select('nilai, id_mapel, id_siswa');
         $this->db->from('rapor_nilai_pts');
         $this->db->where_in('id_mapel', $ids_mapel);

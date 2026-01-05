@@ -67,7 +67,7 @@ $(document).ready(function () {
             success: function (data) {
                 btn.removeAttr('disabled').text('Simpan');
                 if (data.status) {
-                    swal.fire({
+                    Swal.fire({
                         "title": "Sukses",
                         "text": "Data Berhasil disimpan",
                         "type": "success"

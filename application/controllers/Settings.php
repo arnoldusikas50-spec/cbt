@@ -1,44 +1,48 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Settings extends MY_Controller {
+class Settings extends MY_Controller
+{
 
-	public function __construct(){
+	public function __construct()
+	{
 		parent::__construct();
-		if (!$this->auth->logged_in()){
+		if (!$this->auth->logged_in()) {
 			redirect('auth');
-		}else if(!$this->auth->is_admin()){
-            show_error('Hanya Admin yang boleh mengakses halaman ini', 403, 'Akses dilarang');
+		} else if (!$this->auth->is_admin()) {
+			show_error('Hanya Admin yang boleh mengakses halaman ini', 403, 'Akses dilarang');
 		}
 		$this->load->library('upload');
 		$this->load->model('Settings_model', 'settings');
-        $this->load->model('Dashboard_model', 'dashboard');
+		$this->load->model('Dashboard_model', 'dashboard');
 		$this->load->helper('directory');
 	}
 
-    public function index() {
+	public function index()
+	{
 		$user = $this->auth->user();
 		$data = [
 			'user' => $user,
-			'judul'	=> 'Profile Sekolah',
-			'subjudul'=> '',
-			'profile'		=> null,
-			'setting'		=> $this->dashboard->getSetting()
+			'judul' => 'Profile Sekolah',
+			'subjudul' => '',
+			'profile' => null,
+			'setting' => $this->dashboard->getSetting()
 		];
 
-        $data['tp'] = $this->dashboard->getTahun();
-        $data['tp_active'] = $this->dashboard->getTahunActive();
-        $data['smt'] = $this->dashboard->getSemester();
-        $data['smt_active'] = $this->dashboard->getSemesterActive();
+		$data['tp'] = $this->dashboard->getTahun();
+		$data['tp_active'] = $this->dashboard->getTahunActive();
+		$data['smt'] = $this->dashboard->getSemester();
+		$data['smt_active'] = $this->dashboard->getSemesterActive();
 
-        $this->render_view(1, 'setting/data', $data);
+		$this->render_view(1, 'setting/data', $data);
 	}
 
-	public function dbManager(){
+	public function dbManager()
+	{
 		$data = [
 			'user' => $this->auth->user(),
-			'judul'	=> 'Backup dan Restore',
-			'subjudul'=> 'Backup dan Restore',
+			'judul' => 'Backup dan Restore',
+			'subjudul' => 'Backup dan Restore',
 		];
 
 		$data['tp'] = $this->dashboard->getTahun();
@@ -51,8 +55,9 @@ class Settings extends MY_Controller {
 		$this->render_view(1, 'setting/db', $data);
 	}
 
-	function uploadFile($logo){
-		if(isset($_FILES["logo"]["name"]) && $_FILES['logo']['name'] !== ''){
+	function uploadFile($logo)
+	{
+		if (isset($_FILES["logo"]["name"]) && $_FILES['logo']['name'] !== '') {
 			//$newName = $_FILES["logo"]["name"].".".$_FILES['logo']['type'];
 
 			$config['upload_path'] = './uploads/settings/';
@@ -65,20 +70,28 @@ class Settings extends MY_Controller {
 			}
 
 			$this->upload->initialize($config);
-			if(!$this->upload->do_upload('logo')){
+			if (!$this->upload->do_upload('logo')) {
 				$data['status'] = false;
 				$data['src'] = strip_tags($this->upload->display_errors('', ''));
 				$data['message'] = $data['src'];
-			}else{
+			} else {
 				$result = $this->upload->data();
-				$relativePath = 'uploads/settings/'.$result['file_name'];
-				$data['src'] = base_url().$relativePath;
+				$relativePath = 'uploads/settings/' . $result['file_name'];
+				$data['src'] = base_url() . $relativePath;
 				$data['relative_path'] = $relativePath;
 				$data['filename'] = pathinfo($result['file_name'], PATHINFO_FILENAME);
 
 				$allowedFields = [
-					'logo_kanan', 'logo_kiri', 'stampel', 'tanda_tangan', 'ttdproktor',
-					'kodescan', 'kopsekolah', 'banner1', 'banner2', 'banner3'
+					'logo_kanan',
+					'logo_kiri',
+					'stampel',
+					'tanda_tangan',
+					'ttdproktor',
+					'kodescan',
+					'kopsekolah',
+					'banner1',
+					'banner2',
+					'banner3'
 				];
 				if (in_array($logo, $allowedFields, true)) {
 					$this->db->where('id_setting', 1)->update('setting', [$logo => $relativePath]);
@@ -98,7 +111,8 @@ class Settings extends MY_Controller {
 		$this->output_json($data);
 	}
 
-	function deleteFile() {
+	function deleteFile()
+	{
 		$src = $this->input->post('src', true);
 		$field = $this->input->post('field', true);
 		$file_name = ltrim(str_replace(base_url(), '', $src ?? ''), '/');
@@ -107,8 +121,16 @@ class Settings extends MY_Controller {
 		}
 
 		$allowedFields = [
-			'logo_kanan', 'logo_kiri', 'stampel', 'tanda_tangan', 'ttdproktor',
-			'kodescan', 'kopsekolah', 'banner1', 'banner2', 'banner3'
+			'logo_kanan',
+			'logo_kiri',
+			'stampel',
+			'tanda_tangan',
+			'ttdproktor',
+			'kodescan',
+			'kopsekolah',
+			'banner1',
+			'banner2',
+			'banner3'
 		];
 		if (!empty($field) && in_array($field, $allowedFields, true)) {
 			$this->db->where('id_setting', 1)->update('setting', [$field => '']);
@@ -132,7 +154,8 @@ class Settings extends MY_Controller {
 		return ltrim($normalized, '/');
 	}
 
-	public function saveSetting() {
+	public function saveSetting()
+	{
 		$sekolah = $this->input->post('nama_sekolah', true);
 		$nss = $this->input->post('nss', true);
 		$npsn = $this->input->post('npsn', true);
@@ -160,6 +183,7 @@ class Settings extends MY_Controller {
 		$ba_waktu_input = $this->input->post('ba_waktu', true);
 		$tkn_siswa = $this->input->post('tkn_siswa', true);
 		$mode_app = $this->input->post('mode_app', true);
+		$api_key = $this->input->post('api_key', true);
 
 		$nama_aplikasi = $this->input->post('nama_aplikasi', true);
 		$tanda_tangan = $this->normalizeMediaPath($this->input->post('tanda_tangan', true));
@@ -206,6 +230,7 @@ class Settings extends MY_Controller {
 			'nip_proktor' => $nip_proktor,
 			'tkn_siswa' => $tkn_siswa,
 			'mode_app' => $mode_app,
+			'api_key' => $api_key,
 			'ba_aktif' => $ba_aktif,
 			'ba_waktu' => $ba_waktu,
 			'jenjang' => $jenjang,

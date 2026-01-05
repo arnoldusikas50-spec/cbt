@@ -1,12 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-/**
- * Created by IntelliJ IDEA.
- * User: ServerMts
- * Date: 18/12/2021
- * Time: 15:45
- */
+
 
 class Migrate extends MY_Controller {
 

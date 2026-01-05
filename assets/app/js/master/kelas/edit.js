@@ -19,7 +19,7 @@ $(document).ready(function () {
                 btn.removeAttr('disabled').text('Simpan');
                 //console.log(data);
                 if (data.status) {
-                    swal.fire({
+                    Swal.fire({
                         "title": "Sukses",
                         "text": "Data Berhasil disimpan",
                         "type": "success"

@@ -118,7 +118,7 @@ $(document).ready(function () {
             success: function (result) {
 				console.log("result", result);
                 if(result.data > 0) {
-                    swal.fire({
+                    Swal.fire({
                         title: "Berhasil",
                         text: result.data + " soal berhasil disimpan",
                         icon: "success"
@@ -128,7 +128,7 @@ $(document).ready(function () {
                         }
                     })
                 } else {
-                    swal.fire({
+                    Swal.fire({
                         title: "Gagal",
                         text: "Tidak ada soal yg disimpan",
                         icon: "error"
@@ -136,7 +136,7 @@ $(document).ready(function () {
                 }
             }, error: function (xhr, status, error) {
                 console.log("error", xhr.responseText);
-                swal.fire({
+                Swal.fire({
                     title: "Gagal",
                     text: "Tidak ada soal yg disimpan",
                     icon: "error"
@@ -147,7 +147,7 @@ $(document).ready(function () {
 });
 
 function preview(action, data, filename) {
-    swal.fire({
+    Swal.fire({
         title: "Mempersiapkan upload",
         text: "Silahkan tunggu....",
         button: false,
@@ -182,7 +182,7 @@ function preview(action, data, filename) {
                     '</div>');
             } else {
                 /*
-                swal.fire({
+                Swal.fire({
                     title: "Sukses",
                     text: data.data + " Soal berhasil diimport",
                     icon: "success",
@@ -373,7 +373,7 @@ function getData() {
         showDangerToast('Pilih File dulu');
         return;
     }
-    swal.fire({
+    Swal.fire({
         title: "Import soal ke database",
         text: "Silahkan tunggu....",
         button: false,
@@ -504,7 +504,7 @@ function getData() {
         data: datapost,
         success: function (result) {
             console.log("result", result);
-            swal.fire({
+            Swal.fire({
                 title: "Sukses",
                 html: "Total isi soal: <b>" + result.total + "</b><br>Total soal diimport: <b>" + result.insert +"</b>",
                 icon: "success",

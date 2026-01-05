@@ -13,7 +13,7 @@ $(document).ready(function () {
         var kelas = $(this).data('id');
         console.log(kelas);
 
-        swal.fire({
+        Swal.fire({
             title: "Hapus Data Kelas?",
             text: "Kelas beserta jumlah siswa akan dihapus",
             icon: "warning",
@@ -31,7 +31,7 @@ $(document).ready(function () {
                         if (respon.kelas) {
                             window.location.href = base_url +'datakelas';
                         } else {
-                            swal.fire({
+                            Swal.fire({
                                 title: "Gagal",
                                 text: "Tidak bisa menghapus kelas",
                                 icon: "error"
@@ -40,7 +40,7 @@ $(document).ready(function () {
                     },
                     error: function (xhr, error, status) {
                         console.log(xhr.responseText);
-                        swal.fire({
+                        Swal.fire({
                             title: "Gagal",
                             text: "Tidak bisa menghapus kelas",
                             icon: "error"

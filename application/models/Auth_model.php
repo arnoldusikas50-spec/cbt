@@ -10,7 +10,7 @@ class Auth_model extends CI_Model
     public function in_group($group)
     {
         $role = $this->session->userdata('role_name');
-        return $role == $group;
+        return strtolower($role ?? '') == strtolower($group);
     }
 
     public function is_admin()

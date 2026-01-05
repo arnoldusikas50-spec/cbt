@@ -1,4 +1,4 @@
-<div class="content-wrapper bg-white pt-4">
+<main class="app-main bg-white pt-4">
 
 
     <section class="content">
@@ -216,3 +216,4 @@
     })
 
 </script>
+

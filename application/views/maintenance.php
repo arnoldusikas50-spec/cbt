@@ -86,14 +86,14 @@
       <div>
           <p>Mohon maaf, untuk sementara aplikasi tidak dapat dibuka. Jika ada yang perlu disampaikan silahkan hubungi Admin Sekolah</p>
           <p>&mdash; Admin Sekolah &mdash;</p>
-          <p>[ RANDY - 085339035155 ]</p>
+          <p>[085339035155]</p>
           <button class="btn" onclick="confirm()">Logout</button>
           
       </div>
   </article>
   <div id="myModal" class="modal">
       <div class="modal-content">
-          <span class="close">&times;</span>
+          <span class="btn-close">&times;</span>
           <div class="modal-desc">
               <p>Konfirmasi logout</p>
               <button class="btn" onclick="logout()">Logout</button>

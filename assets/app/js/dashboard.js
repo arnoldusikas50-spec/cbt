@@ -66,18 +66,18 @@ function addComments(id, comments, append) {
             '        </div>' +
             '        <div class="ml-2">' +
             '            <span class="btn-sm mr-2 text-muted">' + createTime(v.tanggal) + '</span>' +
-            '            <span id="trigger-reply'+v.id_comment+'" class="btn btn-sm mr-2 text-muted action-collapse" data-toggle="collapse" aria-expanded="true"' +
+            '            <span id="trigger-reply' + v.id_comment + '" class="btn btn-sm mr-2 text-muted action-collapse" data-toggle="collapse" aria-expanded="true"' +
             '                              aria-controls="collapse-reply' + v.id_comment + '"' +
             '                              href="#collapse-reply' + v.id_comment + '"><b>' + v.jml + ' balasan</b></span>' +
             '            <span class="btn btn-sm mr-2 text-muted btn-toggle-reply"' +
             '                  data-id="' + v.id_comment + '" data-toggle="modal" data-target="#balasanModal">' +
-            '                <i class="fas fa-reply"></i> <b>Balas</b></span>' +
-            '<span class="btn btn-sm text-muted text-red" onclick="hapusKomentar('+v.id_comment+')" data-id="'+v.id_comment+'"><i class="fa fa-trash mr-1"></i> Hapus</span>'+
+            '                <i class="bi bi-reply"></i> <b>Balas</b></span>' +
+            '<span class="btn btn-sm text-muted text-red" onclick="hapusKomentar(' + v.id_comment + ')" data-id="' + v.id_comment + '"><i class="bi bi-trash mr-1"></i> Hapus</span>' +
             '        </div>' +
             '<div id="collapse-reply' + v.id_comment + '" class="p-2 collapse toggle-reply" data-id="' + v.id_comment + '" data-parent="#parent-reply' + v.id_comment + '">';
         if (v.jml != '0') {
-            comm += '<div id="konten-reply' + v.id_comment + '"></div>'+
-                '<div id="loadmore-reply' + v.id_comment + '" onclick="getReplies('+v.id_comment+')" class="text-center mb-3 loadmore-reply">' +
+            comm += '<div id="konten-reply' + v.id_comment + '"></div>' +
+                '<div id="loadmore-reply' + v.id_comment + '" onclick="getReplies(' + v.id_comment + ')" class="text-center mb-3 loadmore-reply">' +
                 '       <div class="btn btn-default">Muat balasan lainnya ...</div>' +
                 '</div>';
         } else {
@@ -86,7 +86,7 @@ function addComments(id, comments, append) {
         comm += '    <div id="loading-reply' + v.id_comment + '" class="text-center d-none">' +
             '        <div class="spinner-border text-danger"></div>' +
             '    </div>' +
-            '</div>'+
+            '</div>' +
             '    </div>' +
             '</div>';
     });
@@ -131,19 +131,19 @@ function addReplies(id, replies, append) {
             }
 
             repl +=
-                '<div class="media mt-1 media'+v.id_reply+'">'
+                '<div class="media mt-1 media' + v.id_reply + '">'
                 + avatar +
                 '    <div class="w-100">' +
                 '        <div class="media-body border pl-3" style="border-radius: 17px; background-color: #dee2e6">' +
-                '            <span class="text-xs text-muted"><b>'+dari+'</b></span>' +
+                '            <span class="text-xs text-muted"><b>' + dari + '</b></span>' +
                 '            <div class="comment-text">' + v.text +
                 '            </div>' +
                 '        </div>' +
                 '        <div class="ml-2">' +
-                '            <small class="btn-sm mr-2 text-muted">'+createTime(v.tanggal)+'</small>' +
-                '            <span class="btn btn-sm text-muted" onclick="hapusReply('+v.id_reply+')" data-id="'+v.id_reply+'">' +
-                '                <i class="fa fa-trash mr-1"></i> Hapus' +
-                '            </span>'+
+                '            <small class="btn-sm mr-2 text-muted">' + createTime(v.tanggal) + '</small>' +
+                '            <span class="btn btn-sm text-muted" onclick="hapusReply(' + v.id_reply + ')" data-id="' + v.id_reply + '">' +
+                '                <i class="bi bi-trash mr-1"></i> Hapus' +
+                '            </span>' +
                 '        </div>' +
                 '    </div>' +
                 '</div>';
@@ -238,11 +238,11 @@ function addPosts(response) {
             }
 
             card += '<div class="card card-default">' +
-                '    <div class="card-body" id="parent'+v.id_post+'">' +
+                '    <div class="card-body" id="parent' + v.id_post + '">' +
                 '        <div class="media">' +
                 avatar +
                 '                <div class="media-body ml-3">' +
-                '                    <span class="font-weight-bold"><b>'+dari+'</b></span>' +
+                '                    <span class="font-weight-bold"><b>' + dari + '</b></span>' +
                 '                    <br/>' +
                 '                    <span class="text-gray">' + createTime(v.tanggal) + '</span>' +
                 '                </div>' +
@@ -250,33 +250,33 @@ function addPosts(response) {
                 '        <div class="mt-2">' + v.text + '</div>' +
                 '        <div class="text-muted">' +
                 '            <button type="button" class="btn btn-primary btn-sm mr-2 btn-toggle"' +
-                '                    data-id="'+v.id_post+'" data-toggle="modal"' +
-                '                    data-target="#komentarModal"><i class="fas fa-reply mr-1"></i> Tulis komentar' +
+                '                    data-id="' + v.id_post + '" data-toggle="modal"' +
+                '                    data-target="#komentarModal"><i class="bi bi-reply mr-1"></i> Tulis komentar' +
                 '            </button>' +
-                '            <button type="button" id="trigger'+v.id_post+'" class="btn btn-success btn-sm mr-2 action-collapse"' +
+                '            <button type="button" id="trigger' + v.id_post + '" class="btn btn-success btn-sm mr-2 action-collapse"' +
                 '                    data-toggle="collapse" aria-expanded="true"' +
-                '                    aria-controls="collapse-'+v.id_post+'"' +
-                '                    href="#collapse-'+v.id_post+'">' +
-                '                <i class="fa fa-commenting-o mr-1"></i>'+v.jml+' komentar' +
+                '                    aria-controls="collapse-' + v.id_post + '"' +
+                '                    href="#collapse-' + v.id_post + '">' +
+                '                <i class="bi bi-commenting-o mr-1"></i>' + v.jml + ' komentar' +
                 '            </button>' +
-                '            <button type="button" class="btn btn-danger btn-sm" onclick="hapusPost('+v.id_post+')" data-id="'+v.id_post+'">' +
-                '                <i class="fa fa-trash mr-1"></i> Hapus' +
+                '            <button type="button" class="btn btn-danger btn-sm" onclick="hapusPost(' + v.id_post + ')" data-id="' + v.id_post + '">' +
+                '                <i class="bi bi-trash mr-1"></i> Hapus' +
                 '            </button>' +
                 '        </div>' +
                 '    </div>' +
-                '    <div id="collapse-'+v.id_post+'" class="p-2 collapse toggle-comment"' +
-                '         data-id="'+v.id_post+'" data-parent="#parent'+v.id_post+'">' +
+                '    <div id="collapse-' + v.id_post + '" class="p-2 collapse toggle-comment"' +
+                '         data-id="' + v.id_post + '" data-parent="#parent' + v.id_post + '">' +
                 '        <hr class="m-0">' +
-                '        <div id="konten'+v.id_post+'" class="p-4">' +
+                '        <div id="konten' + v.id_post + '" class="p-4">' +
                 '        </div>' +
-                '        <div id="loading'+v.id_post+'" class="text-center d-none">' +
+                '        <div id="loading' + v.id_post + '" class="text-center d-none">' +
                 '            <div class="spinner-border text-danger></div>' +
                 '        </div>';
-            if (v.jml=='0'){
+            if (v.jml == '0') {
                 card += '<div class="text-center" id="empty-comment">Tidak ada komentar</div>';
             } else {
-                card += '<div id="loadmore'+v.id_post+'"' +
-                    '     onclick="getComments('+v.id_post+')"' +
+                card += '<div id="loadmore' + v.id_post + '"' +
+                    '     onclick="getComments(' + v.id_post + ')"' +
                     '     class="text-center mt-4 loadmore">' +
                     '    <div class="btn btn-default">Muat komentar lainnya ...</div>' +
                     '</div>';
@@ -314,7 +314,7 @@ function addPosts(response) {
         var id = $(e.relatedTarget).data('id');
         $("#id-comment").val(id);
 
-        var isVisible = $(`#collapse-reply${id}`).hasClass('show' );
+        var isVisible = $(`#collapse-reply${id}`).hasClass('show');
         if (!isVisible) {
             $(`#trigger-reply${id}`).click();
         }
@@ -417,36 +417,36 @@ function formatTanggal(date) {
         minutes = dateArray[1].split(':')[1];
 
     var hari = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-    var bulan = ['Jan', 'Feb', 'Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
+    var bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
 
-    var d = new Date(month+"/"+day+"/"+year);
+    var d = new Date(month + "/" + day + "/" + year);
     var curr_day = d.getDay();
     var curr_date = d.getDate();
 
     var curr_month = d.getMonth();
     var curr_year = d.getFullYear();
 
-    return  hari[curr_day] + ", " + curr_date + "  " + bulan[curr_month] + " " + curr_year + " " + hour + ":" + minutes;
+    return hari[curr_day] + ", " + curr_date + "  " + bulan[curr_month] + " " + curr_year + " " + hour + ":" + minutes;
 }
 
 function hapusPost(idPost) {
-    swal.fire({
+    Swal.fire({
         title: "Hapus Pengumuman",
         text: "Pengumuman ini akan dihapus",
         icon: "info",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
-		cancelButtonColor: "#d33",
+        cancelButtonColor: "#d33",
         confirmButtonText: "HAPUS"
     }).then(result => {
         if (result.value) {
             $.ajax({
-                url: base_url + "pengumuman/hapuspost/"+idPost,
+                url: base_url + "pengumuman/hapuspost/" + idPost,
                 type: "GET",
                 success: function (data) {
                     console.log("result", data);
                     if (data) {
-                        swal.fire({
+                        Swal.fire({
                             title: "Sukses",
                             text: "Pengumuman dihapus",
                             icon: "success",
@@ -457,7 +457,7 @@ function hapusPost(idPost) {
                             }
                         });
                     } else {
-                        swal.fire({
+                        Swal.fire({
                             title: "ERROR",
                             text: "Pengumuman tidak dihapus",
                             icon: "error",
@@ -466,7 +466,7 @@ function hapusPost(idPost) {
                     }
                 }, error: function (xhr, status, error) {
                     console.log("error", xhr.responseText);
-                    swal.fire({
+                    Swal.fire({
                         title: "ERROR",
                         text: "Pengumuman tidak dihapus",
                         icon: "error",
@@ -479,23 +479,23 @@ function hapusPost(idPost) {
 }
 
 function hapusKomentar(idKomentar) {
-    swal.fire({
+    Swal.fire({
         title: "Hapus Komentar",
         text: "Komentar ini akan dihapus",
         icon: "info",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
-		cancelButtonColor: "#d33",
+        cancelButtonColor: "#d33",
         confirmButtonText: "HAPUS"
     }).then(result => {
         if (result.value) {
             $.ajax({
-                url: base_url + "pengumuman/hapuskomentar/"+idKomentar,
+                url: base_url + "pengumuman/hapuskomentar/" + idKomentar,
                 type: "GET",
                 success: function (data) {
                     console.log("result", data);
                     if (data) {
-                        swal.fire({
+                        Swal.fire({
                             title: "Sukses",
                             text: "Komentar dihapus",
                             icon: "success",
@@ -506,7 +506,7 @@ function hapusKomentar(idKomentar) {
                             }
                         });
                     } else {
-                        swal.fire({
+                        Swal.fire({
                             title: "ERROR",
                             text: "Komentar tidak dihapus",
                             icon: "error",
@@ -515,7 +515,7 @@ function hapusKomentar(idKomentar) {
                     }
                 }, error: function (xhr, status, error) {
                     console.log("error", xhr.responseText);
-                    swal.fire({
+                    Swal.fire({
                         title: "ERROR",
                         text: "Komentar tidak dihapus",
                         icon: "error",
@@ -528,23 +528,23 @@ function hapusKomentar(idKomentar) {
 }
 
 function hapusReply(idReply) {
-    swal.fire({
+    Swal.fire({
         title: "Hapus Balasan",
         text: "Balasan ini akan dihapus",
         icon: "info",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
-		cancelButtonColor: "#d33",
+        cancelButtonColor: "#d33",
         confirmButtonText: "HAPUS"
     }).then(result => {
         if (result.value) {
             $.ajax({
-                url: base_url + "pengumuman/hapusbalasan/"+idReply,
+                url: base_url + "pengumuman/hapusbalasan/" + idReply,
                 type: "GET",
                 success: function (data) {
                     console.log("result", data);
                     if (data) {
-                        swal.fire({
+                        Swal.fire({
                             title: "Sukses",
                             text: "Balasan dihapus",
                             icon: "success",
@@ -555,7 +555,7 @@ function hapusReply(idReply) {
                             }
                         });
                     } else {
-                        swal.fire({
+                        Swal.fire({
                             title: "ERROR",
                             text: "Balasan tidak dihapus",
                             icon: "error",
@@ -564,7 +564,7 @@ function hapusReply(idReply) {
                     }
                 }, error: function (xhr, status, error) {
                     console.log("error", xhr.responseText);
-                    swal.fire({
+                    Swal.fire({
                         title: "ERROR",
                         text: "Balasan tidak dihapus",
                         icon: "error",
@@ -577,13 +577,13 @@ function hapusReply(idReply) {
 }
 
 function hapusLogAktivitas() {
-    swal.fire({
+    Swal.fire({
         title: "Hapus Log",
         text: "Semua log aktifitas akan dihapus",
         icon: "info",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
-		cancelButtonColor: "#d33",
+        cancelButtonColor: "#d33",
         confirmButtonText: "HAPUS"
     }).then(result => {
         if (result.value) {
@@ -593,7 +593,7 @@ function hapusLogAktivitas() {
                 success: function (data) {
                     console.log("result", data);
                     if (data) {
-                        swal.fire({
+                        Swal.fire({
                             title: "Sukses",
                             text: "Semua log dihapus",
                             icon: "success",
@@ -604,7 +604,7 @@ function hapusLogAktivitas() {
                             }
                         });
                     } else {
-                        swal.fire({
+                        Swal.fire({
                             title: "ERROR",
                             text: "Gagal menghapus log",
                             icon: "error",
@@ -613,7 +613,7 @@ function hapusLogAktivitas() {
                     }
                 }, error: function (xhr, status, error) {
                     console.log("error", xhr.responseText);
-                    swal.fire({
+                    Swal.fire({
                         title: "ERROR",
                         text: "Gagal menghapus log",
                         icon: "error",
@@ -644,8 +644,8 @@ function hapusLogAktivitas() {
  * 12 = melihat nilai
  */
 
-$(document).ready(function(){
-	//Pace.restart();
+$(document).ready(function () {
+    //Pace.restart();
     ajaxcsrf();
 
     /*
@@ -656,33 +656,33 @@ $(document).ready(function(){
      */
 
     var colorBg = ['success', 'success', 'secondary', 'primary', 'warning', 'danger',
-		'primary', "warning", "primary", "success", "primary", "success", "warning"
-	];
+        'primary', "warning", "primary", "success", "primary", "success", "warning"
+    ];
 
-	function load_log() {
-		$.ajax({
-			url: base_url + "dashboard/getlog",
-            data: {page: 1, limit: 10, filter: ['1','2','3']},
-			method: "GET",
-			success:function(data) {
-				if (data.length > 0) {
+    function load_log() {
+        $.ajax({
+            url: base_url + "dashboard/getlog",
+            data: { page: 1, limit: 10, filter: ['1', '2', '3'] },
+            method: "GET",
+            success: function (data) {
+                if (data.length > 0) {
                     var ul = '<ul class="products-list product-list-in-card pl-2 pr-2">';
                     $.each(data, function (key, value) {
-                        const nama_lengkap = value?.first_name === value?.last_name ? value?.first_name : value?.first_name +' '+ value?.last_name
+                        const nama_lengkap = value?.first_name === value?.last_name ? value?.first_name : value?.first_name + ' ' + value?.last_name
                         var nama = value.id_group === '1' ? value.first_name : nama_lengkap;
                         var clr = colorBg[value.log_type];
                         var tgl = formatTanggal(value.log_time);//new Date('02/12/2018');
                         ul += '  <li class="item">' +
                             '    <div class="media" style="line-height: 1.3">' +
-                            '      <button class="btn btn-circle-sm btn-'+clr+' media-left">' +
-                            nama.charAt(0).toUpperCase()+
+                            '      <button class="btn btn-circle-sm btn-' + clr + ' media-left">' +
+                            nama.charAt(0).toUpperCase() +
                             '      </button>' +
                             '      <div class="media-body ml-2">' +
-                            '        <span>'+nama+'</span>' +
+                            '        <span>' + nama + '</span>' +
                             '        <br />' +
-                            '        <span class="text-'+clr+' text-sm">'+value.log_desc+'</span class="product-description">' +
+                            '        <span class="text-' + clr + ' text-sm">' + value.log_desc + '</span class="product-description">' +
                             '        <br />' +
-                            '        <span class="text-xs text-muted">'+tgl+'</span>' +
+                            '        <span class="text-xs text-muted">' + tgl + '</span>' +
                             '      </div>' +
                             '    </div>' +
                             '  </li>';
@@ -691,10 +691,10 @@ $(document).ready(function(){
                     ul += '</ul>';
                     $('#log-list').html(ul);
                 }
-			}
-		});
-	}
+            }
+        });
+    }
 
-	load_log();
-	getPosts();
+    load_log();
+    getPosts();
 });

@@ -1,4 +1,4 @@
-<div class="content-wrapper bg-white pt-4">
+<main class="app-main bg-white">
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -6,9 +6,9 @@
                     <h1><?= $judul ?></h1>
                 </div>
                 <div class="col-6">
-                    <a href="<?= base_url('cbtsesi') ?>" type="button" class="btn btn-sm btn-danger float-right">
-                        <i class="fas fa-arrow-circle-left"></i><span
-                                class="d-none d-sm-inline-block ml-1">Kembali</span>
+                    <a href="<?= base_url('cbtsesi') ?>" type="button" class="btn btn-sm btn-danger float-end">
+                        <i class="bi bi-arrow-left-square"></i><span
+                            class="d-none d-sm-inline-block ms-1">Kembali</span>
                     </a>
                 </div>
             </div>
@@ -24,4 +24,4 @@
             </div>
         </div>
     </section>
-</div>
+    </div>

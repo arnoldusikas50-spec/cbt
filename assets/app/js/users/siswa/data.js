@@ -1,14 +1,14 @@
 var table;
 
-$(document).ready(function() {
+$(document).ready(function () {
 	ajaxcsrf();
 
 	table = $("#users").DataTable({
-		initComplete: function() {
+		initComplete: function () {
 			var api = this.api();
 			$("#users_filter input")
 				.off(".DT")
-				.on("keyup.DT", function(e) {
+				.on("keyup.DT", function (e) {
 					api.search(this.value).draw();
 				});
 		},
@@ -28,9 +28,9 @@ $(document).ready(function() {
 				orderable: false,
 				searchable: false
 			},
-			{ data: "nis"},
+			{ data: "nis" },
 			{ data: "nama" },
-			{ data: "nama_kelas"},
+			{ data: "nama_kelas" },
 			{ data: "username" },
 			{ data: "password" },
 		],
@@ -43,17 +43,17 @@ $(document).ready(function() {
 					id_siswa: "id_siswa",
 					nama: "nama",
 					aktif: "aktif",
-					id : "id"
+					id: "id"
 				},
-				render: function(data, type, row, meta) {
+				render: function (data, type, row, meta) {
 					let btn;
 					if (data.aktif > 0) {
 						btn = `<button type="button" class="btn btn-nonaktif btn-danger btn-xs" data-id="${data.id}" data-nama="${data.nama}" data-toggle="tooltip" title="Nonaktifkan">
-								<i class="fa fa-ban m-1"></i>
+								<i class="bi bi-ban m-1"></i>
 							</button>`;
 					} else {
 						btn = `<button type="button" class="btn btn-aktif btn-success btn-xs" data-id="${data.id_siswa}" data-toggle="tooltip" title="Aktifkan">
-								<i class="fa fa-user-plus m-1"></i>
+								<i class="bi bi-person-plus m-1"></i>
 							</button>`;
 					}
 					return btn;
@@ -61,17 +61,17 @@ $(document).ready(function() {
 			}
 		],
 		order: [[2, "asc"]],
-		rowId: function(a) {
+		rowId: function (a) {
 			return a;
 		},
-		rowCallback: function(row, data, iDisplayIndex) {
+		rowCallback: function (row, data, iDisplayIndex) {
 			var info = this.fnPagingInfo();
 			var page = info.iPage;
 			var length = info.iLength;
 			var index = page * length + (iDisplayIndex + 1);
 			$("td:eq(0)", row).html(index);
 		},
-		createdRow: function( row, data, dataIndex ) {
+		createdRow: function (row, data, dataIndex) {
 			//console.log(data);
 		}
 	});
@@ -81,7 +81,7 @@ $(document).ready(function() {
 		.container()
 		.appendTo("#users_wrapper .col-md-6:eq(0)");
 
-	$("#users").on("click", ".btn-aktif", function() {
+	$("#users").on("click", ".btn-aktif", function () {
 		let id = $(this).data("id");
 		$('#loading').removeClass('d-none');
 		$.ajax({
@@ -89,17 +89,17 @@ $(document).ready(function() {
 			type: "GET",
 			success: function (response) {
 				console.log("pass", response.pass);
-                $('#loading').addClass('d-none');
+				$('#loading').addClass('d-none');
 				if (response.msg) {
 					if (response.status) {
-						swal.fire({
+						Swal.fire({
 							title: "Sukses",
 							text: response.msg,
 							icon: "success"
 						});
 						reload_ajax();
 					} else {
-						swal.fire({
+						Swal.fire({
 							title: "Error",
 							text: response.msg,
 							icon: "error"
@@ -107,7 +107,7 @@ $(document).ready(function() {
 					}
 				}
 			},
-			error: function(xhr, status, error) {
+			error: function (xhr, status, error) {
 				console.log(xhr);
 				Swal.fire({
 					title: "Gagal",
@@ -118,25 +118,25 @@ $(document).ready(function() {
 		});
 	});
 
-	$("#users").on("click", ".btn-nonaktif", function() {
+	$("#users").on("click", ".btn-nonaktif", function () {
 		let id = $(this).data("id");
 		let nama = $(this).data("nama").replace("'", "");
-        $('#loading').removeClass('d-none');
+		$('#loading').removeClass('d-none');
 		$.ajax({
-			url: base_url + "usersiswa/deactivate/" + id +"/"+nama,
+			url: base_url + "usersiswa/deactivate/" + id + "/" + nama,
 			type: "GET",
 			success: function (response) {
-                $('#loading').addClass('d-none');
+				$('#loading').addClass('d-none');
 				if (response.msg) {
 					if (response.status) {
-						swal.fire({
+						Swal.fire({
 							title: "Sukses",
 							text: response.msg,
 							icon: "success"
 						});
 						reload_ajax();
 					} else {
-						swal.fire({
+						Swal.fire({
 							title: "Error",
 							text: response.msg,
 							icon: "error"
@@ -147,10 +147,10 @@ $(document).ready(function() {
 		});
 	});
 
-	$(".btn-action").on("click", function() {
+	$(".btn-action").on("click", function () {
 		let action = $(this).data("action");
 		let uri = action === 'aktifkan' ? base_url + "usersiswa/aktifkansemua" : base_url + "usersiswa/nonaktifkansemua";
-		swal.fire({
+		Swal.fire({
 			title: action === 'aktifkan' ? "Aktifan Semua Siswa" : "Nonaktifkan Semua Siswa",
 			text: "",
 			icon: "info",
@@ -160,14 +160,14 @@ $(document).ready(function() {
 			confirmButtonText: "Lanjutkan"
 		}).then(result => {
 			if (result.value) {
-                $('#loading').removeClass('d-none');
+				$('#loading').removeClass('d-none');
 				$.ajax({
 					url: uri,
 					type: "GET",
 					success: function (response) {
-                        $('#loading').addClass('d-none');
+						$('#loading').addClass('d-none');
 						console.log("result", response.jumlah);
-						swal.fire({
+						Swal.fire({
 							title: response.status ? "Sukses" : "Gagal",
 							text: response.msg,
 							icon: response.status ? "success" : "error"
@@ -175,7 +175,7 @@ $(document).ready(function() {
 							reload_ajax();
 						});
 					},
-					error: function(xhr, status, error) {
+					error: function (xhr, status, error) {
 						console.log(xhr);
 						Swal.fire({
 							title: "Gagal",
@@ -193,5 +193,5 @@ $(document).ready(function() {
 
 function editLogin(id) {
 	console.log("id", id);
-	window.location.href = base_url + "usersiswa/edit/"+id;
+	window.location.href = base_url + "usersiswa/edit/" + id;
 }

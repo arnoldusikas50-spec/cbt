@@ -1,23 +1,23 @@
 <?php
 
 
-class Cbtpengawas extends MY_Controller {
+class Cbtpengawas extends MY_Controller
+{
 
-	public function __construct(){
-		parent::__construct();
-		if (!$this->auth->logged_in()){
-			redirect('auth');
-		}else if ( !$this->auth->is_admin() && !$this->auth->in_group('panitia')){
-			show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="'.base_url('dashboard').'">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
-		}
-		$this->load->library(['form_validation']);// Load Library Ignited-Datatables
-		$this->form_validation->set_error_delimiters('','');
-		$this->load->model('Dashboard_model', 'dashboard');
-		$this->load->model('Cbt_model', 'cbt');
-		$this->load->model('Dropdown_model', 'dropdown');
-	}
+    public function __construct()
+    {
+        parent::__construct();
+        if (!$this->auth->logged_in()) {
+            redirect('auth');
+        } else if (!$this->auth->is_admin()) {
+            show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
+        }
+        $this->load->library(['form_validation']);// Load Library Ignited-Datatables
+        $this->form_validation->set_error_delimiters('', '');
+    }
 
-    protected function getDistinctTgl($tp, $smt, $jenis) {
+    private function getDistinctTgl($tp, $smt, $jenis)
+    {
         $this->db->distinct('a.tgl_mulai');
         $this->db->select('a.id_jenis, a.tgl_mulai');
         $this->db->from('cbt_jadwal a');
@@ -36,19 +36,20 @@ class Cbtpengawas extends MY_Controller {
         return $ret;
     }
 
-	public function index() {
+    public function index()
+    {
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Cbt_model', 'cbt');
         $this->load->model('Dropdown_model', 'dropdown');
 
         $user = $this->auth->user();
         $setting = $this->dashboard->getSetting();
-		$data = [
-			'user' => $user,
-			'judul'	=> 'Atur Pengawas',
-			'subjudul'=> 'Pengawas Ujian/Ulangan',
-            'setting'		=> $setting
-		];
+        $data = [
+            'user' => $user,
+            'judul' => 'Atur Pengawas',
+            'subjudul' => 'Pengawas Ujian/Ulangan',
+            'setting' => $setting
+        ];
 
         $tp = $this->dashboard->getTahunActive();
         $smt = $this->dashboard->getSemesterActive();
@@ -62,21 +63,54 @@ class Cbtpengawas extends MY_Controller {
         $data['gurus'] = $this->dropdown->getAllGuru();
         $id_jenis = $this->cbt->getDistinctJenisJadwal($tp->id_tp, $smt->id_smt);
         $ids = [];
-        if ($id_jenis && count($id_jenis)>0) {
+        if ($id_jenis && count($id_jenis) > 0) {
             foreach ($id_jenis as $jenis) {
                 $ids[] = $jenis->id_jenis;
             }
         }
 
-        if ($ids && count($ids)>0) {
+        if ($ids && count($ids) > 0) {
             $data['jenis'] = $this->cbt->getAllJenisUjianByArrJenis($ids);
         } else {
-            $data['jenis'] = [''=>'belum ada jadwal ujian'];
+            $data['jenis'] = ['' => 'belum ada jadwal ujian'];
         }
+        //$data['tanggal'] = $this->getDistinctTgl($tp->id_tp, $smt->id_smt, $jenis_selected);
+        /*
+        $jenis_selected = $this->input->get('jenis', true);
+        $tanggal_selected = $this->input->get('tanggal', true);
+        $data['jenis_selected'] = $jenis_selected;
+        $data['tanggal_selected'] = $tanggal_selected;
 
+        $allJadwals = [];
+        if ($jenis_selected && $tanggal_selected) {
+            $tglJadwals = $this->cbt->getAllJadwalByTanggal($tp->id_tp, $smt->id_smt, $jenis_selected, $tanggal_selected);
+            foreach ($tglJadwals as $idx=>$jadwal) {
+                $jadwal->bank_kelas = $this->maybe_unserialize($jadwal->bank_kelas ?? '');
+                $arrKelas = array_column($jadwal->bank_kelas, 'kelas_id');
+                $peserta = $this->cbt->getKelasUjian($tp->id_tp, $smt->id_smt, $arrKelas);
+                $kls_psrta = [];
+                foreach ($peserta as $kls=>$psrt) {
+                    foreach ($psrt as $ruang=>$sesies) {
+                        foreach ($sesies as $ses=>$id_kelas) {
+                            $key = $jadwal->tgl_mulai.'|'.$ruang.'-'.$ses;
+                            if (!isset($kls_psrta[$key])) {
+                                $kls_psrta[$key] = count($id_kelas);
+                                $jadwal->peserta = count($id_kelas);
+                                $allJadwals[$key][$jadwal->id_mapel][] = $jadwal;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        $data['tgl_jadwals'] = $allJadwals;
+        $ruangs = $this->cbt->getDistinctRuang($tp->id_tp, $smt->id_smt, []);
+        $data['ruangs'] = $ruangs;
+        $data['pengawas'] = $this->cbt->getAllPengawas($tp->id_tp, $smt->id_smt);
+        */
 
         $this->render_view(1, 'cbt/pengawas/data', $data);
-	}
+    }
 
     public function get_tanggal()
     {
@@ -88,159 +122,144 @@ class Cbtpengawas extends MY_Controller {
         $this->output_json($jadwal);
     }
 
-    public function get_pengawas() {
-        // TEMPORARILY DISABLED TRY-CATCH TO SEE ERROR
-        // try {
-            $this->load->model('Cbt_jadwal_model', 'cbt_jadwal_model');
-            $this->load->model('Cbt_siswa_model', 'cbt_siswa_model');
-            $this->load->model('Cbt_sesisiswa_model', 'sesisiswa_model');
-            $this->load->model('Cbt_model', 'cbt');
-            $this->load->model('Dropdown_model', 'dropdown');
+    public function get_pengawas()
+    {
+        $this->load->model('Cbt_jadwal_model', 'cbt_jadwal_model');
+        $this->load->model('Cbt_siswa_model', 'cbt_siswa_model');
+        $this->load->model('Cbt_sesisiswa_model', 'sesisiswa_model');
+        $this->load->model('Cbt_model', 'cbt');
+        $this->load->model('Dropdown_model', 'dropdown');
 
-            $jenis_selected = $this->input->post('jenis', true);
-            $tanggal_selected = $this->input->post('tanggal', true);
+        $jenis_selected = $this->input->post('jenis', true);
+        $tanggal_selected = $this->input->post('tanggal', true);
 
-            $tp_smt = $this->getTpSmt();
-            $tp = $tp_smt->tp_active;
-            $smt = $tp_smt->smt_active;
+        $tp_smt = $this->getTpSmt();
+        $tp = $tp_smt->tp_active;
+        $smt = $tp_smt->smt_active;
 
-            // Use standard CI query instead of custom model methods
-            $this->db->select('a.id_jadwal, a.id_tp, a.id_smt, a.id_bank, a.id_jenis, a.tgl_mulai, a.tgl_selesai, a.status, a.jam_ke');
-            $this->db->select('b.bank_kode, b.bank_kelas, b.soal_agama, b.bank_guru_id');
-            $this->db->select('c.kode as mapel_kode, c.nama_mapel');
-            $this->db->from('cbt_jadwal a');
-            $this->db->join('cbt_bank_soal b', 'b.id_bank = a.id_bank', 'left');
-            $this->db->join('master_mapel c', 'c.id_mapel = b.bank_mapel_id', 'left');
-            $this->db->where('a.id_tp', $tp->id_tp);
-            $this->db->where('a.id_smt', $smt->id_smt);
-            $this->db->where('a.tgl_mulai', $tanggal_selected);
-            $this->db->where('a.id_jenis', $jenis_selected);
-            $jadwals_query = $this->db->get();
-            $jadwals = $jadwals_query->result();
-            
-            // Restructure result to match expected format
-            if ($jadwals && count($jadwals) > 0) {
-                foreach ($jadwals as $jdwl) {
-                    // Unserialize bank_kelas
-                    $bank_kelas_unserialized = $this->maybe_unserialize($jdwl->bank_kelas ?? '');
-                    if (!is_array($bank_kelas_unserialized)) {
-                        $bank_kelas_unserialized = [];
-                    }
-                    
-                    // Create bank object
-                    $jdwl->bank = (object)[
-                        'bank_kode' => $jdwl->bank_kode ?? '',
-                        'bank_kelas' => $bank_kelas_unserialized,  // Array, not string!
-                        'soal_agama' => $jdwl->soal_agama ?? '',
-                        'bank_guru_id' => $jdwl->bank_guru_id ?? '',
-                        'mapel' => (object)[
-                            'kode' => $jdwl->mapel_kode ?? '',
-                            'nama_mapel' => $jdwl->nama_mapel ?? ''
-                        ]
-                    ];
-                    
-                    // Clean up duplicate properties
-                    unset($jdwl->bank_kode);
-                    unset($jdwl->bank_kelas);
-                    unset($jdwl->soal_agama);
-                    unset($jdwl->bank_guru_id);
-                    unset($jdwl->mapel_kode);
-                    unset($jdwl->nama_mapel);
+        $jadwals = $this->cbt_jadwal_model
+            ->fields('id_jadwal,id_tp,id_smt,id_bank,id_jenis,tgl_mulai,tgl_selesai,status,jam_ke')
+            ->where(['id_tp' => $tp->id_tp, 'id_smt' => $smt->id_smt, 'tgl_mulai' => $tanggal_selected, 'id_jenis' => $jenis_selected])
+            ->with_bank([
+                'fields' => 'bank_kode,bank_kelas,soal_agama,bank_guru_id',
+                'where' => ['id_tp' => $tp->id_tp, 'id_smt' => $smt->id_smt],
+                'with' => [
+                    ['relation' => 'mapel', 'fields' => 'kode,nama_mapel'],
+                ]
+            ])
+            ->get_all();
+
+        $arrKelas = [];
+        $result = [];
+        $all_siswa = [];
+        $cbt_siswa = [];
+
+        $data['today'] = date('Y-m-d');
+        $data['pengawas'] = $this->cbt->getAllPengawas($tp->id_tp, $smt->id_smt, null, null);
+        $data['gurus'] = $this->dropdown->getAllGuru();
+
+        $panitias = $this->dropdown->getAllPanitiaPengawas();
+        $panitia_map = [];
+        foreach ($panitias as $p) {
+            $p_id = 'P' . $p->id_panitia;
+            $data['gurus'][$p_id] = $p->nama_panitia . ' (Pengawas)';
+            if ($p->ruang) {
+                if (!isset($panitia_map[$p->ruang])) {
+                    $panitia_map[$p->ruang] = [];
                 }
+                $panitia_map[$p->ruang][] = $p_id;
             }
+        }
+        $data['panitia_ruang'] = $panitia_map;
 
-            $arrKelas = [];
-            $result = [];
-            $all_siswa = [];
-            $cbt_siswa = [];
+        $data['kelases'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
 
-            $data['today'] = date('Y-m-d');
-            $data['pengawas'] = $this->cbt->getAllPengawas($tp->id_tp, $smt->id_smt, null, null);
-            $data['gurus'] = $this->dropdown->getAllGuru();
-            $data['kelases'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
-
-            if (!$jadwals) {
-                $data['sesisiswa'] = $all_siswa;
-                $data['cbtsiswa'] = $cbt_siswa;
-                $data['ruangs'] = [];
-                $data['arr_kelas'] = [];
-                $data['jadwals_ujian'] = [];
-                $this->output_json($data);
-                return;
-            }
-
-            // Minimal safe implementation
-            $ids_jadwal = [];
-            $arrKelas = [];
-            $result = [];
-
-            // Process jadwals safely
-            if ($jadwals && is_array($jadwals)) {
-                foreach ($jadwals as $jadwal) {
-                    if (isset($jadwal->id_jadwal)) {
-                        $ids_jadwal[] = $jadwal->id_jadwal;
-                    }
-                    
-                    // Try to get kelas safely
-                    if (isset($jadwal->bank)) {
-                        $bank_kelas = isset($jadwal->bank->bank_kelas) ? $jadwal->bank->bank_kelas : '';
-                        if ($bank_kelas) {
-                            $kelas_arr = $this->maybe_unserialize($bank_kelas);
-                            if (is_array($kelas_arr)) {
-                                foreach ($kelas_arr as $kls) {
-                                    if (is_object($kls) && isset($kls->kelas_id)) {
-                                        $arrKelas[] = $kls->kelas_id;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
-                    $result[] = $jadwal;
-                }
-            }
-            
-            // Remove duplicates
-            $arrKelas = array_unique($arrKelas);
-            
-            // Get ruang data safely
-            $ruangs = [];
-            if (count($arrKelas) > 0) {
-                try {
-                    $ruangs = $this->cbt->getDistinctSesi($tp->id_tp, $smt->id_smt, $arrKelas);
-                    if (!is_array($ruangs)) {
-                        $ruangs = [];
-                    }
-                } catch (Exception $e) {
-                    $ruangs = [];
-                }
-            }
-            
-            // Return data
-            $data['sesisiswa'] = [];  // Will populate later
-            $data['cbtsiswa'] = [];   // Will populate later  
-            $data['ruangs'] = array_values($ruangs);
-            $data['arr_kelas'] = array_values($arrKelas);
+        if (!$jadwals) {
+            $data['sesisiswa'] = $all_siswa;
+            $data['cbtsiswa'] = $cbt_siswa;
+            $data['ruangs'] = [];
+            $data['arr_kelas'] = $arrKelas;
             $data['jadwals_ujian'] = $result;
-            
             $this->output_json($data);
-            
-        /*} catch (Exception $e) {
-            $this->output_json([
-                'error' => true,
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-        } catch (Error $e) {
-            $this->output_json([
-                'error' => true,
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-        }*/
+            return;
+        }
+
+        $ids_jadwal = [];
+        foreach ($jadwals as $jadwal) {
+            $ids_jadwal[] = $jadwal->id_jadwal;
+            if (isset($jadwal->bank)) {
+                $info = $jadwal->bank;
+                $kelasIds = $this->maybe_unserialize($info->bank_kelas ?? []);
+                $info->bank_kelas = array_map('strval', array_column($kelasIds, 'kelas_id'));
+
+                foreach ($info->bank_kelas as $kls) {
+                    if ($kls) {
+                        $arrKelas[] = $kls;
+                    }
+                }
+                $result[] = $jadwal;
+            }
+        }
+
+        $ruangs = $this->cbt->getDistinctSesi($tp->id_tp, $smt->id_smt, $arrKelas);
+
+        $siswas = $this->sesisiswa_model
+            ->where('kelas_id', $arrKelas)
+            ->where(['tp_id' => $tp->id_tp, 'smt_id' => $smt->id_smt])
+            ->with_siswa(['fields' => 'id_siswa,nama,nis,nisn,agama'])
+            ->with_peserta()
+            ->with_kelas(['fields' => 'kode_kelas,nama_kelas'])
+            ->with_ruang(['fields' => 'kode_ruang,nama_ruang'])
+            ->with_sesi(['fields' => 'kode_sesi,nama_sesi'])
+            ->as_array()
+            ->get_all();
+
+        if (!$siswas) {
+            $data['sesisiswa'] = $all_siswa;
+            $data['cbtsiswa'] = $cbt_siswa;
+            $data['ruangs'] = array_values($ruangs);
+            $data['arr_kelas'] = $arrKelas;
+            $data['jadwals_ujian'] = $result;
+            $this->output_json($data);
+            return;
+        }
+
+        $ids_siswa = [];
+        foreach ($siswas as $siswa) {
+            if (!in_array($siswa['siswa_id'], $ids_siswa)) {
+                $ids_siswa[] = $siswa['siswa_id'];
+            }
+            $all_siswa[] = $siswa;
+        }
+
+        $cbtsiswa = $this->cbt_siswa_model
+            ->fields('id_bank,id_cbt_siswa,id_jadwal,id_siswa,lama_ujian,mulai,reset_izin,reset_waktu,selesai,status')
+            ->where('id_siswa', $ids_siswa)
+            ->where('id_jadwal', $ids_jadwal)
+            ->with_jadwal()
+            ->get_all();
+
+        if (!$cbtsiswa) {
+            $data['sesisiswa'] = $all_siswa;
+            $data['cbtsiswa'] = $cbt_siswa;
+            $data['ruangs'] = array_values($ruangs);
+            $data['arr_kelas'] = $arrKelas;
+            $data['jadwals_ujian'] = $result;
+            $this->output_json($data);
+            return;
+        }
+
+        $data['sesisiswa'] = $all_siswa;
+        $data['cbtsiswa'] = (array) $cbtsiswa;
+        $data['ruangs'] = array_values($ruangs);
+        $data['arr_kelas'] = $arrKelas;
+        $data['jadwals_ujian'] = $result;
+
+        $this->output_json($data);
     }
 
-    public function save() {
+    public function savePengawas()
+    {
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Log_model', 'logging');
 
@@ -257,16 +276,17 @@ class Cbtpengawas extends MY_Controller {
                 $ruang = $d->ruang;
                 $sesi = $d->sesi;
                 $jadwal = $d->jadwal;
-                $id_pengawas = $id_tp.$id_smt.$jadwal.$ruang.$sesi;
+                $id_pengawas = $id_tp . $id_smt . $jadwal . $ruang . $sesi;
 
                 $dataInsert = [
-                    'id_pengawas'	=> $id_pengawas,
-                    'id_jadwal'	=> $jadwal,
+                    'id_pengawas' => $id_pengawas,
+                    'id_jadwal' => $jadwal,
                     'id_tp' => $id_tp,
                     'id_smt' => $id_smt,
                     'id_ruang' => $ruang,
                     'id_sesi' => $sesi,
                     'id_guru' => implode(",", $d->guru),
+
                 ];
 
                 if ($this->dashboard->check_data_by_id('cbt_pengawas', 'id_pengawas', $id_pengawas)) {
@@ -276,9 +296,8 @@ class Cbtpengawas extends MY_Controller {
                 }
             }
         }
-        
         $updated = 0;
-        if (count($for_insert)>0) {
+        if (count($for_insert) > 0) {
             $updated1 = $this->db->insert_batch('cbt_pengawas', $for_insert);
             if ($updated1) {
                 $updated++;
@@ -299,74 +318,4 @@ class Cbtpengawas extends MY_Controller {
         $data['status'] = $updated;
         $this->output_json($data);
     }
-
-    public function savePengawas() {
-        $this->load->model('Dashboard_model', 'dashboard');
-        $this->load->model('Log_model', 'logging');
-
-        $input = json_decode($this->input->post('data', true));
-        $tp = $this->dashboard->getTahunActive();
-        $smt = $this->dashboard->getSemesterActive();
-        $id_tp = $tp->id_tp;
-        $id_smt = $smt->id_smt;
-
-        $for_insert = [];
-        $for_update = [];
-        foreach ($input as $d) {
-            if (isset($d->jadwal)) {
-                $ruang = $d->ruang;
-                $sesi = $d->sesi;
-                $jadwal = $d->jadwal;
-                $id_pengawas = $id_tp.$id_smt.$jadwal.$ruang.$sesi;
-
-                $dataInsert = [
-                    'id_pengawas'	=> $id_pengawas,
-                    'id_jadwal'	=> $jadwal,
-                    'id_tp' => $id_tp,
-                    'id_smt' => $id_smt,
-                    'id_ruang' => $ruang,
-                    'id_sesi' => $sesi,
-                    'id_guru' => implode(",", $d->guru),
-
-                ];
-
-                if ($this->dashboard->check_data_by_id('cbt_pengawas', 'id_pengawas', $id_pengawas)) {
-                    $for_update[] = $dataInsert;
-                } else {
-                    $for_insert[] = $dataInsert;
-                }
-            }
-        }
-        $updated = 0;
-        if (count($for_insert)>0) {
-            $updated1 = $this->db->insert_batch('cbt_pengawas', $for_insert);
-            if ($updated1) {
-                $updated++;
-                $this->logging->saveLog($this->LOG_TYPE->ADD, 'Menambah pengawas ujian');
-            }
-        }
-
-        if (count($for_update) > 0) {
-            $updated2 = $this->db->update_batch('cbt_pengawas', $for_update, 'id_pengawas');
-            if ($updated2) {
-                $updated++;
-                $this->logging->saveLog($this->LOG_TYPE->EDIT, 'Mengupdate pengawas ujian');
-            }
-        }
-
-        $data['insert'] = $for_insert;
-        $data['update'] = $for_update;
-        $data['status'] = $updated;
-		$this->output_json($data);
-	}
-
-    protected function getTpSmt() {
-        $tp = $this->dashboard->getTahunActive();
-        $smt = $this->dashboard->getSemesterActive();
-        return (object)[
-            'tp_active' => $tp,
-            'smt_active' => $smt
-        ];
-    }
 }
-

@@ -1,50 +1,76 @@
 <!-- Navbar -->
-<nav class="main-header navbar navbar-expand navbar-warning navbar-light shadow">
+<nav class="app-header navbar navbar-expand bg-body shadow">
+
+    <?php
+    $defaultAvatar = base_url('assets/img/guru.png');
+    $avatar = $defaultAvatar;
+
+    if (isset($guru->foto) && !empty($guru->foto)) {
+        $photoPath = ltrim($guru->foto, '/');
+        $absolutePhoto = FCPATH . $photoPath;
+
+        if (file_exists($absolutePhoto)) {
+            $avatar = base_url($photoPath);
+        }
+    }
+
+    $userName = isset($guru->nama_lengkap) && $guru->nama_lengkap ? $guru->nama_lengkap : 'IKASMEDIA';
+    $userRole = isset($guru->jabatan) && $guru->jabatan ? $guru->jabatan : 'Guru';
+    ?>
+
     <!-- Left navbar links -->
-    <ul class="navbar-nav">
+    <ul class="navbar-nav align-items-center">
         <li class="nav-item">
-            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button"><i class="bi bi-list"></i></a>
+        </li>
+        <li class="nav-item">
+            <span class="nav-link px-2">
+                <span>
+                    TP: <?= isset($tp_active) ? $tp_active->tahun : 'Belum di set' ?> | Smt:
+                    <?= isset($smt_active) ? $smt_active->nama_smt : 'Belum di set' ?>
+                </span>
+            </span>
         </li>
 
-        <li class="nav-item badge-pill badge-light">
-            <span class="nav-link text-dark font-weight-bold">TP: <?= isset($tp_active) ? $tp_active->tahun : "Belum di set" ?> Smt: <?= isset($smt_active) ? $smt_active->nama_smt : "Belum di set" ?></span>
-        </li>
     </ul>
 
-    <ul class="navbar-nav ml-auto">
-        <li class="nav-item badge-pill badge-danger text-white">
-            <div id="live-clock"></div>
+    <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item">
+            <span class="nav-link px-2">
+                <span class="badge rounded-pill bg-danger">
+                    <span id="live-clock" class="text-white text-end"></span>
+                </span>
+            </span>
         </li>
-
-        <?php
-        $guru_foto = isset($guru->foto) && $guru->foto ? base_url() . ltrim($guru->foto, '/') : base_url() . 'assets/img/guru.png';
-        $guru_nama = isset($guru->nama_lengkap) && $guru->nama_lengkap ? $guru->nama_lengkap : 'IKASMEDIA';
-        $guru_jabatan = isset($guru->jabatan) && $guru->jabatan ? $guru->jabatan : 'Admin';
-        ?>
         <li class="nav-item dropdown user-menu">
-            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-                <?php $avatar = $guru_foto; ?>
-                <img src="<?= $avatar ?>" class="user-image img-circle elevation-2" alt="User Image">
-                <span style="color:#000"> <i class='fa fa-caret-down'></i></span>
+            <a href="#" class="nav-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                <img src="<?= $avatar ?>" class="user-image rounded-circle shadow-sm me-2" alt="User Image">
+                <div class="d-none d-md-block text-start">
+                    <span class="d-block text-dark fw-bold"><?= $userName ?></span>
+                </div>
+                <i class="bi bi-chevron-down text-dark ms-2"></i>
             </a>
-            <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <!-- User image -->
-                <li class="user-header bg-dark">
-                    <?php $avatar = $guru_foto; ?>
-                    <div class="image">
-                        <img src="<?= $avatar ?>" class="img-circle" alt="User Image" style="height:90px">
+            <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0">
+                <li class="user-header bg-dark text-center">
+                    <div class="image mb-2">
+                        <img src="<?= $avatar ?>" class="rounded-circle" alt="User Image" style="height:90px">
                     </div>
-                    <p>
-                        <?= $guru_nama ?>
-                        <small class="text-muted">
-                            <?= $guru_jabatan ?>
-                        </small>
+                    <p class="mb-0">
+                        <span class="d-block"><?= $userName ?></span>
+                        <small class="text-muted"><?= $userRole ?></small>
                     </p>
                 </li>
-                <!-- Menu Footer-->
-                <li class="user-footer bg-yellow">
-                    <a href="<?= base_url() ?>guru" class="btn btn-xs bg-teal float-left"> <span><i class="fas fa-user-cog nav-icon"></i> PROFIL </span></a>
-                    <a href="#" class="btn btn-xs bg-red float-right" role="button" onclick="logout()"><span><i class="fas fa-sign-out-alt nav-icon"></i> LOGOUT</span></a>
+                <li class="user-footer bg-yellow d-flex align-items-center w-100 px-0">
+                    <a href="<?= base_url() ?>guru"
+                        class="btn btn-sm bg-teal rounded-0 border-0 me-auto d-inline-flex align-items-center ps-3 pe-3 ms-2">
+                        <i class="bi bi-gear-wide-connected nav-icon me-1"></i> Profil
+                    </a>
+                    <a href="#"
+                        class="btn btn-sm bg-red rounded-0 border-0 ms-auto d-inline-flex align-items-center ps-3 pe-3 me-2"
+                        role="button" onclick="logout()">
+                        <i class="bi bi-box-arrow-right nav-icon me-1"></i> Logout
+                    </a>
                 </li>
             </ul>
         </li>

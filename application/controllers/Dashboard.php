@@ -1,20 +1,27 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: AbangAzmi
- * Date: 02/06/2020
- * Time: 01.13
- */
+
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Dashboard extends MY_Controller {
+class Dashboard extends MY_Controller
+{
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->model('Master_model', 'master');
+        $this->load->model('Dashboard_model', 'dashboard');
+        $this->load->model('Cbt_model', 'cbt');
+        $this->load->model('Elearning_model', 'elearning');
+        $this->load->model('Dropdown_model', 'dropdown');
+    }
 
     //public $user;
     //public $tp;
     //public $smt;
 
-    public function admin_box($setting, $tp, $smt) {
+    public function admin_box($setting, $tp, $smt)
+    {
         $where = '';
         if ($setting->jenjang == "1") {
             $where = 'jenjang=0 OR jenjang=1';
@@ -24,153 +31,230 @@ class Dashboard extends MY_Controller {
 
         $box = [
             [
-                'box' 		=> 'blue',
-                'total' 	=> $this->master->getSiswaTotalPage($tp, $smt, '0'),
-                'title'		=> 'Siswa',
-                'url'		=> 'datasiswa',
-                'icon'		=> 'users'
+                'box' => 'blue',
+                'total' => $this->master->getSiswaTotalPage($tp, $smt, '0'),
+                'title' => 'Siswa',
+                'url' => 'datasiswa',
+                'icon' => 'users'
             ],
             [
-                'box' 		=> 'cyan',
-                'total' 	=> $this->dashboard->total('master_kelas', 'id_tp='.$tp.' AND id_smt='.$smt),
-                'title'		=> 'Rombel',
-                'url'		=> 'datakelas',
-                'icon'		=> 'bell'
+                'box' => 'cyan',
+                'total' => $this->dashboard->total('master_kelas', 'id_tp=' . $tp . ' AND id_smt=' . $smt),
+                'title' => 'Rombel',
+                'url' => 'datakelas',
+                'icon' => 'bell'
             ],
             [
-                'box' 		=> 'teal',
-                'total' 	=> $this->dashboard->total('master_guru'),
-                'title'		=> 'Guru',
-                'url'		=> 'dataguru',
-                'icon'		=> 'user-circle'
+                'box' => 'teal',
+                'total' => $this->dashboard->total('master_guru'),
+                'title' => 'Guru',
+                'url' => 'dataguru',
+                'icon' => 'user-circle'
             ],
-			[
-				'box' 		=> 'fuchsia',
-				'total' 	=> $this->dashboard->totalWaliKelas($tp, $smt),
-				'title'		=> 'Wali Kelas',
-                'url'		=> 'dataguru',
-				'icon'		=> 'user-o'
-			],
-			[
-				'box' 		=> 'success',
-				'total' 	=> $this->dashboard->total('master_mapel', $where),
-				'title'		=> 'Mapel',
-                'url'		=> 'datamapel',
-				'icon'		=> 'book'
-			],
             [
-                'box' 		=> 'info',
-                'total' 	=> $this->dashboard->total('master_ekstra'),
-                'title'		=> 'Ekstrakurikuler',
-                'url'		=> 'dataekstra',
-                'icon'		=> 'universal-access'
+                'box' => 'fuchsia',
+                'total' => $this->dashboard->totalWaliKelas($tp, $smt),
+                'title' => 'Wali Kelas',
+                'url' => 'dataguru',
+                'icon' => 'user-o'
+            ],
+            [
+                'box' => 'success',
+                'total' => $this->dashboard->total('master_mapel', $where),
+                'title' => 'Mapel',
+                'url' => 'datamapel',
+                'icon' => 'book'
+            ],
+            [
+                'box' => 'info',
+                'total' => $this->dashboard->total('master_ekstra'),
+                'title' => 'Ekstrakurikuler',
+                'url' => 'dataekstra',
+                'icon' => 'universal-access'
             ],
         ];
         return json_decode(json_encode($box), FALSE);
     }
 
-	public function ujian_box($tp, $smt) {
-		$box = [
-			[
-				'box' 		=> 'indigo',
-				'total' 	=> $this->dashboard->total('cbt_ruang'),
-				'title'		=> 'Ruang',
-                'url'		=> 'cbtruang',
-				'icon'		=> 'school'
-			],
-			[
-				'box' 		=> 'maroon',
-				'total' 	=> $this->dashboard->total('cbt_sesi'),
-				'title'		=> 'Sesi',
-                'url'		=> 'cbtsesi',
-				'icon'		=> 'clock'
-			],
-			[
-				'box' 		=> 'green',
-				'total' 	=> $this->dashboard->total('cbt_bank_soal'),
-				'title'		=> 'Bank Soal',
-                'url'		=> 'cbtbanksoal',
-				'icon'		=> 'folder'
-			],
+    public function ujian_box($tp, $smt)
+    {
+        $box = [
             [
-                'box' 		=> 'teal',
-                'total' 	=> $this->dashboard->totalJadwal($tp, $smt),
-                'title'		=> 'Jadwal',
-                'url'		=> 'cbtjadwal',
-                'icon'		=> 'clock'
+                'box' => 'indigo',
+                'total' => $this->dashboard->total('cbt_ruang'),
+                'title' => 'Ruang',
+                'url' => 'cbtruang',
+                'icon' => 'school'
             ],
-		];
+            [
+                'box' => 'maroon',
+                'total' => $this->dashboard->total('cbt_sesi'),
+                'title' => 'Sesi',
+                'url' => 'cbtsesi',
+                'icon' => 'clock'
+            ],
+            [
+                'box' => 'green',
+                'total' => $this->dashboard->total('cbt_bank_soal'),
+                'title' => 'Bank Soal',
+                'url' => 'cbtbanksoal',
+                'icon' => 'folder'
+            ],
+            [
+                'box' => 'teal',
+                'total' => $this->dashboard->totalJadwal($tp, $smt),
+                'title' => 'Jadwal',
+                'url' => 'cbtjadwal',
+                'icon' => 'clock'
+            ],
+        ];
         return json_decode(json_encode($box), FALSE);
-	}
+    }
 
-	public function menu_siswa_box() {
-		$box = [
+    public function panitia_box($tp, $smt)
+    {
+        // 1. Data Guru
+        $total_guru = $this->dashboard->total('master_guru');
+
+        // 2. Data Siswa
+        $total_siswa = $this->master->getSiswaTotalPage($tp, $smt, '0');
+
+        // 3. Data Pengawas (Panitia)
+        $total_pengawas = $this->dashboard->total('master_panitia');
+
+        // 4. Jadwal Aktif
+        $now = date('Y-m-d H:i:s');
+        $this->db->where('tgl_mulai <=', $now);
+        $this->db->where('tgl_selesai >=', $now);
+        $total_active_exams = $this->db->count_all_results('cbt_jadwal');
+
+        // 5. Siswa Belum Ujian
+        $belum_ujian = 0;
+        // Get active schedule IDs first
+        $this->db->select('id_jadwal');
+        $this->db->where('tgl_mulai <=', $now);
+        $this->db->where('tgl_selesai >=', $now);
+        $active_schedules = $this->db->get('cbt_jadwal')->result_array();
+        $schedule_ids = array_column($active_schedules, 'id_jadwal');
+
+        if (!empty($schedule_ids)) {
+            $this->db->where_in('id_jadwal', $schedule_ids);
+            $this->db->group_start();
+            $this->db->where('selesai', null);
+            $this->db->group_end();
+            $belum_ujian = $this->db->count_all_results('cbt_siswa');
+        }
+
+        $box = [
             [
-                'title'		=> 'Jadwal Pelajaran',
-                'icon'		=> 'ic_online.gif',
-                'link'		=> 'kbm/jadwal_pelajaran'
+                'box' => 'blue',
+                'total' => $total_guru,
+                'title' => 'Guru',
+                'url' => 'dataguru',
+                'icon' => 'chalkboard-teacher'
             ],
             [
-                'title'		=> 'Materi',
-                'icon'		=> 'ic_elearning.gif',
-                'link'		=> 'kbm/materi'
+                'box' => 'cyan',
+                'total' => $total_siswa,
+                'title' => 'Siswa',
+                'url' => 'datasiswa',
+                'icon' => 'users'
             ],
             [
-                'title'		=> 'Tugas',
-                'icon'		=> 'ic_questions.gif',
-                'link'		=> 'kbm/tugas'
+                'box' => 'teal',
+                'total' => $total_pengawas,
+                'title' => 'Pengawas',
+                'url' => 'datapanitia',
+                'icon' => 'user-tie'
             ],
-		/* ikasmedia */
-			/*[
-				'title'		=> 'Ujian / Ulangan',
-				'icon'		=> 'ic_question.png',
-				'link'		=> 'cbtsiswa/cbt'
-			],
+            [
+                'box' => 'fuchsia',
+                'total' => $total_active_exams,
+                'title' => 'Jadwal Aktif',
+                'url' => 'cbtjadwal',
+                'icon' => 'clock'
+            ],
+            [
+                'box' => 'maroon',
+                'total' => $belum_ujian,
+                'title' => 'Belum Ujian',
+                'url' => 'cbtstatus/belum_ujian',
+                'icon' => 'user-clock'
+            ]
+        ];
+        return json_decode(json_encode($box), FALSE);
+    }
+
+    public function menu_siswa_box()
+    {
+        $box = [
+            [
+                'title' => 'Jadwal Pelajaran',
+                'icon' => 'ic_online.gif',
+                'link' => 'kbm/jadwal_pelajaran'
+            ],
+            [
+                'title' => 'Materi',
+                'icon' => 'ic_elearning.gif',
+                'link' => 'kbm/materi'
+            ],
+            [
+                'title' => 'Tugas',
+                'icon' => 'ic_questions.gif',
+                'link' => 'kbm/tugas'
+            ],
+            /* ikasmedia */
+            /*[
+                'title'		=> 'Ujian / Ulangan',
+                'icon'		=> 'ic_question.png',
+                'link'		=> 'cbtsiswa/cbt'
+            ],
             */
             [
-                'title'		=> 'Nilai Hasil',
-                'icon'		=> 'ic_exam.gif',
-                'link'		=> 'kbm/hasil'
+                'title' => 'Nilai Hasil',
+                'icon' => 'ic_exam.gif',
+                'link' => 'kbm/hasil'
             ],
             [
-                'title'		=> 'Absensi',
-                'icon'		=> 'absensi.png',
-                'link'		=> 'kbm/kehadiran'
+                'title' => 'Absensi',
+                'icon' => 'absensi.png',
+                'link' => 'kbm/kehadiran'
             ],
             [
-                'title'		=> 'Catatan Guru',
-                'icon'		=> 'ic_teacher.png',
-                'link'		=> 'siswa/catatan'
+                'title' => 'Catatan Guru',
+                'icon' => 'ic_teacher.png',
+                'link' => 'siswa/catatan'
             ],
             [
-                'title'		=> 'Arsip',
-                'icon'		=> 'icon-arsip.gif',
-                'link'		=> 'kbm/arsip'
+                'title' => 'Arsip',
+                'icon' => 'icon-arsip.gif',
+                'link' => 'kbm/arsip'
             ],
             [
-                'title'		=> 'E-Perpus',
-                'icon'		=> 'ic_library.png',
-                'link'		=> 'siswa/perpus'
+                'title' => 'E-Perpus',
+                'icon' => 'ic_library.png',
+                'link' => 'siswa/perpus'
             ],
-		];
+        ];
         return json_decode(json_encode($box), FALSE);
-	}
+    }
 
-    public function index() {
-        $this->load->model('Master_model', 'master');
-        $this->load->model('Dashboard_model', 'dashboard');
-        $this->load->model('Elearning_model', 'elearning');
-        $this->load->model('Dropdown_model', 'dropdown');
-        $this->load->model('Cbt_model', 'cbt');
+    public function index()
+    {
+        //$this->load->model('Master_model', 'master');
+        //$this->load->model('Dashboard_model', 'dashboard');
+        //$this->load->model('Elearning_model', 'elearning');
+        //$this->load->model('Dropdown_model', 'dropdown');
+        //$this->load->model('Cbt_model', 'cbt');
 
         $setting = $this->dashboard->getSetting();
         $user = $this->auth->user();
 
         $data = [
-            'user'      => $user,
-            'judul'     => 'Beranda',
-            'subjudul'  => 'Halaman Utama',
-            'setting'   => $setting
+            'user' => $user,
+            'judul' => 'Beranda',
+            'subjudul' => 'Halaman Utama',
+            'setting' => $setting
         ];
 
         $tp = $this->dashboard->getTahunActive();
@@ -227,7 +311,8 @@ class Dashboard extends MY_Controller {
         $kelasKeys = array_keys($kelass);
 
         foreach ($jadk as $idKelas => $kelas) {
-            if (!in_array($idKelas, $kelasKeys)) continue;
+            if (!in_array($idKelas, $kelasKeys))
+                continue;
 
             if ($kelas->kbm_jam_selesai > $maxTime) {
                 $maxTime = $kelas->kbm_jam_selesai;
@@ -309,7 +394,8 @@ class Dashboard extends MY_Controller {
 
                 $timeSlots[] = ['start' => $formattedStart];
                 $startTime->add(new DateInterval('PT5M'));
-            } catch (Exception $e) {}
+            } catch (Exception $e) {
+            }
         }
 
         $data['times'] = $timeSlots;
@@ -339,7 +425,7 @@ class Dashboard extends MY_Controller {
 
         // Data umum untuk selain siswa
         $token = $this->cbt->getToken();
-        $data['token'] = $token ?? (object)['token' => '', 'auto' => '0', 'jarak' => '1', 'elapsed' => '00:00:00'];
+        $data['token'] = $token ?? (object) ['token' => '', 'auto' => '0', 'jarak' => '1', 'elapsed' => '00:00:00'];
         $data['ada_ujian'] = $this->cbt->getDataJadwalByTgl(date('Y-m-d'));
         $data['jadwal_kbm'] = $jadk ?: [];
         $data['mapels'] = $this->master->getAllMapel();
@@ -349,6 +435,7 @@ class Dashboard extends MY_Controller {
         if ($this->auth->is_admin()) {
             $data['info_box'] = $this->admin_box($setting, $tp->id_tp, $smt->id_smt);
             $data['ujian_box'] = $this->ujian_box($tp->id_tp, $smt->id_smt);
+            $data['is_profile_incomplete'] = false; // Prevent JS error
             $this->render_view(1, 'dashboard', $data);
             return;
         }
@@ -366,13 +453,14 @@ class Dashboard extends MY_Controller {
                 $data['session'] = $data['guru'] = $guru;
                 $data['info_box'] = $this->admin_box($setting, $tp->id_tp, $smt->id_smt);
                 $data['ujian_box'] = $this->ujian_box($tp->id_tp, $smt->id_smt);
+                $data['is_profile_incomplete'] = false; // Prevent JS error
                 $this->render_view(2, 'members/guru/dashboard', $data);
             }
             return;
         }
 
         // Role: Panitia
-        if ($this->auth->in_group('panitia')) {
+        if ($this->auth->in_group('panitia') || $this->session->userdata('role') == '4') {
             if (!$user) {
                 $this->load->view('disable_login', $data);
                 return;
@@ -380,15 +468,42 @@ class Dashboard extends MY_Controller {
             $panitia = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
             if (!$panitia) {
                 $this->load->view('disable_login', $data);
-                return;
             } else {
                 $data['panitia'] = $panitia;
-                $data['info_box'] = $this->admin_box($setting, $tp->id_tp, $smt->id_smt);
-                $data['ujian_box'] = $this->ujian_box($tp->id_tp, $smt->id_smt);
+                $data['is_profile_incomplete'] = false; // TODO: Define actual logic for incomplete profile
+                $data['info_box'] = $this->panitia_box($tp->id_tp, $smt->id_smt);
+                $data['ujian_box'] = []; // Ujian box data is now integrated into info_box or separate if you wish
                 $this->render_view(4, 'members/panitia/dashboard', $data);
             }
             return;
         }
+
+        show_error('Akses tidak diizinkan atau Role tidak dikenali. Session Role: ' . $this->session->userdata('role_name') . ' (ID: ' . $this->session->userdata('role') . ')', 403);
+    }
+
+    public function get_realtime_stats()
+    {
+        //$this->load->model('Master_model', 'master');
+        //$this->load->model('Dashboard_model', 'dashboard');
+        //$this->load->model('Cbt_model', 'cbt');
+        $tp = $this->dashboard->getTahunActive();
+        $smt = $this->dashboard->getSemesterActive();
+        $setting = $this->dashboard->getSetting();
+        session_write_close();
+
+        if ($tp && $smt && $setting) {
+            if ($this->auth->in_group('panitia') || $this->session->userdata('role') == '4') {
+                $data['info_box'] = $this->panitia_box($tp->id_tp, $smt->id_smt);
+                $data['ujian_box'] = [];
+            } else {
+                $data['info_box'] = $this->admin_box($setting, $tp->id_tp, $smt->id_smt);
+                $data['ujian_box'] = $this->ujian_box($tp->id_tp, $smt->id_smt);
+            }
+        } else {
+            $data['info_box'] = [];
+            $data['ujian_box'] = [];
+        }
+        $this->output_json($data);
     }
 
     public function get_status_siswa()
@@ -403,49 +518,31 @@ class Dashboard extends MY_Controller {
         $tp = $tp_smt->tp_active;
         $smt = $tp_smt->smt_active;
 
-        $this->db->select('a.id_jadwal, a.id_tp, a.id_smt, a.id_bank, a.id_jenis, a.tgl_mulai, a.tgl_selesai, a.status, a.jam_ke');
-        $this->db->select('b.bank_kode, b.bank_kelas, b.soal_agama, b.bank_guru_id');
-        $this->db->select('c.kode as mapel_kode, c.nama_mapel');
-        $this->db->from('cbt_jadwal a');
-        $this->db->join('cbt_bank_soal b', 'b.id_bank = a.id_bank', 'left');
-        $this->db->join('master_mapel c', 'c.id_mapel = b.bank_mapel_id', 'left');
-        $this->db->where('a.id_tp', $tp->id_tp);
-        $this->db->where('a.id_smt', $smt->id_smt);
-        $today = date('Y-m-d');
-        $this->db->where('a.tgl_mulai <=', $today);
-        $this->db->where('a.tgl_selesai >=', $today);
-        $jadwals_query = $this->db->get();
-        $jadwals = $jadwals_query->result();
+        session_write_close();
 
-        if ($jadwals && count($jadwals) > 0) {
-            foreach ($jadwals as $jdwl) {
-                // Unserialize bank_kelas
-                $bank_kelas_unserialized = $this->maybe_unserialize($jdwl->bank_kelas ?? '');
-                if (!is_array($bank_kelas_unserialized)) {
-                    $bank_kelas_unserialized = [];
-                }
-                
-                // Create bank object
-                $jdwl->bank = (object)[
-                    'bank_kode' => $jdwl->bank_kode ?? '',
-                    'bank_kelas' => array_map('strval', array_column($bank_kelas_unserialized, 'kelas_id')),
-                    'soal_agama' => $jdwl->soal_agama ?? '',
-                    'bank_guru_id' => $jdwl->bank_guru_id ?? '',
-                    'mapel' => (object)[
-                        'kode' => $jdwl->mapel_kode ?? '',
-                        'nama_mapel' => $jdwl->nama_mapel ?? ''
-                    ]
-                ];
-                
-                // Clean up duplicate properties
-                unset($jdwl->bank_kode);
-                unset($jdwl->bank_kelas);
-                unset($jdwl->soal_agama);
-                unset($jdwl->bank_guru_id);
-                unset($jdwl->mapel_kode);
-                unset($jdwl->nama_mapel);
+        $ruang_pengawas = null;
+        if ($this->auth->in_group('panitia') || $this->session->userdata('role') == '4') {
+            $user = $this->auth->user();
+            $panitia = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            if ($panitia && $panitia->jabatan === 'Pengawas' && !empty($panitia->ruang)) {
+                $ruang_pengawas = $panitia->ruang;
             }
         }
+
+        $jadwals = $this->cbt_jadwal_model
+            ->fields('id_jadwal,id_tp,id_smt,id_bank,id_jenis,tgl_mulai,tgl_selesai,status,jam_ke')
+            ->where('id_tp', $tp->id_tp)
+            ->where('id_smt', $smt->id_smt)
+            ->where('tgl_mulai <=', date('Y-m-d 23:59:59'))
+            ->where('tgl_selesai >=', date('Y-m-d'))
+            ->with_bank([
+                'fields' => 'bank_kode,bank_kelas,soal_agama',
+                'where' => ['id_tp' => $tp->id_tp, 'id_smt' => $smt->id_smt],
+                'with' => [
+                    ['relation' => 'mapel', 'fields' => 'kode,nama_mapel'],
+                ]
+            ])
+            ->get_all();
 
         $arrKelas = [];
         $result = [];
@@ -453,33 +550,18 @@ class Dashboard extends MY_Controller {
         $cbt_siswa = [];
 
         $data['today'] = date('Y-m-d');
-        
-        // Add error handling for model calls
-        try {
-            $data['pengawas'] = $this->cbt->getAllPengawas($tp->id_tp, $smt->id_smt, null, null);
-            if (!is_array($data['pengawas'])) {
-                $data['pengawas'] = [];
+        $data['pengawas'] = $this->cbt->getAllPengawas($tp->id_tp, $smt->id_smt, null, null);
+        $data['gurus'] = $this->dropdown->getAllGuru();
+        $data['kelases'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
+
+        $data['panitias'] = [];
+        if ($this->db->table_exists('master_panitia')) {
+            $panitias = $this->db->get('master_panitia')->result();
+            $panitia_map = [];
+            foreach ($panitias as $p) {
+                $panitia_map[$p->id_panitia] = $p->nama_panitia;
             }
-        } catch (Exception $e) {
-            $data['pengawas'] = [];
-        }
-        
-        try {
-            $data['gurus'] = $this->dropdown->getAllGuru();
-            if (!is_array($data['gurus'])) {
-                $data['gurus'] = [];
-            }
-        } catch (Exception $e) {
-            $data['gurus'] = [];
-        }
-        
-        try {
-            $data['kelases'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
-            if (!is_array($data['kelases'])) {
-                $data['kelases'] = [];
-            }
-        } catch (Exception $e) {
-            $data['kelases'] = [];
+            $data['panitias'] = $panitia_map;
         }
 
         if (!$jadwals) {
@@ -498,6 +580,11 @@ class Dashboard extends MY_Controller {
             if (isset($jadwal->bank)) {
                 $info = $jadwal->bank;
                 $kelasIds = $this->maybe_unserialize($info->bank_kelas ?? []);
+                if (!is_array($kelasIds)) {
+                    $kelasIds = json_decode(json_encode($kelasIds), true);
+                    if (!is_array($kelasIds))
+                        $kelasIds = [];
+                }
                 $info->bank_kelas = array_map('strval', array_column($kelasIds, 'kelas_id'));
 
                 foreach ($info->bank_kelas as $kls) {
@@ -509,25 +596,27 @@ class Dashboard extends MY_Controller {
             }
         }
 
-        if (empty($arrKelas)) {
-            $data['sesisiswa'] = $all_siswa;
-            $data['cbtsiswa'] = $cbt_siswa;
-            $data['ruangs'] = [];
-            $data['arr_kelas'] = $arrKelas;
-            $data['jadwals_ujian'] = $result;
-            $this->output_json($data);
-            return;
+        $ruangs = $this->cbt->getDistinctSesi($tp->id_tp, $smt->id_smt, $arrKelas);
+        if ($ruang_pengawas) {
+            $ruangs = array_filter($ruangs, function ($r) use ($ruang_pengawas) {
+                return $r->ruang_id == $ruang_pengawas;
+            });
         }
 
-        $ruangs = $this->cbt->getDistinctSesi($tp->id_tp, $smt->id_smt, $arrKelas);
-
-        $siswas = $this->sesisiswa_model
+        $siswas_query = $this->sesisiswa_model
             ->where('kelas_id', $arrKelas)
+            ->where(['tp_id' => $tp->id_tp, 'smt_id' => $smt->id_smt]);
+
+        if ($ruang_pengawas) {
+            $siswas_query = $siswas_query->where('ruang_id', $ruang_pengawas);
+        }
+
+        $siswas = $siswas_query
             ->with_siswa(['fields' => 'id_siswa,nama,nis,nisn,agama'])
             ->with_peserta()
-            ->with_kelas(['fields'=>'kode_kelas,nama_kelas'])
-            ->with_ruang(['fields'=>'kode_ruang,nama_ruang'])
-            ->with_sesi(['fields'=>'kode_sesi,nama_sesi'])
+            ->with_kelas(['fields' => 'kode_kelas,nama_kelas'])
+            ->with_ruang(['fields' => 'kode_ruang,nama_ruang'])
+            ->with_sesi(['fields' => 'kode_sesi,nama_sesi'])
             ->as_array()
             ->get_all();
 
@@ -567,7 +656,7 @@ class Dashboard extends MY_Controller {
         }
 
         $data['sesisiswa'] = $all_siswa;
-        $data['cbtsiswa'] = (array)$cbtsiswa;
+        $data['cbtsiswa'] = (array) $cbtsiswa;
         $data['ruangs'] = array_values($ruangs);
         $data['arr_kelas'] = $arrKelas;
         $data['jadwals_ujian'] = $result;
@@ -587,10 +676,10 @@ class Dashboard extends MY_Controller {
         $user = $this->auth->user();
         $setting = $this->dashboard->getSetting();
         $data = [
-            'user' 			=> $user,
-            'judul'			=> 'UPDATE',
-            'subjudul'		=> 'Update Aplikasi',
-            'setting'		=> $setting
+            'user' => $user,
+            'judul' => 'UPDATE',
+            'subjudul' => 'Update Aplikasi',
+            'setting' => $setting
         ];
         $tp = $this->dashboard->getTahunActive();
         $smt = $this->dashboard->getSemesterActive();
@@ -614,7 +703,8 @@ class Dashboard extends MY_Controller {
         }
     }
 
-    public function checkTokenJadwal() {
+    public function checkTokenJadwal()
+    {
         $this->load->model('Cbt_model', 'cbt');
         $ada_ujian = $this->cbt->getDataJadwalByTgl(date('Y-m-d'));
         $data['ada_ujian'] = count($ada_ujian);
@@ -624,7 +714,8 @@ class Dashboard extends MY_Controller {
         $this->output_json($data);
     }
 
-    public function gantiTahun() {
+    public function gantiTahun()
+    {
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Log_model', 'logging');
 
@@ -642,9 +733,9 @@ class Dashboard extends MY_Controller {
             }
 
             $update[] = array(
-                'id_tp'     => $id_tp,
-                'tahun' 	=> $tahun,
-                'active'    => $active
+                'id_tp' => $id_tp,
+                'tahun' => $tahun,
+                'active' => $active
             );
         }
 
@@ -655,7 +746,8 @@ class Dashboard extends MY_Controller {
         $this->output_json($data);
     }
 
-    public function gantiSemester() {
+    public function gantiSemester()
+    {
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Log_model', 'logging');
 
@@ -673,9 +765,9 @@ class Dashboard extends MY_Controller {
             }
 
             $update[] = array(
-                'id_smt'    => $id_smt,
-                'smt'       => $smt,
-                'active'    => $active
+                'id_smt' => $id_smt,
+                'smt' => $smt,
+                'active' => $active
             );
         }
 
@@ -686,9 +778,12 @@ class Dashboard extends MY_Controller {
         $this->output_json($data);
     }
 
-    public function getNotifikasi() {}
+    public function getNotifikasi()
+    {
+    }
 
-    public function getLog() {
+    public function getLog()
+    {
         $this->load->model('Log_model', 'logging');
 
         $page = $this->input->get('page', true);
@@ -696,6 +791,8 @@ class Dashboard extends MY_Controller {
         $filter = $this->input->get('filter', true);
         $offset = ($page - 1) * $limit;
         $search = $this->input->get('search', true);
+
+        session_write_close();
 
         $total = $this->logging->getCountLog($search, $filter);
         $logs = $this->logging->getLog($offset, $limit, $search, $filter);
@@ -723,26 +820,27 @@ class Dashboard extends MY_Controller {
                 }
             }
         }
-        if (count($ids_siswa)>0) {
+        if (count($ids_siswa) > 0) {
             $allSiswa = $this->auth->allSiswa($ids_siswa);
         }
-        if (count($ids_guru)>0) {
+        if (count($ids_guru) > 0) {
             $allGuru = $this->auth->allGuru($ids_guru);
         }
-        if (count($admins)>0) {
+        if (count($admins) > 0) {
             $allAdmin = $this->auth->all_profiles($admins);
         }
         $result = [
-            'siswa'=>$allSiswa ?? [],
-            'guru'=>$allGuru ?? [],
-            'logs'=>array_values($logs),
-            'admins'=>$allAdmin ?? [],
+            'siswa' => $allSiswa ?? [],
+            'guru' => $allGuru ?? [],
+            'logs' => array_values($logs),
+            'admins' => $allAdmin ?? [],
             'total' => $total
         ];
         $this->output_json($result);
     }
 
-    public function hapusLog($id_log) {
+    public function hapusLog($id_log)
+    {
         $this->db->trans_start();
         if ($id_log == 'all') {
             if ($this->db->empty_table('log')) {
@@ -762,24 +860,29 @@ class Dashboard extends MY_Controller {
         $this->output_json($deleted);
     }
 
-    public function getLogSiswa($limit) {
+    public function getLogSiswa($limit)
+    {
+        session_write_close();
         $this->load->model('Log_model', 'logging');
         $this->output_json($this->logging->loadAktifitasSiswa($limit));
     }
 
-    public function getPengumuman($for) {
+    public function getPengumuman($for)
+    {
         $this->load->model('Dashboard_model', 'dashboard');
         $this->output_json($this->dashboard->loadPengumuman($for));
     }
 
-    public function getJadwalHariIni($id_kelas, $id_hari) {
+    public function getJadwalHariIni($id_kelas, $id_hari)
+    {
         $this->load->model('Dashboard_model', 'dashboard');
         $tp = $this->dashboard->getTahunActive();
         $smt = $this->dashboard->getSemesterActive();
         $this->output_json($this->dashboard->loadJadwalHariIni($tp->id_tp, $smt->id_smt, $id_kelas, $id_hari));
     }
 
-    public function getJadwalKbm($id_kelas) {
+    public function getJadwalKbm($id_kelas)
+    {
         $this->load->model('Dashboard_model', 'dashboard');
         $tp = $this->dashboard->getTahunActive();
         $smt = $this->dashboard->getSemesterActive();
@@ -793,20 +896,62 @@ class Dashboard extends MY_Controller {
         $this->output_json(array('jadwal' => $jadwal, 'istirahat' => $istirahat));
     }
 
-    public function get_realtime_stats() {
-        $this->load->model('Dashboard_model', 'dashboard');
-        $this->load->model('Master_model', 'master');
-        
-        $setting = $this->dashboard->getSetting();
-        $tp = $this->dashboard->getTahunActive();
-        $smt = $this->dashboard->getSemesterActive();
+    /**
+     * Get sync status for dashboard widget (admin only)
+     */
+    public function get_sync_status()
+    {
+        if (!$this->auth->is_admin()) {
+            $this->output_json(['status' => 'error', 'message' => 'Unauthorized']);
+            return;
+        }
 
-        $info_box = $this->admin_box($setting, $tp->id_tp, $smt->id_smt);
-        $ujian_box = $this->ujian_box($tp->id_tp, $smt->id_smt);
+        // Check if sync tables exist
+        if (!$this->db->table_exists('sync_config')) {
+            $this->output_json([
+                'enabled' => false,
+                'message' => 'Sync belum dikonfigurasi'
+            ]);
+            return;
+        }
 
-        $this->output_json([
-            'info_box' => $info_box,
-            'ujian_box' => $ujian_box
-        ]);
+        $this->load->model('Sync_model');
+
+        $config = $this->Sync_model->get_config();
+
+        if (!$config) {
+            $this->output_json([
+                'enabled' => false,
+                'message' => 'Sync belum dikonfigurasi'
+            ]);
+            return;
+        }
+
+        $status = $this->Sync_model->get_sync_status();
+
+        $data = [
+            'enabled' => true,
+            'server_type' => $config->server_type,
+            'is_pusat' => $config->server_type === 'pusat',
+            'auto_sync' => (bool) $config->auto_sync,
+            'last_download' => $config->last_sync_download,
+            'last_upload' => $config->last_sync_upload,
+            'pending_upload' => $status['pending_upload'] ?? 0,
+            'queue_count' => $status['queue_count'] ?? 0,
+            'connection' => null
+        ];
+
+        // Test connection for local servers
+        if ($config->server_type === 'lokal' && !empty($config->pusat_url)) {
+            $connection = $this->Sync_model->test_connection();
+            $data['connection'] = $connection['success'] ?? false;
+        }
+
+        // For pusat server, count registered schools
+        if ($config->server_type === 'pusat') {
+            $data['school_count'] = $this->Sync_model->count_schools();
+        }
+
+        $this->output_json($data);
     }
 }

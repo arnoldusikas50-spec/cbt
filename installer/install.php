@@ -1,6 +1,7 @@
 <?php
 // Aktifkan semua laporan kesalahan selama pengembangan, ubah ke 0 dalam produksi
 error_reporting(E_ALL);
+ini_set('display_errors', 0);
 require_once('taskCoreClass.php');
 require_once('databaseLibrary.php');
 
@@ -25,8 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $message = $core->show_message(2, 'info', "Anda akan menggunakan database yang sudah ada, status tabel pada database kosong.", $db_is_exist['data']);
             }
-        }
-        else {
+        } else {
             $message = $core->show_message(1, 'info', 'Silahkan isi semua parameter yang sesuai.');
         }
     } else {

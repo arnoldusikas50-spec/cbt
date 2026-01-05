@@ -7,7 +7,7 @@ class Cbtnomorpeserta extends MY_Controller {
 		parent::__construct();
 		if (!$this->auth->logged_in()) {
 			redirect('auth');
-        } else if (!$this->auth->is_admin() && !$this->auth->in_group('panitia') && !$this->auth->in_group('guru')) {
+        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru')) {
             show_error('Hanya Administrator dan guru yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
 		}
 		$this->load->library(['datatables', 'form_validation']); // Load Library Ignited-Datatables
@@ -74,7 +74,7 @@ class Cbtnomorpeserta extends MY_Controller {
         $smt = $tp_smt->smt_active;
 
         $ids_nomor = [];
-		foreach ($input as $in) {
+        foreach ($input as $in) {
             $ids_nomor[] = $in->id . $tp->id_tp . $smt->id_smt;
 		}
 
@@ -104,18 +104,20 @@ class Cbtnomorpeserta extends MY_Controller {
             }
         }
 
-
         if (count($insert)>0) {
             $this->db->insert_batch('cbt_nomor_peserta', $insert);
         }
         if (count($update)>0) {
             $this->db->update_batch('cbt_nomor_peserta', $update, 'id_nomor');
         }
+        $duplikat = $this->cbt->hapus_duplikat_nomor_peserta();
+
         $this->logging->saveLog($this->LOG_TYPE->ADD, 'Membuat nomor peserta ujian');
         $res['status'] = true;
         $res['input'] = $insert;
         $res['insert'] = $insert;
         $res['update'] = $update;
+        $res['duplikat'] = $duplikat;
 		$this->output_json($res);
 	}
 
@@ -181,4 +183,3 @@ class Cbtnomorpeserta extends MY_Controller {
 	}
 
 }
-

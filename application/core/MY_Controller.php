@@ -1,7 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class MY_Controller extends CI_Controller {
+class MY_Controller extends CI_Controller
+{
 
     protected $LOG_TYPE = [];
 
@@ -37,23 +38,6 @@ class MY_Controller extends CI_Controller {
         parent::__construct();
         $this->load->database();
 
-        // Set security headers hanya untuk production, bukan localhost
-        $host = $_SERVER['HTTP_HOST'] ?? '';
-        $is_localhost = ($host == 'localhost' || 
-                         strpos($host, '127.0.0.1') !== false || 
-                         strpos($host, '192.168.') !== false ||
-                         strpos($host, '.local') !== false ||
-                         strpos($host, '.dev') !== false);
-
-        if (!$is_localhost) {
-            // Hanya untuk production environment
-            $this->output->set_header('Content-Security-Policy: upgrade-insecure-requests');
-            $this->output->set_header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
-            $this->output->set_header('X-Content-Type-Options: nosniff');
-            $this->output->set_header('X-Frame-Options: SAMEORIGIN');
-            $this->output->set_header('X-XSS-Protection: 1; mode=block');
-        }
-
         $sessionExist = $this->config->item('sess_driver') != 'database' || ($this->config->item('sess_driver') == 'database' && $this->db->table_exists('ci_sessions'));
         $url = $this->uri->segment(1);
         if ($url !== 'reset_password' && $url !== 'migrate') {
@@ -74,15 +58,15 @@ class MY_Controller extends CI_Controller {
         if ($bulan_sekarang >= 7) {
             // Semester Ganjil dimulai Juli
             $tahun_ajaran = $tahun_sekarang . '/' . ($tahun_sekarang + 1);
-            $semester     = '1'; // atau 'Ganjil'
+            $semester = '1'; // atau 'Ganjil'
         } else {
             // Semester Genap dimulai Januari
             $tahun_ajaran = ($tahun_sekarang - 1) . '/' . $tahun_sekarang;
-            $semester     = '2'; // atau 'Genap'
+            $semester = '2'; // atau 'Genap'
         }
 
         $this->default_data['thn_sekarang'] = $tahun_sekarang;
-        $this->default_data['tp_sekarang']  = $tahun_ajaran;
+        $this->default_data['tp_sekarang'] = $tahun_ajaran;
         $this->default_data['smt_sekarang'] = $semester;
 
         $this->LOG_TYPE = (object) [
@@ -101,10 +85,11 @@ class MY_Controller extends CI_Controller {
         ];
     }
 
-    protected function render_view($role, $main_view, $data = []) {
+    protected function render_view($role, $main_view, $data = [])
+    {
         $data = array_merge($this->default_data, $data);
 
-        if ( $role == 1) {
+        if ($role == 1) {
             $this->load->view("_templates/dashboard/_header", $data);
             $this->load->view($main_view);
             $this->load->view("_templates/dashboard/_footer");
@@ -125,51 +110,42 @@ class MY_Controller extends CI_Controller {
         }
     }
 
-    public function submit($data){
-        foreach ($data as $key=>$val) {
+    public function submit($data)
+    {
+        foreach ($data as $key => $val) {
             $data[$key] = $this->security->xss_clean($val);
         }
         return $data;
     }
 
 
-    protected function output_json($data, $encode = true) {
-        if (ob_get_length()) ob_end_clean();
+    protected function output_json($data, $encode = true)
+    {
+        if (ob_get_length())
+            ob_end_clean();
         header_remove();
 
-        if ($encode) $data = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR); //json_encode($data);
+        if ($encode)
+            $data = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR); //json_encode($data);
         $this->output->set_content_type('application/json')->set_output($data);
     }
 
-	protected function respond_json($status, $message = '', $data = null, $errors = null, $http_code = 200)
-	{
-		$response = [
-			'status' => (bool) $status,
-			'message' => $message,
-			'errors' => $errors,
-			'data' => $data
-		];
-		if (ob_get_length()) ob_end_clean();
-		header_remove();
-		$this->output
-			->set_status_header($http_code)
-			->set_content_type('application/json')
-			->set_output(json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR));
-	}
-
-    public function output_json_stream($data) {
+    public function output_json_stream($data)
+    {
         $this->output->set_content_type('application/json');
         echo '[';
         $count = count($data);
         foreach ($data as $i => $row) {
             echo json_encode($row, JSON_UNESCAPED_UNICODE);
-            if ($i < $count - 1) echo ',';
+            if ($i < $count - 1)
+                echo ',';
             flush(); // kirim sebagian data ke browser
         }
         echo ']';
     }
 
-    protected function buildData($data) {
+    protected function buildData($data)
+    {
         $tp_smt = $this->getTpSmt();
         $tp = $tp_smt->tp_active;
         $smt = $tp_smt->smt_active;
@@ -185,14 +161,14 @@ class MY_Controller extends CI_Controller {
     {
         $this->load->model('Tp_model', 'tp');
         $this->load->model('Smt_model', 'smt');
-        $tps = (array)$this->tp->get_all();
-        $smts = (array)$this->smt->get_all();
+        $tps = (array) $this->tp->get_all();
+        $smts = (array) $this->smt->get_all();
         $data['tp'] = $tps;
         $data['smt'] = $smts;
-        $tp_fil = array_filter($tps, function($item) {
+        $tp_fil = array_filter($tps, function ($item) {
             return $item->active == '1';
         });
-        $smt_fil = array_filter($smts, function($item) {
+        $smt_fil = array_filter($smts, function ($item) {
             return $item->active == '1';
         });
         $tp = reset($tp_fil);
@@ -200,7 +176,7 @@ class MY_Controller extends CI_Controller {
 
         $data['tp_active'] = $tp;
         $data['smt_active'] = $smt;
-        return (object)$data;
+        return (object) $data;
     }
 
     private function arrToUpper($val)
@@ -222,11 +198,13 @@ class MY_Controller extends CI_Controller {
         $this->config->load('migration');
         $latest = $this->config->item('migration_version');
         $uptodate = ['latest' => $latest];
-        if ($this->db->table_exists('migrations') &&
-            $this->db->field_exists('version', 'migrations')) {
+        if (
+            $this->db->table_exists('migrations') &&
+            $this->db->field_exists('version', 'migrations')
+        ) {
             $versi = $this->db->get('migrations')->first_row();
-            $uptodate['current'] = (int)$versi->version;
-            $uptodate['is_latest'] = (int)$versi->version >= $latest;
+            $uptodate['current'] = (int) $versi->version;
+            $uptodate['is_latest'] = (int) $versi->version >= $latest;
         } else {
             $uptodate['current'] = 0;
             $uptodate['is_latest'] = false;
@@ -234,49 +212,50 @@ class MY_Controller extends CI_Controller {
         return json_decode(json_encode($uptodate));
     }
 
-    protected function is_serialized( $data, $strict = true ) {
+    protected function is_serialized($data, $strict = true)
+    {
         // If it isn't a string, it isn't serialized.
-        if ( ! is_string( $data ) ) {
+        if (!is_string($data)) {
             return false;
         }
-        $data = trim( $data );
-        if ( 'N;' == $data ) {
+        $data = trim($data);
+        if ('N;' == $data) {
             return true;
         }
-        if ( strlen( $data ) < 4 ) {
+        if (strlen($data) < 4) {
             return false;
         }
-        if ( ':' !== $data[1] ) {
+        if (':' !== $data[1]) {
             return false;
         }
-        if ( $strict ) {
-            $lastc = substr( $data, -1 );
-            if ( ';' !== $lastc && '}' !== $lastc ) {
+        if ($strict) {
+            $lastc = substr($data, -1);
+            if (';' !== $lastc && '}' !== $lastc) {
                 return false;
             }
         } else {
-            $semicolon = strpos( $data, ';' );
-            $brace     = strpos( $data, '}' );
+            $semicolon = strpos($data, ';');
+            $brace = strpos($data, '}');
             // Either ; or } must exist.
-            if ( false == $semicolon && false == $brace ) {
+            if (false == $semicolon && false == $brace) {
                 return false;
             }
             // But neither must be in the first X characters.
-            if ( false !== $semicolon && $semicolon < 3 ) {
+            if (false !== $semicolon && $semicolon < 3) {
                 return false;
             }
-            if ( false !== $brace && $brace < 4 ) {
+            if (false !== $brace && $brace < 4) {
                 return false;
             }
         }
         $token = $data[0];
-        switch ( $token ) {
+        switch ($token) {
             case 's':
-                if ( $strict ) {
-                    if ( '"' !== $data[strlen($data) - 2]) {
+                if ($strict) {
+                    if ('"' !== $data[strlen($data) - 2]) {
                         return false;
                     }
-                } elseif ( false == strpos( $data, '"' ) ) {
+                } elseif (false == strpos($data, '"')) {
                     return false;
                     //} elseif ( ! str_contains( $data, '"' ) ) {
                     //    return false;
@@ -285,12 +264,12 @@ class MY_Controller extends CI_Controller {
             case 'a':
             case 'O':
             case 'E':
-                return (bool) preg_match( "/^{$token}:[0-9]+:/s", $data );
+                return (bool) preg_match("/^{$token}:[0-9]+:/s", $data);
             case 'b':
             case 'i':
             case 'd':
                 $end = $strict ? '$' : '';
-                return (bool) preg_match( "/^{$token}:[0-9.E+-]+;$end/", $data );
+                return (bool) preg_match("/^{$token}:[0-9.E+-]+;$end/", $data);
         }
         return false;
     }
@@ -298,10 +277,11 @@ class MY_Controller extends CI_Controller {
     /**
      * @throws JsonException
      */
-    protected function maybe_unserialize($data ) {
+    protected function maybe_unserialize($data)
+    {
         // Don't attempt to unserialize data that wasn't serialized going in.
-        if ( $this->is_serialized( $data ) ) {
-            $result = @unserialize( trim( $data ));
+        if ($this->is_serialized($data)) {
+            $result = @unserialize(trim($data));
             return json_decode(json_encode($result));
         }
 
@@ -330,11 +310,13 @@ class MY_Controller extends CI_Controller {
         return $data;
     }
 
-    private function getToken() {
+    private function getToken()
+    {
         return $this->db->get('cbt_token')->row();
     }
 
-    protected function getValidToken($ada_ujian) {
+    protected function getValidToken($ada_ujian)
+    {
         $token = $this->getToken();
         if (!$token) {
             $data['token'] = '';
@@ -364,11 +346,12 @@ class MY_Controller extends CI_Controller {
         return $token;
     }
 
-    protected function createNewToken() {
+    protected function createNewToken()
+    {
         $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $input_length = strlen($chars);
         $new_token = '';
-        for($i = 0; $i < 6; $i++) {
+        for ($i = 0; $i < 6; $i++) {
             $random_character = $chars[mt_rand(0, $input_length - 1)];
             $new_token .= $random_character;
         }
@@ -517,7 +500,8 @@ class MY_Controller extends CI_Controller {
     }
     */
 
-    private function simpanNilai($arr_siswa) {
+    protected function simpanNilai($arr_siswa)
+    {
         $nilai = [];
 
         foreach ($arr_siswa as $cbt) {
@@ -530,28 +514,42 @@ class MY_Controller extends CI_Controller {
                 'id_siswa' => $input->id_siswa,
                 'id_jadwal' => $id_jadwal,
                 'dikoreksi' => '0',
-                'pg_benar'  => $input->pg_benar ?? 0,
-                'pg_nilai'  => $input->pg_nilai ?? 0,
+                'pg_benar' => $input->pg_benar ?? 0,
+                'pg_nilai' => $input->pg_nilai ?? 0,
                 'kompleks_nilai' => 0,
                 'jodohkan_nilai' => 0,
-                'isian_nilai'    => 0,
-                'essai_nilai'    => 0
+                'isian_nilai' => 0,
+                'essai_nilai' => 0,
+                'urutan_nilai' => 0,
+                'cloze_nilai' => 0
             ];
 
             $skorSemua = [];
-            foreach (['skor_pg','skor_kompleks','skor_jodohkan','skor_isian','skor_essai'] as $tipe) {
-                if (!empty($input->{$tipe}['detail'])) {
-                    $skorSemua = array_merge($skorSemua, $input->{$tipe}['detail']);
+            foreach (['skor_pg', 'skor_kompleks', 'skor_jodohkan', 'skor_isian', 'skor_essai', 'skor_urutan', 'skor_cloze'] as $tipe) {
+                // Safely get the property
+                $scoreData = $input->{$tipe} ?? null;
+                $details = [];
+
+                if (is_array($scoreData) && isset($scoreData['detail'])) {
+                    $details = $scoreData['detail'];
+                } elseif (is_object($scoreData) && isset($scoreData->detail)) {
+                    $details = $scoreData->detail;
+                }
+
+                if (!empty($details)) {
+                    $skorSemua = array_merge($skorSemua, (array) $details);
                 }
             }
 
             $nilai_detail = [];
             foreach ($skorSemua as $detail) {
-                if (!isset($detail->id_soal)) continue;
+                $detail = (object) $detail;
+                if (!isset($detail->id_soal))
+                    continue;
                 $nilai_detail[] = [
-                    'id_bank'   => $id_bank,
+                    'id_bank' => $id_bank,
                     'id_jadwal' => $id_jadwal,
-                    'id_soal'   => $detail->id_soal,
+                    'id_soal' => $detail->id_soal,
                     'nilai_koreksi' => 0,
                     'nilai_otomatis' => 0,
                     'point_soal' => $detail->point_soal
@@ -560,8 +558,8 @@ class MY_Controller extends CI_Controller {
 
             $nilai[$id_cbt_siswa] = [
                 'id_cbt_siswa' => $id_cbt_siswa,
-                'nilai_input'  => json_encode($nilai_in),
-                'nilai'        => json_encode($nilai_detail)
+                'nilai_input' => json_encode($nilai_in),
+                'nilai' => json_encode($nilai_detail)
             ];
         }
 
@@ -595,55 +593,54 @@ class MY_Controller extends CI_Controller {
         }
 
         $jadwal = $this->cbt_jadwal_model
-            ->fields('id_jadwal,id_tp,id_smt,id_bank,id_jenis,tgl_mulai,tgl_selesai,durasi_ujian,pelanggaran,acak_soal,acak_opsi,hasil_tampil,token,status,ulang,reset_login,rekap,jam_ke,jarak,pelanggaran')
-            ->where(['id_jadwal'=>$id_jadwal])
+            ->fields('id_jadwal,id_tp,id_smt,id_bank,id_jenis,tgl_mulai,tgl_selesai,durasi_ujian,pelanggaran,acak_soal,acak_opsi,hasil_tampil,token,status,ulang,reset_login,rekap,jam_ke,jarak,pelanggaran,katrol_max,katrol_min')
+            ->where(['id_jadwal' => $id_jadwal])
             ->with_jenis()
             ->with_sesisiswa([
                 'fields' => 'siswa_id,kelas_id,ruang_id,sesi_id,tp_id,smt_id',
-                'where'=> $sesisiswa_where,
+                'where' => $sesisiswa_where,
                 'with' => [
-                    ['relation'=>'siswa', 'fields'=>'id_siswa,nama,nis,agama'],
-                    ['relation'=>'peserta', 'fields'=>'nomor_peserta'],
-                    ['relation'=>'kelas', 'fields'=>'kode_kelas,nama_kelas'],
-                    ['relation'=>'ruang', 'fields'=>'kode_ruang,nama_ruang'],
-                    ['relation'=>'sesi', 'fields'=>'kode_sesi,nama_sesi'],
+                    ['relation' => 'siswa', 'fields' => 'id_siswa,nama,nis,agama'],
+                    ['relation' => 'peserta', 'fields' => 'nomor_peserta'],
+                    ['relation' => 'kelas', 'fields' => 'kode_kelas,nama_kelas'],
+                    ['relation' => 'ruang', 'fields' => 'kode_ruang,nama_ruang'],
+                    ['relation' => 'sesi', 'fields' => 'kode_sesi,nama_sesi'],
                 ]
             ])
             ->with_bank([
-                'fields'=> 'bank_kode,bank_kelas,opsi,jml_soal,tampil_pg,bobot_pg,jml_kompleks,tampil_kompleks,bobot_kompleks,jml_jodohkan,tampil_jodohkan,bobot_jodohkan,jml_isian,tampil_isian,bobot_isian,jml_esai,tampil_esai,bobot_esai,id_tp,id_smt,soal_agama',
-                'where'=> ['id_tp' => $id_tp, 'id_smt'=>$id_smt],
+                'fields' => 'bank_kode,bank_kelas,opsi,jml_soal,tampil_pg,bobot_pg,jml_kompleks,tampil_kompleks,bobot_kompleks,jml_jodohkan,tampil_jodohkan,bobot_jodohkan,jml_isian,tampil_isian,bobot_isian,jml_esai,tampil_esai,bobot_esai,id_tp,id_smt,soal_agama,tampil_urutan,bobot_urutan,tampil_cloze,bobot_cloze',
+                'where' => ['id_tp' => $id_tp, 'id_smt' => $id_smt],
                 'with' => [
                     [
                         'relation' => 'soal',
-                        'fields'=>'id_soal, bank_id, mapel_id, jenis, nomor_soal, soal, opsi_a, opsi_b, opsi_c, opsi_d, opsi_e, jawaban, tampilkan',
-                        'where'=> ['tampilkan'=>'1']
+                        'fields' => 'id_soal, bank_id, mapel_id, jenis, nomor_soal, soal, opsi_a, opsi_b, opsi_c, opsi_d, opsi_e, jawaban, tampilkan',
+                        'where' => ['tampilkan' => '1']
                     ],
-                    ['relation' => 'mapel', 'fields'=>'kode,nama_mapel', 'where'=>[]],
-                    ['relation' => 'guru', 'fields'=>'kode_guru,nama_guru', 'where'=>[]],
+                    ['relation' => 'mapel', 'fields' => 'kode,nama_mapel', 'where' => []],
+                    ['relation' => 'guru', 'fields' => 'kode_guru,nama_guru', 'where' => []],
                 ]
             ])
-            ->as_array()
             ->get();
 
-        if (isset($jadwal['bank'])) {
-            $info = $jadwal['bank'];
+        if (isset($jadwal->bank)) {
+            $info = $jadwal->bank;
             foreach ($info->soal as $soal) {
                 $soal->opsi_a = $this->maybe_unserialize($soal->opsi_a ?? '');
                 $soal->jawaban = $this->maybe_unserialize($soal->jawaban ?? '');
             }
-            $soals = (array)$info->soal;
+            $soals = (array) $info->soal;
             $info->soal = $soals;
 
-            if ($info->bank_kelas[0] == '[' || $info->bank_kelas[0] == '{') {
+            if (!empty($info->bank_kelas) && is_string($info->bank_kelas) && ($info->bank_kelas[0] == '[' || $info->bank_kelas[0] == '{')) {
                 $info->bank_kelas = $this->maybe_unserialize($info->bank_kelas);
             } else {
-                $kelasIds = $this->maybe_unserialize($info->bank_kelas);
-                $info->bank_kelas = array_column($kelasIds, 'kelas_id');
+                $kelasIds = $this->maybe_unserialize($info->bank_kelas ?? []);
+                $info->bank_kelas = array_column((array) $kelasIds, 'kelas_id');
             }
 
             // OPTIMASI: Ambil ID siswa yang relevan dari hasil filter jadwal.
             if ($type_query == 1) {
-                $siswa_ids = array_column($jadwal['sesisiswa'] ?? [], 'siswa_id');
+                $siswa_ids = array_column((array) ($jadwal->sesisiswa ?? []), 'siswa_id');
             } else {
                 $siswa_ids = [$query];
             }
@@ -651,7 +648,7 @@ class MY_Controller extends CI_Controller {
             if (empty($siswa_ids)) {
                 // Jika tidak ada siswa yang cocok dengan filter, keluar lebih awal
                 unset($info->soal);
-                return (object)$jadwal;
+                return (object) $jadwal;
             }
 
             $cbtsiswa = $this->cbt_siswa_model
@@ -663,7 +660,7 @@ class MY_Controller extends CI_Controller {
                 ->where('id_siswa', $siswa_ids)
                 ->get_all();
 
-            if ($cbtsiswa && isset($jadwal['sesisiswa'])) {
+            if ($cbtsiswa && isset($jadwal->sesisiswa)) {
                 $map_cbt = [];
                 $map_pelanggaran = [];
                 foreach ($cbtsiswa as $cbt) {
@@ -675,10 +672,10 @@ class MY_Controller extends CI_Controller {
                     $map_log[$log->id_siswa][] = $log;
                 }
                 $arr_cbt_empty = [];
-                foreach ($jadwal['sesisiswa'] as $idx=>$siswa) {
+                foreach ($jadwal->sesisiswa as $idx => $siswa) {
                     if ($info->soal_agama != '-' && $info->soal_agama != '0' && $info->soal_agama !== $siswa->siswa->agama) {
-                        unset($jadwal['sesisiswa'][$idx]);
-                        $siswa->cbtsiswa = (object)[];
+                        unset($jadwal->sesisiswa[$idx]);
+                        $siswa->cbtsiswa = (object) [];
                         $siswa->log = [];
                     } else {
                         if (isset($map_cbt[$siswa->siswa_id])) {
@@ -686,35 +683,61 @@ class MY_Controller extends CI_Controller {
                                 $arr_cbt_empty[] = $map_cbt[$siswa->siswa_id]->id_cbt_siswa;
                             }
                         }
-                        $siswa->cbtsiswa = $map_cbt[$siswa->siswa_id] ?? (object)[];
+                        $siswa->cbtsiswa = $map_cbt[$siswa->siswa_id] ?? (object) [];
                         $siswa->log = $map_log[$siswa->siswa_id] ?? [];
-                        $siswa->pelanggaran = $map_pelanggaran[$siswa->siswa_id] ?? (object)[];
+                        $siswa->pelanggaran = $map_pelanggaran[$siswa->siswa_id] ?? (object) [];
                     }
                 }
-                $adaNilaiKosong = count($arr_cbt_empty) >0;
-                $jadwal['sesisiswa'] = array_values($jadwal['sesisiswa']);
-                $this->createPointSiswa($jadwal['sesisiswa'], $info, $adaNilaiKosong);
+                $adaNilaiKosong = count($arr_cbt_empty) > 0;
+                $jadwal->sesisiswa = array_values((array) $jadwal->sesisiswa);
+                $this->createPointSiswa($jadwal->sesisiswa, $info, $adaNilaiKosong);
 
                 if ($adaNilaiKosong) {
-                    $arr_siswa = array_filter($jadwal['sesisiswa'], function ($cbt) use ($arr_cbt_empty) {
+                    $arr_siswa = array_filter($jadwal->sesisiswa, function ($cbt) use ($arr_cbt_empty) {
                         return in_array($cbt->id_cbt_siswa, $arr_cbt_empty);
                     });
                     $resultSiampan = $this->simpanNilai($arr_siswa);
-                    $jadwal['ada_nilai_kosong'] = $resultSiampan;
-                    $this->db->update_batch('cbt_siswa', $resultSiampan, 'id_cbt_siswa');
+                    $jadwal->ada_nilai_kosong = $resultSiampan;
+
+                    $db_debug = $this->db->db_debug;
+                    $this->db->db_debug = FALSE;
+
+                    // Ensure indexed array and catch errors
+                    if (!$this->db->update_batch('cbt_siswa', array_values($resultSiampan), 'id_cbt_siswa')) {
+                        $error = $this->db->error();
+                        $this->db->db_debug = $db_debug;
+                        throw new \Exception("DB Update Error " . $error['code'] . ": " . $error['message']);
+                    }
+                    $this->db->db_debug = $db_debug;
                 }
-                $jadwal['type_query'] = $type_query;
+                $jadwal->type_query = $type_query;
                 if ($koreksi) {
-                    $jadwal['soal_pg'] = array_values(array_filter($soals, static function($val) {return ($val->jenis == '1' && $val->tampilkan == '1');}));
-                    $jadwal['soal_kompleks'] = array_values(array_filter($soals, static function($val) {return ($val->jenis == '2' && $val->tampilkan == '1');}));
-                    $jadwal['soal_jodohkan'] = array_values(array_filter($soals, static function($val) {return ($val->jenis == '3' && $val->tampilkan == '1');}));
-                    $jadwal['soal_isian'] = array_values(array_filter($soals, static function($val) {return ($val->jenis == '4' && $val->tampilkan == '1');}));
-                    $jadwal['soal_esai'] = array_values(array_filter($soals, static function($val) {return ($val->jenis == '5' && $val->tampilkan == '1');}));
+                    $jadwal->soal_pg = array_values(array_filter($soals, static function ($val) {
+                        return ($val->jenis == '1' && $val->tampilkan == '1');
+                    }));
+                    $jadwal->soal_kompleks = array_values(array_filter($soals, static function ($val) {
+                        return ($val->jenis == '2' && $val->tampilkan == '1');
+                    }));
+                    $jadwal->soal_jodohkan = array_values(array_filter($soals, static function ($val) {
+                        return ($val->jenis == '3' && $val->tampilkan == '1');
+                    }));
+                    $jadwal->soal_isian = array_values(array_filter($soals, static function ($val) {
+                        return ($val->jenis == '4' && $val->tampilkan == '1');
+                    }));
+                    $jadwal->soal_esai = array_values(array_filter($soals, static function ($val) {
+                        return ($val->jenis == '5' && $val->tampilkan == '1');
+                    }));
+                    $jadwal->soal_urutan = array_values(array_filter($soals, static function ($val) {
+                        return ($val->jenis == '6' && $val->tampilkan == '1');
+                    }));
+                    $jadwal->soal_cloze = array_values(array_filter($soals, static function ($val) {
+                        return ($val->jenis == '7' && $val->tampilkan == '1');
+                    }));
                 }
             }
             unset($info->soal);
         }
-        return (object)$jadwal;
+        return (object) $jadwal;
     }
 
     private function createMenit($durasi)
@@ -724,7 +747,7 @@ class MY_Controller extends CI_Controller {
         }
 
         $parts = explode(":", $durasi);
-        $jam   = isset($parts[0]) ? (int) $parts[0] : 0;
+        $jam = isset($parts[0]) ? (int) $parts[0] : 0;
         $menit = isset($parts[1]) ? (int) $parts[1] : 0;
         $detik = isset($parts[2]) ? (int) $parts[2] : 0;
 
@@ -732,15 +755,23 @@ class MY_Controller extends CI_Controller {
         return round($totalMenit, 2);
     }
 
-    private function createPointSiswa($jadwal, $info, $adaNilaiKosong) {
+    private function createPointSiswa($jadwal, $info, $adaNilaiKosong)
+    {
         $bobot = $this->calculateWeights($info);
         $soals = $info->soal;
         foreach ($jadwal as $status) {
-            $status->cbtsiswa->jawaban = $this->maybe_unserialize($status->cbtsiswa->jawaban ?? '[]', false, 512, JSON_THROW_ON_ERROR) ?? [];
-            $status->cbtsiswa->nilai = $this->maybe_unserialize($status->cbtsiswa->nilai ?? '[]', false, 512, JSON_THROW_ON_ERROR) ?? [];
-            $nilai_input = $this->maybe_unserialize($status->cbtsiswa->nilai_input ?? '{}', false, 512, JSON_THROW_ON_ERROR) ?? new stdClass();
+            $status->cbtsiswa->jawaban = $this->maybe_unserialize($status->cbtsiswa->jawaban ?? '[]');
+            $status->cbtsiswa->nilai = $this->maybe_unserialize($status->cbtsiswa->nilai ?? '[]');
+            $nilai_input = $this->maybe_unserialize($status->cbtsiswa->nilai_input ?? '{}');
 
-            $durasi = (object)[
+            if (!is_array($status->cbtsiswa->jawaban))
+                $status->cbtsiswa->jawaban = [];
+            if (!is_array($status->cbtsiswa->nilai))
+                $status->cbtsiswa->nilai = [];
+            if (!is_object($nilai_input))
+                $nilai_input = new stdClass();
+
+            $durasi = (object) [
                 "status" => $status->cbtsiswa->status ?? '',
                 "mulai" => $status->cbtsiswa->mulai ?? '',
                 "selesai" => $status->cbtsiswa->selesai ?? '',
@@ -764,6 +795,8 @@ class MY_Controller extends CI_Controller {
             $nilai_input->skor_jodohkan = [];
             $nilai_input->skor_isian = [];
             $nilai_input->skor_essai = [];
+            $nilai_input->skor_urutan = [];
+            $nilai_input->skor_cloze = [];
 
             $jawabans_siswa = [];
             // Proses pengelompokan soal berdasarkan jenis_soal
@@ -773,7 +806,7 @@ class MY_Controller extends CI_Controller {
 
                 if ($idx_jwbn !== false) {
                     $no_soal = $dataSoal->nomor_soal;
-                    $jawaban_siswa = (object)$status->cbtsiswa->jawaban[$idx_jwbn];
+                    $jawaban_siswa = (object) $status->cbtsiswa->jawaban[$idx_jwbn];
                     if ($dataSoal->jenis == '3') {
                         $arrAlphabet = range('A', 'Z');
                         if (!isset($jawaban_siswa->jawaban_siswa) || !isset($jawaban_siswa->jawaban_siswa->links)) {
@@ -782,10 +815,12 @@ class MY_Controller extends CI_Controller {
                                 foreach ($jawaban_siswa->jawaban_siswa->jawaban as $idx => $jbs) {
                                     if ($idx > 0) {
                                         $arrjwbnSiswa[$idx] = [];
-                                        foreach ($jbs as $idxs => $jb) {
-                                            if ($idxs > 0) {
-                                                if ($jb == '1') {
-                                                    $arrjwbnSiswa[$idx][] = $arrAlphabet[$idxs - 1];
+                                        if (is_array($jbs) || is_object($jbs)) {
+                                            foreach ($jbs as $idxs => $jb) {
+                                                if ($idxs > 0) {
+                                                    if ($jb == '1') {
+                                                        $arrjwbnSiswa[$idx][] = $arrAlphabet[$idxs - 1];
+                                                    }
                                                 }
                                             }
                                         }
@@ -805,10 +840,12 @@ class MY_Controller extends CI_Controller {
                         foreach ($dataSoal->jawaban->jawaban as $idx => $jbs) {
                             if ($idx > 0) {
                                 $arrjwbn[$idx] = [];
-                                foreach ($jbs as $idxs => $jb) {
-                                    if ($idxs > 0) {
-                                        if ($jb == '1') {
-                                            $arrjwbn[$idx][] = $arrAlphabet[$idxs - 1];
+                                if (is_array($jbs) || is_object($jbs)) {
+                                    foreach ($jbs as $idxs => $jb) {
+                                        if ($idxs > 0) {
+                                            if ($jb == '1') {
+                                                $arrjwbn[$idx][] = $arrAlphabet[$idxs - 1];
+                                            }
                                         }
                                     }
                                 }
@@ -826,42 +863,57 @@ class MY_Controller extends CI_Controller {
                     $nilai = $status->cbtsiswa->nilai[$idx_nilai] ?? [];
                     $jawabans_siswa[$dataSoal->jenis][$no_soal] = [
                         'jawab' => $jawaban_siswa,
-                        'nilai' => (object)$nilai
+                        'nilai' => (object) $nilai
                     ];
                 } else {
                     $jawabans_siswa[$dataSoal->jenis][$dataSoal->nomor_soal] = [
                         'jawab' => null,
-                        'nilai' => (object)[]
+                        'nilai' => (object) []
                     ];
                 }
             }
             $ada_jawaban = count($status->cbtsiswa->jawaban) > 0;
             $ada_jawaban_pg = $ada_jawaban && isset($jawabans_siswa['1']);
-            if ($ada_jawaban_pg) $this->processNilaiPg($info, $jawabans_siswa['1'], $bobot, $nilai_input, $status->cbtsiswa->nilai);
+            if ($ada_jawaban_pg)
+                $this->processNilaiPg($info, $jawabans_siswa['1'], $bobot, $nilai_input, $status->cbtsiswa->nilai);
             $ada_jawaban_pg2 = $ada_jawaban && isset($jawabans_siswa['2']);
-            if ($ada_jawaban_pg2) $this->processNilaiKompleks($info, $jawabans_siswa['2'], $bobot, $nilai_input, $status->cbtsiswa->nilai);
+            if ($ada_jawaban_pg2)
+                $this->processNilaiKompleks($info, $jawabans_siswa['2'], $bobot, $nilai_input, $status->cbtsiswa->nilai);
             $ada_jawaban_jodoh = $ada_jawaban && isset($jawabans_siswa['3']);
-            if ($ada_jawaban_jodoh) $this->processNilaiJodohkan($info, $jawabans_siswa['3'], $bobot, $nilai_input, $status->cbtsiswa->nilai);
+            if ($ada_jawaban_jodoh)
+                $this->processNilaiJodohkan($info, $jawabans_siswa['3'], $bobot, $nilai_input, $status->cbtsiswa->nilai);
             $ada_jawaban_isian = $ada_jawaban && isset($jawabans_siswa['4']);
-            if ($ada_jawaban_isian) $this->processNilaiIsian($info, $jawabans_siswa['4'], $bobot, $nilai_input, $status->cbtsiswa->nilai);
+            if ($ada_jawaban_isian)
+                $this->processNilaiIsian($info, $jawabans_siswa['4'], $bobot, $nilai_input, $status->cbtsiswa->nilai);
             $ada_jawaban_essai = $ada_jawaban && isset($jawabans_siswa['5']);
-            if ($ada_jawaban_essai) $this->processNilaiEsai($info, $jawabans_siswa['5'], $bobot, $nilai_input, $status->cbtsiswa->nilai);
+            if ($ada_jawaban_essai)
+                $this->processNilaiEsai($info, $jawabans_siswa['5'], $bobot, $nilai_input, $status->cbtsiswa->nilai);
+            // Type 6: Urutan (Ordering)
+            $ada_jawaban_urutan = $ada_jawaban && isset($jawabans_siswa['6']);
+            if ($ada_jawaban_urutan)
+                $this->processNilaiUrutan($info, $jawabans_siswa['6'], $bobot, $nilai_input, $status->cbtsiswa->nilai);
+            // Type 7: Cloze (Fill in the blanks)
+            $ada_jawaban_cloze = $ada_jawaban && isset($jawabans_siswa['7']);
+            if ($ada_jawaban_cloze)
+                $this->processNilaiCloze($info, $jawabans_siswa['7'], $bobot, $nilai_input, $status->cbtsiswa->nilai);
 
             $total = ($nilai_input->skor_pg['skor_total'] ?? 0) + ($nilai_input->skor_kompleks['skor_total'] ?? 0)
                 + ($nilai_input->skor_jodohkan['skor_total'] ?? 0) + ($nilai_input->skor_isian['skor_total'] ?? 0)
-                + ($nilai_input->skor_essai['skor_total'] ?? 0);
+                + ($nilai_input->skor_essai['skor_total'] ?? 0) + ($nilai_input->skor_urutan['skor_total'] ?? 0)
+                + ($nilai_input->skor_cloze['skor_total'] ?? 0);
             $nilai_input->skor_total = round($total, 2);
 
             $total_asli = ($nilai_input->skor_pg['skor_total'] ?? 0) + ($nilai_input->skor_kompleks['skor_asli'] ?? 0)
                 + ($nilai_input->skor_jodohkan['skor_asli'] ?? 0) + ($nilai_input->skor_isian['skor_asli'] ?? 0)
-                + ($nilai_input->skor_essai['skor_asli'] ?? 0);
+                + ($nilai_input->skor_essai['skor_asli'] ?? 0) + ($nilai_input->skor_urutan['skor_asli'] ?? 0)
+                + ($nilai_input->skor_cloze['skor_asli'] ?? 0);
             $nilai_input->skor_asli = round($total_asli, 2);
 
             $this->kalkulasiWaktu($durasi);
             $sudahMulai = $durasi->mulai != '';
             $sudahSelesai = $durasi->selesai != '';
-            $iconLoading = $sudahMulai ? '<i class="fa fa-spinner fa-spin"></i> ' : '';
-            $loading = $sudahSelesai ? '<i class="fa fa-check"></i> ' : $iconLoading;
+            $iconLoading = $sudahMulai ? '<i class="bi bi-spinner fa-spin"></i> ' : '';
+            $loading = $sudahSelesai ? '<i class="bi bi-check"></i> ' : $iconLoading;
             $durasi->status_ujian = $loading . $durasi->durasi;
             $status->durasi = $durasi;
 
@@ -874,7 +926,8 @@ class MY_Controller extends CI_Controller {
         }
     }
 
-    protected function processNilaiPg($info, $jawabans, $bobot, $nilai_input, $nilai) {
+    protected function processNilaiPg($info, $jawabans, $bobot, $nilai_input, $nilai)
+    {
         $arrJawabanPg = [];
         $skor_pg = 0;
         if ($info->tampil_pg > 0) {
@@ -885,7 +938,7 @@ class MY_Controller extends CI_Controller {
             $mapJawaban = [];
             foreach ($jawabans as $j) {
                 if (isset($j['jawab']->id_soal)) {
-                    $mapJawaban[(string)$j['jawab']->id_soal] = $j['jawab'];
+                    $mapJawaban[(string) $j['jawab']->id_soal] = $j['jawab'];
                 }
             }
 
@@ -893,25 +946,27 @@ class MY_Controller extends CI_Controller {
             $point_benar = $info->bobot_pg > 0 ? round($info->bobot_pg / $info->tampil_pg, 2) : 0;
 
             foreach ($soals as $soal) {
-                if ($soal->jenis != '1') continue;
+                if ($soal->jenis != '1')
+                    continue;
 
-                $idsoal = (string)$soal->id_soal;
+                $idsoal = (string) $soal->id_soal;
                 $jawab = $mapJawaban[$idsoal] ?? null;
 
                 $jawaban_siswa = strtoupper($jawab->jawaban_siswa ?? '-');
                 $jawaban_benar = strtoupper($jawab->jawaban_benar ?? '');
                 $benar = $jawaban_siswa == $jawaban_benar;
 
-                if ($benar) $benar_pg++;
+                if ($benar)
+                    $benar_pg++;
 
-                $arrJawabanPg[$soal->nomor_soal] = (object)[
+                $arrJawabanPg[$soal->nomor_soal] = (object) [
                     'nomor' => $soal->nomor_soal,
                     'id_soal' => $idsoal,
                     'jawaban_benar' => $jawaban_benar,
                     'jawaban_siswa' => $jawaban_siswa,
                     'analisa' => $benar
-                        ? '<i class="fa fa-check-circle text-green text-lg"></i>'
-                        : '<i class="fa fa-times-circle text-red text-lg"></i>',
+                        ? '<i class="bi bi-check-circle text-green text-lg"></i>'
+                        : '<i class="bi bi-x-circle text-red text-lg"></i>',
                     'skor_jawaban' => $benar ? $point_benar : 0,
                     'benar' => $benar,
                     'point_soal' => $point_benar
@@ -966,7 +1021,7 @@ class MY_Controller extends CI_Controller {
                         'id_soal' => $jawab->id_soal,
                         'jawaban_benar' => strtoupper($jawab->jawaban_benar ?? ''),
                         'jawaban_siswa' => strtoupper($jawab->jawaban_siswa ?? ''),
-                        'analisa'=> $benar ? '<i class="fa fa-check-circle text-green text-lg"></i>' : '<i class="fa fa-times-circle text-red text-lg"></i>',
+                        'analisa'=> $benar ? '<i class="bi bi-check-circle text-green text-lg"></i>' : '<i class="bi bi-x-circle text-red text-lg"></i>',
                         'skor_jawaban' => !$benar || $info->bobot_pg == 0 ? 0 : round($info->bobot_pg / $info->tampil_pg, 2),
                         'benar' => $benar,
                         'point_soal' => $point_benar
@@ -976,7 +1031,7 @@ class MY_Controller extends CI_Controller {
                         'nomor' => $num,
                         'jawaban_benar' => strtoupper($jawab->jawaban_benar ?? ''),
                         'jawaban_siswa' => '',
-                        'analisa'=> '<i class="fa fa-times-circle text-red text-lg"></i>',
+                        'analisa'=> '<i class="bi bi-x-circle text-red text-lg"></i>',
                         'benar' => false,
                         'skor_jawaban' => 0
                     ];
@@ -997,7 +1052,8 @@ class MY_Controller extends CI_Controller {
     }
     */
 
-    protected function processNilaiKompleks($info, $jawabans, $bobot, $nilai_input, $nilai) {
+    protected function processNilaiKompleks($info, $jawabans, $bobot, $nilai_input, $nilai)
+    {
         $benar_pg2 = 0;
         $skor_total = 0.0;
         $detail = [];
@@ -1010,7 +1066,7 @@ class MY_Controller extends CI_Controller {
                 $idsoal = $soal->id_soal;
                 $num = $soal->nomor_soal;
                 $ada_jawaban = array_filter($jawabans, function ($item) use ($idsoal) {
-                    return isset($item['jawab']->id_soal) && (string)$item['jawab']->id_soal == (string)$idsoal;
+                    return isset($item['jawab']->id_soal) && (string) $item['jawab']->id_soal == (string) $idsoal;
                 });
                 $jawaban = null;
                 if (count($ada_jawaban) > 0) {
@@ -1037,11 +1093,11 @@ class MY_Controller extends CI_Controller {
 
                     $jml_benar = count($arr_benar);
                     if ($jml_benar == count($jawaban_benar)) {
-                        $analisa = '<i class="fa fa-check-circle text-green text-lg"></i>';
+                        $analisa = '<i class="bi bi-check-circle text-green text-lg"></i>';
                     } elseif (($jml_benar > 0) && ($jml_benar < count($jawaban_benar))) {
-                        $analisa = '<i class="fa fa-times-circle text-yellow text-lg"></i>';
+                        $analisa = '<i class="bi bi-x-circle text-yellow text-lg"></i>';
                     } else {
-                        $analisa = '<i class="fa fa-times-circle text-red text-lg"></i>';
+                        $analisa = '<i class="bi bi-x-circle text-red text-lg"></i>';
                     }
 
                     $point = round($pk, 2);
@@ -1055,7 +1111,7 @@ class MY_Controller extends CI_Controller {
 
                     // skor_total = gabungan dari nilai koreksi dan nilai dari app
                     $skor_total += is_numeric($skor_jawaban) ? $skor_jawaban : 0;
-                    $detail[$num] = (object)[
+                    $detail[$num] = (object) [
                         'nomor' => $num,
                         'id_soal' => $jawab->id_soal,
                         'jawaban_benar' => $jawaban_benar,
@@ -1069,17 +1125,17 @@ class MY_Controller extends CI_Controller {
                     ];
                 } else {
                     $ada_nilai = array_filter($nilai, function ($item) use ($idsoal) {
-                        return (string)$item->id_soal == (string)$idsoal;
+                        return (string) $item->id_soal == (string) $idsoal;
                     });
                     if (count($ada_nilai) > 0) {
                         $nilai_pg2 = array_shift($ada_nilai);
                         $skor_total += is_numeric($nilai_pg2->nilai_koreksi) ? $nilai_pg2->nilai_koreksi : 0;
-                        $detail[$num] = (object)[
+                        $detail[$num] = (object) [
                             'nomor' => $num,
                             'id_soal' => $soal->id_soal,
                             'jawaban_benar' => $soal->jawaban ?? '--',
                             'jawaban_siswa' => $jawab->jawaban_siswa ?? '-',
-                            'analisa' => '<i class="fa fa-times-circle text-yellow text-lg"></i>',
+                            'analisa' => '<i class="bi bi-x-circle text-yellow text-lg"></i>',
                             'nilai_otomatis' => $nilai_is->nilai_otomatis ?? '0', // 0=otomatis (dari app), 1=nilai koreksi dari guru
                             'nilai_asli' => '0', // dari aplikasi
                             'nilai_koreksi' => $nilai_is->nilai_koreksi ?? '0', // dari guru
@@ -1087,12 +1143,12 @@ class MY_Controller extends CI_Controller {
                             'point_soal' => $point_benar
                         ];
                     } else {
-                        $detail[$num] = (object)[
+                        $detail[$num] = (object) [
                             'nomor' => $num,
                             'id_soal' => $soal->id_soal,
                             'jawaban_benar' => '--',
                             'jawaban_siswa' => '-',
-                            'analisa' => '<i class="fa fa-times-circle text-yellow text-lg"></i>',
+                            'analisa' => '<i class="bi bi-x-circle text-yellow text-lg"></i>',
                             'nilai_otomatis' => '0', // 0=otomatis (dari app), 1=nilai koreksi dari guru
                             'nilai_asli' => '0', // dari aplikasi
                             'nilai_koreksi' => '0', // dari guru
@@ -1120,7 +1176,8 @@ class MY_Controller extends CI_Controller {
         $nilai_input->skor_kompleks['skor_total_app'] = round($skor_total_app, 2);
     }
 
-    protected function processNilaiJodohkan($info, $jawabans, $bobot, $nilai_input, $nilai) {
+    protected function processNilaiJodohkan($info, $jawabans, $bobot, $nilai_input, $nilai)
+    {
         $benar_jod = 0;
         $skor_total = 0.0;
         $detail = [];
@@ -1134,7 +1191,7 @@ class MY_Controller extends CI_Controller {
                 $idsoal = $soal->id_soal;
                 $num = $soal->nomor_soal;
                 $ada_jawaban = array_filter($jawabans, function ($item) use ($idsoal) {
-                    return isset($item['jawab']->id_soal) && (string)$item['jawab']->id_soal == (string)$idsoal;
+                    return isset($item['jawab']->id_soal) && (string) $item['jawab']->id_soal == (string) $idsoal;
                 });
                 $jawaban = null;
                 if (count($ada_jawaban) > 0) {
@@ -1145,7 +1202,7 @@ class MY_Controller extends CI_Controller {
                 $point_benar = $info->bobot_jodohkan > 0 ? round($info->bobot_jodohkan / $info->tampil_jodohkan, 2) : 0;
                 if ($jawab && isset($jawab->jawaban_siswa) && isset($jawab->jawaban_siswa->type)) {
                     $typeSoal = $jawab->jawaban_siswa->type;
-                    $arrSoal = $jawab->jawaban_benar->jawaban;
+                    $arrSoal = (array) $jawab->jawaban_benar->jawaban;
 
                     $item_benar = 0;
                     $item_salah = 0;
@@ -1154,9 +1211,9 @@ class MY_Controller extends CI_Controller {
                     $arrBenar = []; // count same each subitem
 
                     if (isset($jawab->jawaban_siswa->links)) {
-                        $array1 = (array)$jawab->jawaban_benar->links;
+                        $array1 = (array) $jawab->jawaban_benar->links;
                         $this->sortArrays($array1);
-                        $array2 = (array)$jawab->jawaban_siswa->links;
+                        $array2 = (array) $jawab->jawaban_siswa->links;
                         $this->sortArrays($array2);
 
                         foreach ($array1 as $key => $subArray1) {
@@ -1200,26 +1257,30 @@ class MY_Controller extends CI_Controller {
                                 $jwb->subtitle[] = $headSoal[$pos];
                             }
                         }
-                        $jwb->title = array_shift($kolSoal);
+                        $kolSoalArr = (array) $kolSoal;
+                        $jwb->title = array_shift($kolSoalArr);
                         $arrJwbSoal[] = $jwb;
                     }
 
                     $arrJawab = [];
                     $headJawab = [];
                     if (isset($jawab->jawaban_siswa->jawaban)) {
-                        $arrJawab = $jawab->jawaban_siswa->jawaban;
+                        $arrJawab = (array) $jawab->jawaban_siswa->jawaban;
                         $headJawab = array_shift($arrJawab);
                     }
                     $arrJwbJawab = [];
                     foreach ($arrJawab as $kolJawab) {
                         $jwbs = new stdClass();
-                        foreach ($kolJawab as $po => $kol) {
-                            if ($kol == '1') {
-                                $sub = $headJawab[$po];
-                                $jwbs->subtitle[] = $sub;
+                        if (is_array($kolJawab) || is_object($kolJawab)) {
+                            foreach ($kolJawab as $po => $kol) {
+                                if ($kol == '1') {
+                                    $sub = $headJawab[$po] ?? '';
+                                    $jwbs->subtitle[] = $sub;
+                                }
                             }
                         }
-                        $jwbs->title = array_shift($kolJawab);
+                        $kolJawabArr = (array) $kolJawab;
+                        $jwbs->title = array_shift($kolJawabArr);
                         $arrJwbJawab[] = $jwbs;
                     }
 
@@ -1234,14 +1295,14 @@ class MY_Controller extends CI_Controller {
                     $skor_total += is_numeric($skor_jawaban) ? $skor_jawaban : 0;
 
                     if ($item_benar == $items && $item_salah == 0 && $item_kurang == 0) {
-                        $analisa = '<i class="fa fa-check-circle text-green text-lg"></i>';
+                        $analisa = '<i class="bi bi-check-circle text-green text-lg"></i>';
                     } elseif ($item_benar == 0) {
-                        $analisa = '<i class="fa fa-times-circle text-red text-lg"></i>';
+                        $analisa = '<i class="bi bi-x-circle text-red text-lg"></i>';
                     } else {
-                        $analisa = '<i class="fa fa-times-circle text-yellow text-lg"></i>';
+                        $analisa = '<i class="bi bi-x-circle text-yellow text-lg"></i>';
                     }
 
-                    $detail[$num] = (object)[
+                    $detail[$num] = (object) [
                         'nomor' => $num,
                         'id_soal' => $jawab->id_soal,
                         'jawaban_benar' => $jawab->jawaban_benar,
@@ -1259,19 +1320,19 @@ class MY_Controller extends CI_Controller {
                     ];
                 } else {
                     $ada_nilai = array_filter($nilai, function ($item) use ($idsoal) {
-                        return (string)$item->id_soal == (string)$idsoal;
+                        return (string) $item->id_soal == (string) $idsoal;
                     });
                     if (count($ada_nilai) > 0) {
                         $nilai_is = array_shift($ada_nilai);
                         $point_benar = $info->bobot_esai > 0 ? round($info->bobot_esai / $info->tampil_esai, 2) : 0;
                         $skor_total += is_numeric($nilai_is->nilai_koreksi) ? $nilai_is->nilai_koreksi : 0;
 
-                        $detail[$num] = (object)[
+                        $detail[$num] = (object) [
                             'nomor' => $num,
                             'id_soal' => $soal->id_soal,
                             'jawaban_benar' => $soal->jawaban ?? '--',
                             'jawaban_siswa' => $jawab->jawaban_siswa ?? '-',
-                            'analisa' => '<i class="fa fa-times-circle text-yellow text-lg"></i>',
+                            'analisa' => '<i class="bi bi-x-circle text-yellow text-lg"></i>',
                             'nilai_otomatis' => $nilai_is->nilai_otomatis ?? '0', // 0=otomatis (dari app), 1=nilai koreksi dari guru
                             'nilai_asli' => '0', // dari aplikasi
                             'nilai_koreksi' => $nilai_is->nilai_koreksi ?? '0', // dari guru
@@ -1283,12 +1344,12 @@ class MY_Controller extends CI_Controller {
                             'tabel_jawab' => $arrJwbJawab ?? '',
                         ];
                     } else {
-                        $detail[$num] = (object)[
+                        $detail[$num] = (object) [
                             'nomor' => $num,
                             'id_soal' => $soal->id_soal,
                             'jawaban_benar' => '--',
                             'jawaban_siswa' => '-',
-                            'analisa' => '<i class="fa fa-times-circle text-yellow text-lg"></i>',
+                            'analisa' => '<i class="bi bi-x-circle text-yellow text-lg"></i>',
                             'nilai_otomatis' => '0', // 0=otomatis (dari app), 1=nilai koreksi dari guru
                             'nilai_asli' => '0', // dari aplikasi
                             'nilai_koreksi' => '0', // dari guru
@@ -1320,7 +1381,8 @@ class MY_Controller extends CI_Controller {
         $nilai_input->skor_jodohkan['skor_total_app'] = round($skor_total_app, 2);
     }
 
-    protected function processNilaiIsian($info, $jawabans, $bobot, $nilai_input, $nilai) {
+    protected function processNilaiIsian($info, $jawabans, $bobot, $nilai_input, $nilai)
+    {
         $skor_total = 0.0;
         $benar_is = 0;
         $detail = [];
@@ -1334,7 +1396,7 @@ class MY_Controller extends CI_Controller {
                 $idsoal = $soal->id_soal;
                 $num = $soal->nomor_soal;
                 $ada_jawaban = array_filter($jawabans, function ($item) use ($idsoal) {
-                    return isset($item['jawab']->id_soal) && (string)$item['jawab']->id_soal == (string)$idsoal;
+                    return isset($item['jawab']->id_soal) && (string) $item['jawab']->id_soal == (string) $idsoal;
                 });
                 $jawaban = null;
                 if (count($ada_jawaban) > 0) {
@@ -1365,8 +1427,8 @@ class MY_Controller extends CI_Controller {
 
                     // Analisa benar atau salah
                     $analisa = $benar
-                        ? '<i class="fa fa-check-circle text-green text-lg"></i>'
-                        : '<i class="fa fa-times-circle text-yellow text-lg"></i>';
+                        ? '<i class="bi bi-check-circle text-green text-lg"></i>'
+                        : '<i class="bi bi-x-circle text-yellow text-lg"></i>';
 
                     $detail[$num] = (object) [
                         'nomor' => $num,
@@ -1382,17 +1444,17 @@ class MY_Controller extends CI_Controller {
                     ];
                 } else {
                     $ada_nilai = array_filter($nilai, function ($item) use ($idsoal) {
-                        return (string)$item->id_soal == (string)$idsoal;
+                        return (string) $item->id_soal == (string) $idsoal;
                     });
                     if (count($ada_nilai) > 0) {
                         $nilai_is = array_shift($ada_nilai);
                         $skor_total += is_numeric($nilai_is->nilai_koreksi) ? $nilai_is->nilai_koreksi : 0;
-                        $detail[$num] = (object)[
+                        $detail[$num] = (object) [
                             'nomor' => $num,
                             'id_soal' => $soal->id_soal,
                             'jawaban_benar' => $soal->jawaban ?? '--',
                             'jawaban_siswa' => $jawab->jawaban_siswa ?? '-',
-                            'analisa' => '<i class="fa fa-times-circle text-yellow text-lg"></i>',
+                            'analisa' => '<i class="bi bi-x-circle text-yellow text-lg"></i>',
                             'nilai_otomatis' => $nilai_is->nilai_otomatis ?? '0', // 0=otomatis (dari app), 1=nilai koreksi dari guru
                             'nilai_asli' => '0', // dari aplikasi
                             'nilai_koreksi' => $nilai_is->nilai_koreksi ?? '0', // dari guru
@@ -1400,12 +1462,12 @@ class MY_Controller extends CI_Controller {
                             'point_soal' => $point_benar
                         ];
                     } else {
-                        $detail[$num] = (object)[
+                        $detail[$num] = (object) [
                             'nomor' => $num,
                             'id_soal' => $soal->id_soal,
                             'jawaban_benar' => '--',
                             'jawaban_siswa' => '-',
-                            'analisa' => '<i class="fa fa-times-circle text-yellow text-lg"></i>',
+                            'analisa' => '<i class="bi bi-x-circle text-yellow text-lg"></i>',
                             'nilai_otomatis' => '0', // 0=otomatis (dari app), 1=nilai koreksi dari guru
                             'nilai_asli' => '0', // dari aplikasi
                             'nilai_koreksi' => '0', // dari guru
@@ -1434,7 +1496,8 @@ class MY_Controller extends CI_Controller {
         $nilai_input->skor_isian['skor_total_app'] = round($skor_total_app, 2);
     }
 
-    protected function processNilaiEsai($info, $jawabans, $bobot, $nilai_input, $nilai) {
+    protected function processNilaiEsai($info, $jawabans, $bobot, $nilai_input, $nilai)
+    {
         $skor_total = 0.0;
         $benar_es = 0;
         $detail = [];
@@ -1448,7 +1511,7 @@ class MY_Controller extends CI_Controller {
                 $idsoal = $soal->id_soal;
                 $num = $soal->nomor_soal;
                 $ada_jawaban = array_filter($jawabans, function ($item) use ($idsoal) {
-                    return isset($item['jawab']->id_soal) && (string)$item['jawab']->id_soal == (string)$idsoal;
+                    return isset($item['jawab']->id_soal) && (string) $item['jawab']->id_soal == (string) $idsoal;
                 });
 
                 $jawaban = null;
@@ -1477,10 +1540,10 @@ class MY_Controller extends CI_Controller {
                     $skor_total += is_numeric($skor_jawaban) ? $skor_jawaban : 0;
 
                     $analisa = $benar
-                        ? '<i class="fa fa-check-circle text-green text-lg"></i>'
-                        : '<i class="fa fa-times-circle text-yellow text-lg"></i>';
+                        ? '<i class="bi bi-check-circle text-green text-lg"></i>'
+                        : '<i class="bi bi-x-circle text-yellow text-lg"></i>';
 
-                    $detail[$num] = (object)[
+                    $detail[$num] = (object) [
                         'nomor' => $num,
                         'id_soal' => $jawab->id_soal ?? null,
                         'jawaban_benar' => $jawab->jawaban_benar ?? '--',
@@ -1494,17 +1557,17 @@ class MY_Controller extends CI_Controller {
                     ];
                 } else {
                     $ada_nilai = array_filter($nilai, function ($item) use ($idsoal) {
-                        return (string)$item->id_soal == (string)$idsoal;
+                        return (string) $item->id_soal == (string) $idsoal;
                     });
                     if (count($ada_nilai) > 0) {
                         $nilai_es = array_shift($ada_nilai);
                         $skor_total += is_numeric($nilai_es->nilai_koreksi) ? $nilai_es->nilai_koreksi : 0;
-                        $detail[$num] = (object)[
+                        $detail[$num] = (object) [
                             'nomor' => $num,
                             'id_soal' => $soal->id_soal,
                             'jawaban_benar' => $soal->jawaban ?? '--',
                             'jawaban_siswa' => $jawab->jawaban_siswa ?? '-',
-                            'analisa' => '<i class="fa fa-times-circle text-yellow text-lg"></i>',
+                            'analisa' => '<i class="bi bi-x-circle text-yellow text-lg"></i>',
                             'nilai_otomatis' => $nilai_es->nilai_otomatis ?? '0', // 0=otomatis (dari app), 1=nilai koreksi dari guru
                             'nilai_asli' => '0', // dari aplikasi
                             'nilai_koreksi' => $nilai_es->nilai_koreksi ?? '0', // dari guru
@@ -1512,12 +1575,12 @@ class MY_Controller extends CI_Controller {
                             'point_soal' => $point_benar
                         ];
                     } else {
-                        $detail[$num] = (object)[
+                        $detail[$num] = (object) [
                             'nomor' => $num,
                             'id_soal' => $soal->id_soal,
                             'jawaban_benar' => '--',
                             'jawaban_siswa' => '-',
-                            'analisa' => '<i class="fa fa-times-circle text-yellow text-lg"></i>',
+                            'analisa' => '<i class="bi bi-x-circle text-yellow text-lg"></i>',
                             'nilai_otomatis' => '0', // 0=otomatis (dari app), 1=nilai koreksi dari guru
                             'nilai_asli' => '0', // dari aplikasi
                             'nilai_koreksi' => '0', // dari guru
@@ -1540,7 +1603,224 @@ class MY_Controller extends CI_Controller {
         $nilai_input->skor_essai['skor_total_app'] = round($skor_total_app, 2);
     }
 
-    function kalkulasiWaktu($durasi) {
+    /**
+     * Process scoring for Type 6: Urutan (Ordering) questions
+     * Compares student order with correct order
+     */
+    protected function processNilaiUrutan($info, $jawabans, $bobot, $nilai_input, $nilai)
+    {
+        $benar_urutan = 0;
+        $skor_total = 0.0;
+        $detail = [];
+
+        $tampil_urutan = $info->tampil_urutan ?? 0;
+        $bobot_urutan = $info->bobot_urutan ?? 0;
+
+        if ($tampil_urutan > 0) {
+            $soals = $info->soal;
+            foreach ($soals as $soal) {
+                if ($soal->jenis != '6')
+                    continue;
+
+                $idsoal = $soal->id_soal;
+                $num = $soal->nomor_soal;
+                $point_benar = $bobot_urutan > 0 ? round($bobot_urutan / $tampil_urutan, 2) : 0;
+
+                $ada_jawaban = array_filter($jawabans, function ($item) use ($idsoal) {
+                    return isset($item['jawab']->id_soal) && (string) $item['jawab']->id_soal == (string) $idsoal;
+                });
+
+                $jawaban = count($ada_jawaban) > 0 ? array_shift($ada_jawaban) : null;
+                $jawab = $jawaban['jawab'] ?? null;
+
+                if ($jawab && isset($jawab->jawaban_siswa)) {
+                    // Normalize Student Answer
+                    $jawaban_siswa = $jawab->jawaban_siswa;
+                    if (is_string($jawaban_siswa)) {
+                        $jawaban_siswa = json_decode($jawaban_siswa, true);
+                    } elseif (is_object($jawaban_siswa)) {
+                        $jawaban_siswa = (array) $jawaban_siswa;
+                    }
+                    if (!is_array($jawaban_siswa))
+                        $jawaban_siswa = [];
+                    $jawaban_siswa = array_values($jawaban_siswa);
+
+                    // Normalize Correct Answer
+                    $jawaban_benar = $jawab->jawaban_benar;
+                    if (is_string($jawaban_benar)) {
+                        $jawaban_benar = json_decode($jawaban_benar, true);
+                    } elseif (is_object($jawaban_benar)) {
+                        $jawaban_benar = (array) $jawaban_benar;
+                    }
+                    if (!is_array($jawaban_benar))
+                        $jawaban_benar = [];
+                    $jawaban_benar = array_values($jawaban_benar);
+
+                    // Calculate how many positions are correct
+                    $total_items = count($jawaban_benar);
+                    $correct_positions = 0;
+
+                    if ($total_items > 0 && count($jawaban_siswa) == $total_items) {
+                        for ($i = 0; $i < $total_items; $i++) {
+                            // Loose comparison (==) allows string "1" to match int 1
+                            if ($jawaban_siswa[$i] == $jawaban_benar[$i]) {
+                                $correct_positions++;
+                            }
+                        }
+                    }
+
+                    $ratio = $total_items > 0 ? $correct_positions / $total_items : 0;
+                    $point = round($point_benar * $ratio, 2);
+                    $benar_urutan += $ratio;
+                    $skor_total += $point;
+
+                    $analisa = $ratio == 1 ? '<i class="bi bi-check-circle text-green text-lg"></i>' :
+                        ($ratio > 0 ? '<i class="bi bi-x-circle text-yellow text-lg"></i>' :
+                            '<i class="bi bi-x-circle text-red text-lg"></i>');
+
+                    $detail[$num] = (object) [
+                        'nomor' => $num,
+                        'id_soal' => $idsoal,
+                        'jawaban_benar' => $jawaban_benar,
+                        'jawaban_siswa' => $jawaban_siswa,
+                        'correct_positions' => $correct_positions,
+                        'total_items' => $total_items,
+                        'analisa' => $analisa,
+                        'skor_jawaban' => $point,
+                        'point_soal' => $point_benar
+                    ];
+                } else {
+                    $detail[$num] = (object) [
+                        'nomor' => $num,
+                        'id_soal' => $idsoal,
+                        'jawaban_benar' => '--',
+                        'jawaban_siswa' => '-',
+                        'analisa' => '<i class="bi bi-x-circle text-red text-lg"></i>',
+                        'skor_jawaban' => 0,
+                        'point_soal' => $point_benar
+                    ];
+                }
+            }
+        }
+
+        $nilai_input->skor_urutan['jml_benar'] = round($benar_urutan, 2);
+        $nilai_input->skor_urutan['detail'] = array_values($detail);
+        $nilai_input->skor_urutan['skor_total'] = round($skor_total, 2);
+        $nilai_input->skor_urutan['skor_asli'] = round($skor_total, 2);
+    }
+
+    /**
+     * Process scoring for Type 7: Cloze (Fill in the Blanks) questions
+     * Compares each blank answer with correct answers
+     */
+    protected function processNilaiCloze($info, $jawabans, $bobot, $nilai_input, $nilai)
+    {
+        $benar_cloze = 0;
+        $skor_total = 0.0;
+        $detail = [];
+
+        $tampil_cloze = $info->tampil_cloze ?? 0;
+        $bobot_cloze = $info->bobot_cloze ?? 0;
+
+        if ($tampil_cloze > 0) {
+            $soals = $info->soal;
+            foreach ($soals as $soal) {
+                if ($soal->jenis != '7')
+                    continue;
+
+                $idsoal = $soal->id_soal;
+                $num = $soal->nomor_soal;
+                $point_benar = $bobot_cloze > 0 ? round($bobot_cloze / $tampil_cloze, 2) : 0;
+
+                $ada_jawaban = array_filter($jawabans, function ($item) use ($idsoal) {
+                    return isset($item['jawab']->id_soal) && (string) $item['jawab']->id_soal == (string) $idsoal;
+                });
+
+                $jawaban = count($ada_jawaban) > 0 ? array_shift($ada_jawaban) : null;
+                $jawab = $jawaban['jawab'] ?? null;
+
+                if ($jawab && isset($jawab->jawaban_siswa)) {
+                    // Safe decode Student Answer
+                    $jawaban_siswa = $jawab->jawaban_siswa;
+                    if (is_string($jawaban_siswa)) {
+                        $jawaban_siswa = json_decode($jawaban_siswa, true);
+                    } elseif (is_object($jawaban_siswa)) {
+                        $jawaban_siswa = (array) $jawaban_siswa;
+                    }
+                    if (!is_array($jawaban_siswa))
+                        $jawaban_siswa = [];
+
+                    // Safe decode Correct Answer
+                    $jawaban_benar = $jawab->jawaban_benar;
+                    if (is_string($jawaban_benar)) {
+                        $jawaban_benar = json_decode($jawaban_benar, true);
+                    } elseif (is_object($jawaban_benar)) {
+                        $jawaban_benar = (array) $jawaban_benar;
+                    }
+                    if (!is_array($jawaban_benar))
+                        $jawaban_benar = [];
+
+                    // Count correct blanks
+                    $total_blanks = count($jawaban_benar);
+                    $correct_blanks = 0;
+                    $blank_results = [];
+
+                    foreach ($jawaban_benar as $blank_id => $correct_answer) {
+                        $student_answer = $jawaban_siswa[$blank_id] ?? '';
+                        // Case insensitive comparison by default
+                        $is_correct = strtolower(trim($student_answer)) == strtolower(trim($correct_answer));
+                        if ($is_correct)
+                            $correct_blanks++;
+                        $blank_results[$blank_id] = [
+                            'correct' => $correct_answer,
+                            'student' => $student_answer,
+                            'is_correct' => $is_correct
+                        ];
+                    }
+
+                    $ratio = $total_blanks > 0 ? $correct_blanks / $total_blanks : 0;
+                    $point = round($point_benar * $ratio, 2);
+                    $benar_cloze += $ratio;
+                    $skor_total += $point;
+
+                    $analisa = $ratio == 1 ? '<i class="bi bi-check-circle text-green text-lg"></i>' :
+                        ($ratio > 0 ? '<i class="bi bi-x-circle text-yellow text-lg"></i>' :
+                            '<i class="bi bi-x-circle text-red text-lg"></i>');
+
+                    $detail[$num] = (object) [
+                        'nomor' => $num,
+                        'id_soal' => $idsoal,
+                        'jawaban_benar' => $jawaban_benar,
+                        'jawaban_siswa' => $jawaban_siswa,
+                        'blank_results' => $blank_results,
+                        'correct_blanks' => $correct_blanks,
+                        'total_blanks' => $total_blanks,
+                        'analisa' => $analisa,
+                        'skor_jawaban' => $point,
+                        'point_soal' => $point_benar
+                    ];
+                } else {
+                    $detail[$num] = (object) [
+                        'nomor' => $num,
+                        'id_soal' => $idsoal,
+                        'jawaban_benar' => '--',
+                        'jawaban_siswa' => '-',
+                        'analisa' => '<i class="bi bi-x-circle text-red text-lg"></i>',
+                        'skor_jawaban' => 0,
+                        'point_soal' => $point_benar
+                    ];
+                }
+            }
+        }
+
+        $nilai_input->skor_cloze['jml_benar'] = round($benar_cloze, 2);
+        $nilai_input->skor_cloze['detail'] = array_values($detail);
+        $nilai_input->skor_cloze['skor_total'] = round($skor_total, 2);
+        $nilai_input->skor_cloze['skor_asli'] = round($skor_total, 2);
+    }
+
+    function kalkulasiWaktu($durasi)
+    {
         // Reset waktu bisa dilakukan sebelum tanggal ujian berakhir
         // Jika tgl ujian sudah berakhir, silakan tambahkan tgl akhir ujian
         $lamanya = $durasi->lama_ujian;
@@ -1573,7 +1853,7 @@ class MY_Controller extends CI_Controller {
      */
     protected function calculateWeights($info)
     {
-        return (object)[
+        return (object) [
             'bagi_pg' => max(1, $info->tampil_pg) / 100,
             'bobot_pg' => $info->bobot_pg / 100,
             'bagi_pg2' => max(1, $info->tampil_kompleks) / 100,
@@ -1583,11 +1863,16 @@ class MY_Controller extends CI_Controller {
             'bagi_isian' => max(1, $info->tampil_isian) / 100,
             'bobot_isian' => $info->bobot_isian / 100,
             'bagi_essai' => max(1, $info->tampil_esai) / 100,
-            'bobot_essai' => $info->bobot_esai / 100
+            'bobot_essai' => $info->bobot_esai / 100,
+            'bagi_urutan' => max(1, $info->tampil_urutan ?? 0) / 100,
+            'bobot_urutan' => ($info->bobot_urutan ?? 0) / 100,
+            'bagi_cloze' => max(1, $info->tampil_cloze ?? 0) / 100,
+            'bobot_cloze' => ($info->bobot_cloze ?? 0) / 100
         ];
     }
 
-    protected function createSkorSiswa($rekap, $koreksi) {
+    protected function createSkorSiswa($rekap, $koreksi)
+    {
         $info = $rekap->bank_soal;
         $bobot = $this->calculateWeights($info);
         $soals = array_merge(
@@ -1595,7 +1880,9 @@ class MY_Controller extends CI_Controller {
             $rekap->soal_kompleks,
             $rekap->soal_jodohkan,
             $rekap->soal_isian,
-            $rekap->soal_esai
+            $rekap->soal_esai,
+            $rekap->soal_urutan ?? [],
+            $rekap->soal_cloze ?? []
         );
         $info->soal = $soals;
 
@@ -1612,7 +1899,7 @@ class MY_Controller extends CI_Controller {
             $input = $rkp_siswa->nilai_input ?? '{}';
             $nilai_input = $this->maybe_unserialize($input);
 
-            $durasi = (object)[
+            $durasi = (object) [
                 "status" => $rkp_siswa->status ?? '',
                 "mulai" => $rkp_siswa->mulai ?? '',
                 "selesai" => $rkp_siswa->selesai ?? '',
@@ -1625,6 +1912,8 @@ class MY_Controller extends CI_Controller {
             $nilai_input->skor_jodohkan = [];
             $nilai_input->skor_isian = [];
             $nilai_input->skor_essai = [];
+            $nilai_input->skor_urutan = [];
+            $nilai_input->skor_cloze = [];
 
             $jawabans_siswa = [];
             // Proses pengelompokan soal berdasarkan jenis_soal
@@ -1649,10 +1938,12 @@ class MY_Controller extends CI_Controller {
                             foreach ($jawaban_siswa->jawaban_siswa->jawaban as $idx => $jbs) {
                                 if ($idx > 0) {
                                     $arrjwbnSiswa[$idx] = [];
-                                    foreach ($jbs as $idxs => $jb) {
-                                        if ($idxs > 0) {
-                                            if ($jb == '1') {
-                                                $arrjwbnSiswa[$idx][] = $arrAlphabet[$idxs - 1];
+                                    if (is_array($jbs) || is_object($jbs)) {
+                                        foreach ($jbs as $idxs => $jb) {
+                                            if ($idxs > 0) {
+                                                if ($jb == '1') {
+                                                    $arrjwbnSiswa[$idx][] = $arrAlphabet[$idxs - 1];
+                                                }
                                             }
                                         }
                                     }
@@ -1672,10 +1963,12 @@ class MY_Controller extends CI_Controller {
                         foreach ($jawaban_benar->jawaban as $idx => $jbs) {
                             if ($idx > 0) {
                                 $arrjwbn[$idx] = [];
-                                foreach ($jbs as $idxs => $jb) {
-                                    if ($idxs > 0) {
-                                        if ($jb == '1') {
-                                            $arrjwbn[$idx][] = $arrAlphabet[$idxs - 1];
+                                if (is_array($jbs) || is_object($jbs)) {
+                                    foreach ($jbs as $idxs => $jb) {
+                                        if ($idxs > 0) {
+                                            if ($jb == '1') {
+                                                $arrjwbn[$idx][] = $arrAlphabet[$idxs - 1];
+                                            }
                                         }
                                     }
                                 }
@@ -1691,43 +1984,59 @@ class MY_Controller extends CI_Controller {
                     }
                 }
 
-                $idx_nilai = array_search($jawaban_siswa->id_soal,
-                    array_column($rkp_siswa->nilai, 'id_soal'), true);
+                $idx_nilai = array_search(
+                    $jawaban_siswa->id_soal,
+                    array_column($rkp_siswa->nilai, 'id_soal'),
+                    true
+                );
                 if ($dataSoal) {
                     $jawabans_siswa[$dataSoal->jenis][$jawaban_siswa->id_soal] = [
                         'jawab' => $jawaban_siswa,
-                        'nilai' => $idx_nilai !== false ? (object)$rkp_siswa->nilai[$idx_nilai] : null,
+                        'nilai' => $idx_nilai !== false ? (object) $rkp_siswa->nilai[$idx_nilai] : null,
                     ];
                 }
             }
 
             $ada_jawaban = count($rkp_jawaban) > 0;
             $ada_jawaban_pg = $ada_jawaban && isset($jawabans_siswa['1']);
-            if ($ada_jawaban_pg) $this->processNilaiPg($info, $jawabans_siswa['1'], $bobot, $nilai_input, $rkp_siswa->nilai);
+            if ($ada_jawaban_pg)
+                $this->processNilaiPg($info, $jawabans_siswa['1'], $bobot, $nilai_input, $rkp_siswa->nilai);
             $ada_jawaban_pg2 = $ada_jawaban && isset($jawabans_siswa['2']);
-            if ($ada_jawaban_pg2) $this->processNilaiKompleks($info, $jawabans_siswa['2'], $bobot, $nilai_input, $rkp_siswa->nilai);
+            if ($ada_jawaban_pg2)
+                $this->processNilaiKompleks($info, $jawabans_siswa['2'], $bobot, $nilai_input, $rkp_siswa->nilai);
             $ada_jawaban_jodoh = $ada_jawaban && isset($jawabans_siswa['3']);
-            if ($ada_jawaban_jodoh) $this->processNilaiJodohkan($info, $jawabans_siswa['3'], $bobot, $nilai_input, $rkp_siswa->nilai);
+            if ($ada_jawaban_jodoh)
+                $this->processNilaiJodohkan($info, $jawabans_siswa['3'], $bobot, $nilai_input, $rkp_siswa->nilai);
             $ada_jawaban_isian = $ada_jawaban && isset($jawabans_siswa['4']);
-            if ($ada_jawaban_isian) $this->processNilaiIsian($info, $jawabans_siswa['4'], $bobot, $nilai_input, $rkp_siswa->nilai);
+            if ($ada_jawaban_isian)
+                $this->processNilaiIsian($info, $jawabans_siswa['4'], $bobot, $nilai_input, $rkp_siswa->nilai);
             $ada_jawaban_essai = $ada_jawaban && isset($jawabans_siswa['5']);
-            if ($ada_jawaban_essai) $this->processNilaiEsai($info, $jawabans_siswa['5'], $bobot, $nilai_input, $rkp_siswa->nilai);
+            if ($ada_jawaban_essai)
+                $this->processNilaiEsai($info, $jawabans_siswa['5'], $bobot, $nilai_input, $rkp_siswa->nilai);
+            $ada_jawaban_urutan = $ada_jawaban && isset($jawabans_siswa['6']);
+            if ($ada_jawaban_urutan)
+                $this->processNilaiUrutan($info, $jawabans_siswa['6'], $bobot, $nilai_input, $rkp_siswa->nilai);
+            $ada_jawaban_cloze = $ada_jawaban && isset($jawabans_siswa['7']);
+            if ($ada_jawaban_cloze)
+                $this->processNilaiCloze($info, $jawabans_siswa['7'], $bobot, $nilai_input, $rkp_siswa->nilai);
 
             $total = ($nilai_input->skor_pg['skor_total'] ?? 0) + ($nilai_input->skor_kompleks['skor_total'] ?? 0)
                 + ($nilai_input->skor_jodohkan['skor_total'] ?? 0) + ($nilai_input->skor_isian['skor_total'] ?? 0)
-                + ($nilai_input->skor_essai['skor_total'] ?? 0);
+                + ($nilai_input->skor_essai['skor_total'] ?? 0) + ($nilai_input->skor_urutan['skor_total'] ?? 0)
+                + ($nilai_input->skor_cloze['skor_total'] ?? 0);
             $nilai_input->skor_total = round($total, 2);
 
             $total_asli = ($nilai_input->skor_pg['skor_total'] ?? 0) + ($nilai_input->skor_kompleks['skor_asli'] ?? 0)
                 + ($nilai_input->skor_jodohkan['skor_asli'] ?? 0) + ($nilai_input->skor_isian['skor_asli'] ?? 0)
-                + ($nilai_input->skor_essai['skor_asli'] ?? 0);
+                + ($nilai_input->skor_essai['skor_asli'] ?? 0) + ($nilai_input->skor_urutan['skor_asli'] ?? 0)
+                + ($nilai_input->skor_cloze['skor_asli'] ?? 0);
             $nilai_input->skor_asli = round($total_asli, 2);
 
             $this->kalkulasiWaktu($durasi);
             $sudahMulai = $durasi->mulai != '';
             $sudahSelesai = $durasi->selesai != '';
-            $iconLoading = $sudahMulai ? '<i class="fa fa-spinner fa-spin"></i> ' : '';
-            $loading = $sudahSelesai ? '<i class="fa fa-check"></i> ' : $iconLoading;
+            $iconLoading = $sudahMulai ? '<i class="bi bi-spinner fa-spin"></i> ' : '';
+            $loading = $sudahSelesai ? '<i class="bi bi-check"></i> ' : $iconLoading;
             $durasi->status_ujian = $loading . $durasi->durasi;
             $rkp_siswa->durasi = $durasi;
 
@@ -1753,7 +2062,8 @@ class MY_Controller extends CI_Controller {
         }
     }
 
-    private function getKoreksiNilai($id_siswa, $id_jadwal) {
+    private function getKoreksiNilai($id_siswa, $id_jadwal)
+    {
         $tp_smt = $this->getTpSmt();
         $tp = $tp_smt->tp_active;
         $smt = $tp_smt->smt_active;
@@ -1787,11 +2097,19 @@ class MY_Controller extends CI_Controller {
         $soal_5 = array_filter($jadwal->soal_esai, function ($soal) {
             return $soal->tampilkan == '1';
         });
+        $soal_6 = array_filter($jadwal->soal_urutan ?? [], function ($soal) {
+            return $soal->tampilkan == '1';
+        });
+        $soal_7 = array_filter($jadwal->soal_cloze ?? [], function ($soal) {
+            return $soal->tampilkan == '1';
+        });
         $data['soal_pg'] = array_values($soal_1);
         $data['soal_kompleks'] = array_values($soal_2);
         $data['soal_jodohkan'] = array_values($soal_3);
         $data['soal_isian'] = array_values($soal_4);
         $data['soal_esai'] = array_values($soal_5);
+        $data['soal_urutan'] = array_values($soal_6);
+        $data['soal_cloze'] = array_values($soal_7);
 
         $data['is_rekap'] = 0;
         $data['success'] = true;
@@ -1801,7 +2119,8 @@ class MY_Controller extends CI_Controller {
     /**
      * @throws JsonException
      */
-    private function getKoreksiRekap($id_siswa, $id_jadwal) {
+    private function getKoreksiRekap($id_siswa, $id_jadwal)
+    {
         $id_siswa = $this->input->post('siswa');
         $id_jadwal = $this->input->post('jadwal');
 
@@ -1815,9 +2134,9 @@ class MY_Controller extends CI_Controller {
 
         $this->load->model('Rekap_jadwal_model', 'rekap_jadwal');
         $rekap = $this->rekap_jadwal
-            ->where(['id_jadwal'=>$id_jadwal])
+            ->where(['id_jadwal' => $id_jadwal])
             ->with_rekapsiswa([
-                'where'=>['id_siswa'=>$id_siswa],
+                'where' => ['id_siswa' => $id_siswa],
                 /*
                 'with' => [
                     ['relation'=>'siswa', 'fields'=>'id_siswa,nama,nis,agama']
@@ -1851,11 +2170,20 @@ class MY_Controller extends CI_Controller {
         $soal_5 = array_filter($this->maybe_unserialize($rekap->soal_esai), function ($soal) {
             return $soal->tampilkan == '1';
         });
+        $soal_6 = array_filter($this->maybe_unserialize($rekap->soal_urutan ?? []), function ($soal) {
+            return $soal->tampilkan == '1';
+        });
+        $soal_7 = array_filter($this->maybe_unserialize($rekap->soal_cloze ?? []), function ($soal) {
+            return $soal->tampilkan == '1';
+        });
+
         $rekap->soal_pg = array_values($soal_1);
         $rekap->soal_kompleks = array_values($soal_2);
         $rekap->soal_jodohkan = array_values($soal_3);
         $rekap->soal_isian = array_values($soal_4);
         $rekap->soal_esai = array_values($soal_5);
+        $rekap->soal_urutan = array_values($soal_6);
+        $rekap->soal_cloze = array_values($soal_7);
         $rekap->rekapsiswa = (array) $rekap->rekapsiswa;
 
         $this->createSkorSiswa($rekap, true);
@@ -1869,6 +2197,8 @@ class MY_Controller extends CI_Controller {
         $data['soal_jodohkan'] = $rekap->soal_jodohkan;
         $data['soal_isian'] = $rekap->soal_isian;
         $data['soal_esai'] = $rekap->soal_esai;
+        $data['soal_urutan'] = $rekap->soal_urutan;
+        $data['soal_cloze'] = $rekap->soal_cloze;
 
         $data['is_rekap'] = $jadwal->sesisiswa->id_rekap_siswa;
         $data['rekap_mapel'] = $rekap->nama_mapel;
@@ -1877,7 +2207,7 @@ class MY_Controller extends CI_Controller {
         $data['info'] = $rekap->bank_soal;
         $data['id_jadwal'] = $rekap->id_jadwal;
         $data['tp_jadwal'] = $rekap->tp;
-        $data['jenis'] = (object)['id_jenis'=>$rekap->id_jenis, 'kode_jenis'=>$rekap->kode_jenis];
+        $data['jenis'] = (object) ['id_jenis' => $rekap->id_jenis, 'kode_jenis' => $rekap->kode_jenis];
 
         $data['success'] = true;
         $this->output_json($data);
@@ -1919,7 +2249,7 @@ class MY_Controller extends CI_Controller {
                 }
                 $idsoal = $nilai->id_soal;
                 $for_update = array_filter($nilais, function ($item) use ($idsoal) {
-                    return (string)$item->id_soal == (string)$idsoal;
+                    return (string) $item->id_soal == (string) $idsoal;
                 });
                 if (!empty($for_update)) {
                     $nilai_siswa = array_values($for_update)[0];
@@ -1936,12 +2266,12 @@ class MY_Controller extends CI_Controller {
             if (!empty($missing_ids)) {
                 foreach ($missing_ids as $missing) {
                     $cbtsiswa->nilai[] = [
-                        "id_bank" => (string)$bank,
-                        "id_jadwal" => (string)$jadwal,
-                        "id_soal" => (string)$missing->id_soal,
+                        "id_bank" => (string) $bank,
+                        "id_jadwal" => (string) $jadwal,
+                        "id_soal" => (string) $missing->id_soal,
                         "nilai_koreksi" => $missing->koreksi,
                         "nilai_otomatis" => '1',
-                        "point_soal" => (string)$point_soal
+                        "point_soal" => (string) $point_soal
                     ];
                 }
             }
@@ -1968,7 +2298,7 @@ class MY_Controller extends CI_Controller {
                     $point_soal = $nilai->point_soal;
                 }
                 $for_update = array_filter($nilais, function ($item) use ($idsoal) {
-                    return (string)$item->id_soal == (string)$idsoal;
+                    return (string) $item->id_soal == (string) $idsoal;
                 });
                 if (!empty($for_update)) {
                     $nilai_siswa = array_values($for_update)[0];
@@ -1985,12 +2315,12 @@ class MY_Controller extends CI_Controller {
             if (!empty($missing_ids)) {
                 foreach ($missing_ids as $missing) {
                     $rekapsiswa->nilai[] = [
-                        "id_bank" => (string)$bank,
-                        "id_jadwal" => (string)$jadwal,
-                        "id_soal" => (string)$missing->id_soal,
+                        "id_bank" => (string) $bank,
+                        "id_jadwal" => (string) $jadwal,
+                        "id_soal" => (string) $missing->id_soal,
                         "nilai_koreksi" => $missing->koreksi,
                         "nilai_otomatis" => '1',
-                        "point_soal" => (string)$point_soal
+                        "point_soal" => (string) $point_soal
                     ];
                 }
             }
@@ -2027,26 +2357,26 @@ class MY_Controller extends CI_Controller {
         $this->load->model('Rekap_siswa_model', 'rekap_siswa');
         $this->load->model('Log_model', 'logging');
 
-        $cbtsiswa = $this->cbt_siswa_model->fields('id_cbt_siswa,nilai_input')->where(['id_jadwal'=> $jadwal, 'id_siswa'=>$siswa])->get();
+        $cbtsiswa = $this->cbt_siswa_model->fields('id_cbt_siswa,nilai_input')->where(['id_jadwal' => $jadwal, 'id_siswa' => $siswa])->get();
 
         $updated = true;
         if ($cbtsiswa) {
             $nilai_input = $this->maybe_unserialize($cbtsiswa->nilai_input ?? '{}');
             $nilai_input->dikoreksi = '1';
 
-            $set_update = ['nilai_input'   => json_encode($nilai_input)];
+            $set_update = ['nilai_input' => json_encode($nilai_input)];
             $this->db->where('id_cbt_siswa', $cbtsiswa->id_cbt_siswa);
             $updated = $this->db->update('cbt_siswa', $set_update);
             $data['cbtsiswa'] = $set_update;
         }
 
         $updated2 = true;
-        $rekapsiswa = $this->rekap_siswa->fields('id_rekap_siswa,nilai_input')->where(['id_siswa'=>$siswa, 'id_jadwal'=>$jadwal])->get();
+        $rekapsiswa = $this->rekap_siswa->fields('id_rekap_siswa,nilai_input')->where(['id_siswa' => $siswa, 'id_jadwal' => $jadwal])->get();
         if ($rekapsiswa) {
             $nilai_input2 = $this->maybe_unserialize($rekapsiswa->nilai_input ?? '{}');
             $nilai_input2->dikoreksi = '1';
 
-            $set_update2 = ['nilai_input'   => json_encode($nilai_input2)];
+            $set_update2 = ['nilai_input' => json_encode($nilai_input2)];
             $this->db->where('id_rekap_siswa', $rekapsiswa->id_rekap_siswa);
             $updated2 = $this->db->update('cbt_rekap_siswa', $set_update2);
             $data['rekapsiswa'] = $set_update2;
@@ -2078,7 +2408,7 @@ class MY_Controller extends CI_Controller {
         $smt = $tp_smt->smt_active;
 
         $cbtsiswa = $this->cbt_siswa_model->fields('id_cbt_siswa,id_siswa,nilai_input')
-            ->where(['id_jadwal'=> $id_jadwal])
+            ->where(['id_jadwal' => $id_jadwal])
             ->where('id_siswa', $id_siswa)
             ->get_all();
 
@@ -2090,11 +2420,11 @@ class MY_Controller extends CI_Controller {
                     $cbt->nilai_input = json_encode($nilai_input);
                 }
             }
-            $this->db->update_batch('cbt_siswa', (array)$cbtsiswa, 'id_cbt_siswa');
+            $this->db->update_batch('cbt_siswa', (array) $cbtsiswa, 'id_cbt_siswa');
         }
 
         $rekapsiswa = $this->rekap_siswa->fields('id_rekap_siswa,id_siswa,nilai_input')
-            ->where(['id_jadwal'=> $id_jadwal])
+            ->where(['id_jadwal' => $id_jadwal])
             ->where('id_siswa', $id_siswa)
             ->get_all();
 
@@ -2106,14 +2436,14 @@ class MY_Controller extends CI_Controller {
                     $rekap->nilai_input = json_encode($nilai_input2);
                 }
             }
-            $this->db->update_batch('cbt_rekap_siswa', (array)$rekapsiswa, 'id_rekap_siswa');
+            $this->db->update_batch('cbt_rekap_siswa', (array) $rekapsiswa, 'id_rekap_siswa');
         }
 
         $this->logging->saveLog($this->LOG_TYPE->EDIT, 'Mengkoreksi hasil ujian siswa');
         $data['success'] = true;
         $data['siswa'] = $siswas;
-        $data['rekap'] = (array)$rekapsiswa;
-        $data['cbt'] = (array)$cbtsiswa;
+        $data['rekap'] = (array) $rekapsiswa;
+        $data['cbt'] = (array) $cbtsiswa;
         $this->output_json($data);
     }
 
@@ -2131,7 +2461,7 @@ class MY_Controller extends CI_Controller {
 
         $cbtSiswa = $this->cbt_siswa_model
             ->fields('id_cbt_siswa,id_siswa,nilai_input,status')
-            ->where(['id_jadwal'=> $jadwal])
+            ->where(['id_jadwal' => $jadwal])
             ->where('id_siswa', $idSiswa)
             ->get_all();
 
@@ -2142,7 +2472,7 @@ class MY_Controller extends CI_Controller {
 
         $rekapSiswa = $this->rekap_siswa
             ->fields('id_rekap_siswa,id_siswa,nilai_input,status')
-            ->where(['id_jadwal'=> $jadwal])
+            ->where(['id_jadwal' => $jadwal])
             ->where('id_siswa', $idSiswa)
             ->get_all();
 
@@ -2166,10 +2496,15 @@ class MY_Controller extends CI_Controller {
                     $blm_selesai[] = $siswa->id_siswa;
                 } else {
                     $nilai_siswa = json_decode($siswa->nilai_input);
+                    if (!is_object($nilai_siswa))
+                        $nilai_siswa = new stdClass();
+
                     $nilai_siswa->kompleks_nilai = isset($nilai->kompleks_nilai) && $nilai->kompleks_nilai != null ? $nilai->kompleks_nilai : '0';
                     $nilai_siswa->jodohkan_nilai = isset($nilai->jodohkan_nilai) && $nilai->jodohkan_nilai != null ? $nilai->jodohkan_nilai : '0';
                     $nilai_siswa->isian_nilai = isset($nilai->isian_nilai) && $nilai->isian_nilai != null ? $nilai->isian_nilai : '0';
                     $nilai_siswa->essai_nilai = isset($nilai->essai_nilai) && $nilai->essai_nilai != null ? $nilai->essai_nilai : '0';
+                    $nilai_siswa->urutan_nilai = isset($nilai->urutan_nilai) && $nilai->urutan_nilai != null ? $nilai->urutan_nilai : '0';
+                    $nilai_siswa->cloze_nilai = isset($nilai->cloze_nilai) && $nilai->cloze_nilai != null ? $nilai->cloze_nilai : '0';
                     $forUpdate = [
                         'id_cbt_siswa' => $map_cbt[$nilai->id_siswa]->id_cbt_siswa,
                         'nilai_input' => json_encode($nilai_siswa)
@@ -2177,11 +2512,14 @@ class MY_Controller extends CI_Controller {
                     $updated[] = $forUpdate;
                 }
             } else {
+                continue; // Skip if no CBT record found for student
+                /*
                 $nilai_in['id_siswa'] = $nilai->id_siswa;
                 $nilai_in['id_jadwal'] = $nilai->id_jadwal;
                 $nilai_in['id_bank'] = $banksoal;
                 $nilai_in['nilai_input'] = json_encode($nilai);
                 $insert_cbt[] = $nilai_in;
+                */
             }
 
             $adaRekap = isset($map_rekap[$nilai->id_siswa]);
@@ -2195,6 +2533,8 @@ class MY_Controller extends CI_Controller {
                     $nilai_siswa->jodohkan_nilai = isset($nilai->jodohkan_nilai) && $nilai->jodohkan_nilai != null ? $nilai->jodohkan_nilai : '0';
                     $nilai_siswa->isian_nilai = isset($nilai->isian_nilai) && $nilai->isian_nilai != null ? $nilai->isian_nilai : '0';
                     $nilai_siswa->essai_nilai = isset($nilai->essai_nilai) && $nilai->essai_nilai != null ? $nilai->essai_nilai : '0';
+                    $nilai_siswa->urutan_nilai = isset($nilai->urutan_nilai) && $nilai->urutan_nilai != null ? $nilai->urutan_nilai : '0';
+                    $nilai_siswa->cloze_nilai = isset($nilai->cloze_nilai) && $nilai->cloze_nilai != null ? $nilai->cloze_nilai : '0';
                     $forRekap = [
                         'id_rekap_siswa' => $map_rekap[$nilai->id_siswa]->id_rekap_siswa,
                         'nilai_input' => json_encode($nilai_siswa)
@@ -2451,12 +2791,12 @@ class MY_Controller extends CI_Controller {
         if ($sum > 0) {
             $meanTotal = array_sum($totalScores) / count($totalScores);
             $stdDevTotal = sqrt(array_sum(array_map(function ($score) use ($meanTotal) {
-                    return pow($score - $meanTotal, 2);
-                }, $totalScores)) / count($totalScores));
+                return pow($score - $meanTotal, 2);
+            }, $totalScores)) / count($totalScores));
 
             $meanCorrect = array_sum(array_filter($totalScores, function ($score, $index) use ($responses) {
-                    return $responses[$index] == 1;
-                }, ARRAY_FILTER_USE_BOTH)) / max(1, array_sum($responses));
+                return $responses[$index] == 1;
+            }, ARRAY_FILTER_USE_BOTH)) / max(1, array_sum($responses));
 
             $p = array_sum($responses) / count($responses);
             $q = 1 - $p;
@@ -2468,7 +2808,8 @@ class MY_Controller extends CI_Controller {
             : 0;
     }
 
-    private function calculateAlphaCronbach($responses) {
+    private function calculateAlphaCronbach($responses)
+    {
         $numStudents = count($responses);
         $numQuestions = isset($responses[0]) ? count($responses[0]) : 0;
 
@@ -2483,9 +2824,9 @@ class MY_Controller extends CI_Controller {
         $meanTotal = $sum / $numStudents;
 
         // Hitung varian total skor
-        $varTotal = array_sum(array_map(function($score) use ($meanTotal) {
-                return pow($score - $meanTotal, 2);
-            }, $totalScores)) / $numStudents;
+        $varTotal = array_sum(array_map(function ($score) use ($meanTotal) {
+            return pow($score - $meanTotal, 2);
+        }, $totalScores)) / $numStudents;
 
         if ($varTotal == 0) {
             return 0; // Variasi total tidak ada, alpha tidak bisa dihitung
@@ -2497,9 +2838,9 @@ class MY_Controller extends CI_Controller {
             $itemScores = array_column($responses, $i);
             $meanItem = array_sum($itemScores) / $numStudents;
 
-            $itemVariances[$i] = array_sum(array_map(function($score) use ($meanItem) {
-                    return pow($score - $meanItem, 2);
-                }, $itemScores)) / $numStudents;
+            $itemVariances[$i] = array_sum(array_map(function ($score) use ($meanItem) {
+                return pow($score - $meanItem, 2);
+            }, $itemScores)) / $numStudents;
         }
 
         $sumItemVariance = array_sum($itemVariances);
@@ -2513,7 +2854,8 @@ class MY_Controller extends CI_Controller {
         return $alpha;
     }
 
-    private function calculateKR20($responses) {
+    private function calculateKR20($responses)
+    {
         $numStudents = count($responses);
         $numQuestions = isset($responses[0]) ? count($responses[0]) : 0;
 
@@ -2528,9 +2870,9 @@ class MY_Controller extends CI_Controller {
         $meanTotal = $sum / $numStudents;
 
         // Hitung varian total skor
-        $varTotal = array_sum(array_map(function($score) use ($meanTotal) {
-                return pow($score - $meanTotal, 2);
-            }, $totalScores)) / $numStudents;
+        $varTotal = array_sum(array_map(function ($score) use ($meanTotal) {
+            return pow($score - $meanTotal, 2);
+        }, $totalScores)) / $numStudents;
 
         if ($varTotal == 0) {
             return 0; // Variasi total tidak ada, KR-20 tidak dapat dihitung
@@ -2558,7 +2900,7 @@ class MY_Controller extends CI_Controller {
     {
         // Mengatur header CORS untuk mengizinkan permintaan lintas-origin
         // Di produksi, ganti '*' dengan domain frontend Anda yang spesifik (misal: 'http://localhost:8080')
-        header('Access-Control-Allow-Origin: '.base_url());
+        header('Access-Control-Allow-Origin: ' . base_url());
         header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
         header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
         header('Content-Type: application/json');
@@ -2649,20 +2991,27 @@ class MY_Controller extends CI_Controller {
             $og_site_name = $xpath->query('//meta[@property="og:site_name"]/@content')->item(0);
             $og_url = $xpath->query('//meta[@property="og:url"]/@content')->item(0);
 
-            if ($og_title) $extracted_info['title'] = $og_title->nodeValue;
-            if ($og_description) $extracted_info['description'] = $og_description->nodeValue;
-            if ($og_image) $extracted_info['image'] = $og_image->nodeValue;
-            if ($og_site_name) $extracted_info['siteName'] = $og_site_name->nodeValue;
-            if ($og_url) $extracted_info['url'] = $og_url->nodeValue;
+            if ($og_title)
+                $extracted_info['title'] = $og_title->nodeValue;
+            if ($og_description)
+                $extracted_info['description'] = $og_description->nodeValue;
+            if ($og_image)
+                $extracted_info['image'] = $og_image->nodeValue;
+            if ($og_site_name)
+                $extracted_info['siteName'] = $og_site_name->nodeValue;
+            if ($og_url)
+                $extracted_info['url'] = $og_url->nodeValue;
 
             // Fallback jika OG tags tidak ada
             if ($extracted_info['title'] == 'Tidak ada judul') {
                 $title_tag = $xpath->query('//title')->item(0);
-                if ($title_tag) $extracted_info['title'] = $title_tag->nodeValue;
+                if ($title_tag)
+                    $extracted_info['title'] = $title_tag->nodeValue;
             }
             if ($extracted_info['description'] == 'Tidak ada deskripsi yang tersedia.') {
                 $meta_description = $xpath->query('//meta[@name="description"]/@content')->item(0);
-                if ($meta_description) $extracted_info['description'] = $meta_description->nodeValue;
+                if ($meta_description)
+                    $extracted_info['description'] = $meta_description->nodeValue;
             }
             if (empty($extracted_info['image'])) {
                 $link_image_src = $xpath->query('//link[@rel="image_src"]/@href')->item(0);
@@ -2671,7 +3020,8 @@ class MY_Controller extends CI_Controller {
                 } else {
                     // Coba ambil gambar pertama dari body
                     $first_img = $xpath->query('//img')->item(0);
-                    if ($first_img) $extracted_info['image'] = $first_img->getAttribute('src');
+                    if ($first_img)
+                        $extracted_info['image'] = $first_img->getAttribute('src');
                 }
             }
 

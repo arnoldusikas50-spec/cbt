@@ -1,7 +1,6 @@
 <?php
 /**
- * Created by IntelliJ IDEA.
- * User: multazam
+
  * Date: 14/10/20
  * Time: 18:09
  */

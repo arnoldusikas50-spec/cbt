@@ -1,20 +1,23 @@
 <?php
 
 
-class Cbtjadwal extends MY_Controller {
+class Cbtjadwal extends MY_Controller
+{
 
-	public function __construct(){
-		parent::__construct();
-		if (!$this->auth->logged_in()){
-			redirect('auth');
-		}else if ( !$this->auth->is_admin() && !$this->auth->in_group('panitia') && !$this->auth->in_group('guru') ){
-			show_error('Hanya Administrator dan guru yang diberi hak untuk mengakses halaman ini, <a href="'.base_url('dashboard').'">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
-		}
-		$this->load->library(['datatables', 'form_validation']);// Load Library Ignited-Datatables
-		$this->form_validation->set_error_delimiters('','');
-	}
+    public function __construct()
+    {
+        parent::__construct();
+        if (!$this->auth->logged_in()) {
+            redirect('auth');
+        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru') && !$this->auth->in_group('panitia') && $this->session->userdata('role') != '4') {
+            show_error('Hanya Administrator, Guru dan Panitia yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
+        }
+        $this->load->library(['datatables', 'form_validation']);// Load Library Ignited-Datatables
+        $this->form_validation->set_error_delimiters('', '');
+    }
 
-    private function getJadwalTerpakai($id_jadwal = null) {
+    private function getJadwalTerpakai($id_jadwal = null)
+    {
         $this->db->select('id_bank,id_jadwal,id_siswa');
         $this->db->from('cbt_siswa');
         if ($id_jadwal != null) {
@@ -28,7 +31,52 @@ class Cbtjadwal extends MY_Controller {
         return $ret;
     }
 
-	public function index() {
+    /**
+     * Get allocation status for jadwal from cbt_pengawas table
+     * Returns array with id_jadwal as key and allocation info as value
+     */
+    private function getJadwalAlokasi($id_tp, $id_smt)
+    {
+        // 1. Check allocation in cbt_pengawas (Room & Session distribution)
+        $this->db->select('id_jadwal, COUNT(id_pengawas) as jumlah_alokasi, GROUP_CONCAT(DISTINCT jam_ke) as jam_ke');
+        $this->db->from('cbt_pengawas');
+        $this->db->where('id_tp', $id_tp);
+        $this->db->where('id_smt', $id_smt);
+        $this->db->group_by('id_jadwal');
+        $result = $this->db->get()->result();
+        $ret = [];
+        foreach ($result as $row) {
+            $ret[$row->id_jadwal] = (object) [
+                'jumlah_alokasi' => $row->jumlah_alokasi,
+                'jam_ke' => $row->jam_ke
+            ];
+        }
+
+        // 2. Check allocation in cbt_jadwal (Time slot only)
+        // This covers cases where rooms/sessions aren't fully mapped but time is set
+        $this->db->select('id_jadwal, jam_ke');
+        $this->db->from('cbt_jadwal');
+        $this->db->where('id_tp', $id_tp);
+        $this->db->where('id_smt', $id_smt);
+        $this->db->where("jam_ke IS NOT NULL");
+        $this->db->where("jam_ke !=", '0');
+        $this->db->where("jam_ke !=", '');
+        $jadwals = $this->db->get()->result();
+
+        foreach ($jadwals as $j) {
+            if (!isset($ret[$j->id_jadwal])) {
+                $ret[$j->id_jadwal] = (object) [
+                    'jumlah_alokasi' => 0,
+                    'jam_ke' => $j->jam_ke
+                ];
+            }
+        }
+
+        return $ret;
+    }
+
+    public function index()
+    {
         $this->load->model('Cbt_model', 'cbt');
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Kelas_model', 'kelas');
@@ -38,28 +86,28 @@ class Cbtjadwal extends MY_Controller {
         $level = $lvl == null ? '0' : $lvl;
         $user = $this->auth->user();
         $setting = $this->dashboard->getSetting();
-		$data = [
-			'user' => $user,
-			'judul'	=> 'Jadwal Penilaian',
-			'subjudul'=> 'PH/PTS/PAT/USBK',
-			'setting'		=> $setting
-		];
+        $data = [
+            'user' => $user,
+            'judul' => 'Jadwal Penilaian',
+            'subjudul' => 'PH/PTS/PAT/USBK',
+            'setting' => $setting
+        ];
 
-		$tp = $this->dashboard->getTahunActive();
-		$smt = $this->dashboard->getSemesterActive();
-		$data['tp'] = $this->dashboard->getTahun();
-		$data['tp_active'] = $tp;
-		$data['smt'] = $this->dashboard->getSemester();
-		$data['smt_active'] = $smt;
+        $tp = $this->dashboard->getTahunActive();
+        $smt = $this->dashboard->getSemesterActive();
+        $data['tp'] = $this->dashboard->getTahun();
+        $data['tp_active'] = $tp;
+        $data['smt'] = $this->dashboard->getSemester();
+        $data['smt_active'] = $smt;
 
         $mode = $this->input->get('mode');
         $type = $this->input->get('type');
         $data['mode'] = $mode == null ? '1' : $mode;
 
-		$data['ruangs'] = $this->cbt->getAllRuang();
-		$data['sesis'] = $this->dropdown->getAllSesi();
-		$data['jenis'] = $this->cbt->getAllJenisUjian();
-		$data['jadwal'] = json_decode(json_encode($this->cbt->dummyJadwal()));
+        $data['ruangs'] = $this->cbt->getAllRuang();
+        $data['sesis'] = $this->dropdown->getAllSesi();
+        $data['jenis'] = $this->cbt->getAllJenisUjian();
+        $data['jadwal'] = json_decode(json_encode($this->cbt->dummyJadwal()));
 
         $data['jmlIst'] = [];
         $data['jmlMapel'] = [];
@@ -67,21 +115,24 @@ class Cbtjadwal extends MY_Controller {
         if ($mode) {
             $terpakai = $this->getJadwalTerpakai();
             $jadwal_terpakai = [];
-            foreach ($terpakai as $idj=>$rows) {
+            foreach ($terpakai as $idj => $rows) {
                 $jadwal_terpakai[$idj] = count($rows);
             }
             $data['total_siswa'] = $jadwal_terpakai;
+
+            // Get allocation status for each jadwal
+            $data['alokasi_jadwal'] = $this->getJadwalAlokasi($tp->id_tp, $smt->id_smt);
         }
         $data['ada_ujian'] = $this->cbt->getDataJadwalByTgl(date('Y-m-d'));
         $data['levels'] = $this->dropdown->getAllLevel($setting->jenjang);
         $data['kelas'] = $this->cbt->getKelas($tp->id_tp, $smt->id_smt);
         $data['rekaps'] = $this->cekRekapSiswa();
 
-        if($this->auth->is_admin() || $this->auth->in_group('panitia')){
+        if ($this->auth->is_admin() || $this->auth->in_group('panitia') || $this->session->userdata('role') == '4') {
             $data['gurus'] = $this->dropdown->getAllGuru();
             $data['mapels'] = $this->dropdown->getAllMapel();
 
-            $data['filters'] = ['0'=>'Semua', '1'=>'Guru', '2'=>'Mapel', '3'=>'Level'];
+            $data['filters'] = ['0' => 'Semua', '1' => 'Guru', '2' => 'Mapel', '3' => 'Level'];
             $data['id_filter'] = $type == null ? '' : $type;
             $jadwals = [];
             if ($type == '0') {
@@ -99,14 +150,14 @@ class Cbtjadwal extends MY_Controller {
             } elseif ($type == '2') {
                 $id_mapel = $this->input->get('id');
                 $data['id_mapel'] = $id_mapel;
-                $jadwals = $this->cbt->getAllDataJadwal($tp->id_tp, $smt->id_smt,null, $id_mapel);
+                $jadwals = $this->cbt->getAllDataJadwal($tp->id_tp, $smt->id_smt, null, $id_mapel);
 
                 $data['id_guru'] = '';
                 $data['id_level'] = '';
             } elseif ($type == '3') {
                 $id_level = $this->input->get('id');
                 $data['id_level'] = $id_level;
-                $jadwals = $this->cbt->getAllDataJadwal($tp->id_tp, $smt->id_smt,null, null, $id_level);
+                $jadwals = $this->cbt->getAllDataJadwal($tp->id_tp, $smt->id_smt, null, null, $id_level);
 
                 $data['id_guru'] = '';
                 $data['id_mapel'] = '';
@@ -118,18 +169,23 @@ class Cbtjadwal extends MY_Controller {
             if (count($jadwals) > 0) {
                 foreach ($jadwals as $title => $arrjadwal) {
                     foreach ($arrjadwal as $lvl => $sjadwal) {
-                        foreach ($sjadwal as $keys=>$jadwal) {
+                        foreach ($sjadwal as $keys => $jadwal) {
                             $jadwal->bank_kelas = $this->maybe_unserialize($jadwal->bank_kelas ?? '[]');
                         }
                     }
                 }
             }
             $data['jadwals'] = $jadwals;
-            $role_id = $this->auth->is_admin() ? 1 : 4;
-            $this->render_view($role_id, 'cbt/jadwal/data', $data);
-		} else {
+
+            if ($this->auth->is_admin()) {
+                $this->render_view(1, 'cbt/jadwal/data', $data);
+            } else {
+                $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+                $this->render_view(4, 'members/panitia/cbt/jadwal/data', $data);
+            }
+        } else {
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
-			$data['guru'] = $guru;
+            $data['guru'] = $guru;
 
             $mapel_guru = $this->kelas->getGuruMapelKelas($guru->id_guru, $tp->id_tp, $smt->id_smt);
             $mapel = $this->maybe_unserialize($mapel_guru->mapel_kelas ?? '[]');
@@ -141,7 +197,7 @@ class Cbtjadwal extends MY_Controller {
             }
             $data['mapels'] = $arrMapel;
 
-            $data['filters'] = ['0'=>'Semua', '2'=>'Mapel', '3'=>'Level'];
+            $data['filters'] = ['0' => 'Semua', '2' => 'Mapel', '3' => 'Level'];
             $data['id_filter'] = $type == null ? '' : $type;
             $jadwals = [];
             if ($type == '0') {
@@ -171,61 +227,62 @@ class Cbtjadwal extends MY_Controller {
             if (count($jadwals) > 0) {
                 foreach ($jadwals as $title => $arrjadwal) {
                     foreach ($arrjadwal as $lvl => $sjadwal) {
-                        foreach ($sjadwal as $keys=>$jadwal) {
+                        foreach ($sjadwal as $keys => $jadwal) {
                             $jadwal->bank_kelas = $this->maybe_unserialize($jadwal->bank_kelas ?? '[]');
                         }
                     }
                 }
             }
             $data['jadwals'] = $jadwals;
-			$this->render_view(2, 'cbt/jadwal/data', $data);
-		}
-	}
+            $this->render_view(2, 'cbt/jadwal/data', $data);
+        }
+    }
 
-	public function add($id_jadwal) {
+    public function add($id_jadwal)
+    {
         $this->load->model('Cbt_model', 'cbt');
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Kelas_model', 'kelas');
         $this->load->model('Dropdown_model', 'dropdown');
 
         $enable = $this->input->get('enable', true);
-		$user = $this->auth->user();
-		$data = [
-			'user' => $user,
-			'judul'	=> $id_jadwal==0 ? 'Tambah Jadwal Ujian' : 'Edit Jadwal Ujian',
-			'subjudul'=> 'Jadwal Ujian',
-			'setting'		=> $this->dashboard->getSetting()
-		];
+        $user = $this->auth->user();
+        $data = [
+            'user' => $user,
+            'judul' => $id_jadwal == 0 ? 'Tambah Jadwal Ujian' : 'Edit Jadwal Ujian',
+            'subjudul' => 'Jadwal Ujian',
+            'setting' => $this->dashboard->getSetting()
+        ];
 
-		$tp = $this->dashboard->getTahunActive();
-		$smt = $this->dashboard->getSemesterActive();
-		$data['tp'] = $this->dashboard->getTahun();
-		$data['tp_active'] = $tp;
-		$data['smt'] = $this->dashboard->getSemester();
-		$data['smt_active'] = $smt;
+        $tp = $this->dashboard->getTahunActive();
+        $smt = $this->dashboard->getSemesterActive();
+        $data['tp'] = $this->dashboard->getTahun();
+        $data['tp_active'] = $tp;
+        $data['smt'] = $this->dashboard->getSemester();
+        $data['smt_active'] = $smt;
 
-		if ($id_jadwal==0) {
+        if ($id_jadwal == 0) {
             $jadwal = json_decode(json_encode($this->cbt->dummyJadwal()));
             $jadwal->bank_kelas = [];
         } else {
-			$jadwal = $this->cbt->getJadwalById($id_jadwal);
+            $jadwal = $this->cbt->getJadwalById($id_jadwal);
             $jadwal->bank_kelas = $this->maybe_unserialize($jadwal->bank_kelas ?? '[]');
         }
         $data['jadwal'] = $jadwal;
         $gurus = $this->dropdown->getAllGuru();
-		$data['ruangs'] = $this->cbt->getAllRuang();
-		$data['sesis'] = $this->dropdown->getAllSesi();
-		$data['jenis'] = $this->cbt->getAllJenisUjian();
-		$data['kelas'] = $this->cbt->getKelas($tp->id_tp, $smt->id_smt);
-		$data['disable_opsi'] = $enable != null && $enable == 1;
+        $data['ruangs'] = $this->cbt->getAllRuang();
+        $data['sesis'] = $this->dropdown->getAllSesi();
+        $data['jenis'] = $this->cbt->getAllJenisUjian();
+        $data['active_jenis_id'] = $this->cbt->getActiveJenisId(); // Get active jenis for default selection
+        $data['kelas'] = $this->cbt->getKelas($tp->id_tp, $smt->id_smt);
+        $data['disable_opsi'] = $enable != null && $enable == 1;
 
-		if($this->auth->is_admin() || $this->auth->in_group('panitia')){
+        if ($this->auth->is_admin()) {
             $data['guru'] = $gurus;
             $data['mapel'] = $this->dropdown->getAllMapel();
-            $role_id = $this->auth->is_admin() ? 1 : 4;
-            $this->render_view($role_id, 'cbt/jadwal/add', $data);
-		}else{
-			$guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(1, 'cbt/jadwal/add', $data);
+        } else {
+            $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             //$this->dashboard->getDataGuruByUsername($user->username, $tp->id_tp, $smt->id_smt);
             $data['guru'] = $guru;
             $mapel_guru = $this->kelas->getGuruMapelKelas($guru->id_guru, $tp->id_tp, $smt->id_smt);
@@ -235,17 +292,18 @@ class Cbtjadwal extends MY_Controller {
                 $arrMapel[$m->id_mapel] = $m->nama_mapel;
             }
             $data['mapel'] = $arrMapel;
-			$this->render_view(2, 'cbt/jadwal/add', $data);
-		}
-	}
+            $this->render_view(2, 'cbt/jadwal/add', $data);
+        }
+    }
 
-    public function getBankMapel($id_mapel){
+    public function getBankMapel($id_mapel)
+    {
         $this->load->model('Cbt_model', 'cbt');
         $this->load->model('Dashboard_model', 'dashboard');
 
         $tp = $this->dashboard->getTahunActive();
         $smt = $this->dashboard->getSemesterActive();
-        if($this->auth->is_admin() || $this->auth->in_group('panitia')){
+        if ($this->auth->is_admin()) {
             $banks = $this->cbt->getAllBankSoalByMapel($tp->id_tp, $smt->id_smt, $id_mapel);
         } else {
             $user = $this->auth->user();
@@ -256,7 +314,7 @@ class Cbtjadwal extends MY_Controller {
         $filtered = [];
         $digunakan = [];
         $kelas = [];
-        foreach ($banks as $key=>$bank) {
+        foreach ($banks as $key => $bank) {
             $cek_soal = $this->cbt->getJumlahJenisSoal($key);
             $num1 = isset($cek_soal['1']) ? count($cek_soal['1']) : 0;
             $num2 = isset($cek_soal['2']) ? count($cek_soal['2']) : 0;
@@ -277,17 +335,18 @@ class Cbtjadwal extends MY_Controller {
             }
         }
         $all_kelas = $this->cbt->getKelas($tp->id_tp, $smt->id_smt);
-        $this->output_json(['bank' => $filtered, 'jadwal'=>$digunakan, 'kelas'=>$kelas, 'all_kelas' => $all_kelas]);
+        $this->output_json(['bank' => $filtered, 'jadwal' => $digunakan, 'kelas' => $kelas, 'all_kelas' => $all_kelas]);
         //$this->output_json($this->cbt->getAllBankSoalByMapel($tp->id_tp, $smt->id_smt, $id_mapel));
     }
 
-	public function saveJadwal() {
+    public function saveJadwal()
+    {
         $this->load->model('Cbt_model', 'cbt');
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Log_model', 'logging');
 
-		$tp = $this->dashboard->getTahunActive();
-		$smt = $this->dashboard->getSemesterActive();
+        $tp = $this->dashboard->getTahunActive();
+        $smt = $this->dashboard->getSemesterActive();
 
         $id = $this->input->post('id_jadwal', true);
         $res = $this->cbt->saveJadwalUjian($tp->id_tp, $smt->id_smt);
@@ -323,8 +382,8 @@ class Cbtjadwal extends MY_Controller {
             foreach ($jadwal->bank_kelas as $kb) {
                 if ($kb->kelas_id) {
                     $klss = $this->cbt->getKelasUjian($tp->id_tp, $smt->id_smt, $kb->kelas_id);
-                    foreach ($ruangs as $id_ruang=>$ruang) {
-                        foreach ($ruang as $id_sesi=>$sesi) {
+                    foreach ($ruangs as $id_ruang => $ruang) {
+                        foreach ($ruang as $id_sesi => $sesi) {
                             if (isset($klss[$kb->kelas_id][$id_ruang][$id_sesi])) {
                                 if (isset($peserta[$id_ruang][$id_sesi])) {
                                     $peserta[$id_ruang][$id_sesi] += count($klss[$kb->kelas_id][$id_ruang][$id_sesi]);
@@ -338,10 +397,10 @@ class Cbtjadwal extends MY_Controller {
             }
 
             $inserted = [];
-            foreach ($peserta as $idRuang=>$rng) {
-                foreach ($rng as $idSesi=>$ses) {
+            foreach ($peserta as $idRuang => $rng) {
+                foreach ($rng as $idSesi => $ses) {
                     if ($ses > 0) {
-                        $id_pengawas = $tp->id_tp.$smt->id_smt.$jadwal->id_jadwal.$idRuang.$idSesi;
+                        $id_pengawas = $tp->id_tp . $smt->id_smt . $jadwal->id_jadwal . $idRuang . $idSesi;
                         $exist = $this->cbt->getPengawas($id_pengawas);
                         if ($exist) {
                             $exist_peng = explode(",", $exist->id_guru);
@@ -349,8 +408,8 @@ class Cbtjadwal extends MY_Controller {
                                 $exist_peng[] = $guru->id_guru;
                             }
                             $dataInsert = [
-                                'id_pengawas'	=> $exist->id_pengawas,
-                                'id_jadwal'	=> $exist->id_jadwal,
+                                'id_pengawas' => $exist->id_pengawas,
+                                'id_jadwal' => $exist->id_jadwal,
                                 'id_tp' => $exist->id_tp,
                                 'id_smt' => $exist->id_smt,
                                 'id_ruang' => $exist->id_ruang,
@@ -359,8 +418,8 @@ class Cbtjadwal extends MY_Controller {
                             ];
                         } else {
                             $dataInsert = [
-                                'id_pengawas'	=> $id_pengawas,
-                                'id_jadwal'	=> $jadwal->id_jadwal,
+                                'id_pengawas' => $id_pengawas,
+                                'id_jadwal' => $jadwal->id_jadwal,
                                 'id_tp' => $tp->id_tp,
                                 'id_smt' => $smt->id_smt,
                                 'id_ruang' => $idRuang,
@@ -381,16 +440,17 @@ class Cbtjadwal extends MY_Controller {
         $data['success'] = $status;
         $data['message'] = 'Jadwal berhasil disimpan';
 
-		if (!$id) {
-			$this->logging->saveLog(3, 'menambah jadwal pelajaran');
-		} else {
-			$this->logging->saveLog(4, 'mengedit jadwal pelajaran');
-		}
+        if (!$id) {
+            $this->logging->saveLog(3, 'menambah jadwal pelajaran');
+        } else {
+            $this->logging->saveLog(4, 'mengedit jadwal pelajaran');
+        }
 
-		$this->output_json($data);
-	}
+        $this->output_json($data);
+    }
 
-    public function aktifkan_jadwal() {
+    public function aktifkan_jadwal()
+    {
         $this->load->model('Log_model', 'logging');
 
         $method = $this->input->post('method', true);
@@ -401,21 +461,27 @@ class Cbtjadwal extends MY_Controller {
         $this->db->where('id_jadwal', $id);
         $this->db->update('cbt_jadwal');
 
-        $this->logging->saveLog($stat == '1' ? $this->LOG_TYPE->ADD : $this->LOG_TYPE->EDIT,
-            ($stat == '1' ? 'Mengaktifkan' : 'Menonaktifkan').' jadwal ujian');
+        $this->logging->saveLog(
+            $stat == '1' ? $this->LOG_TYPE->ADD : $this->LOG_TYPE->EDIT,
+            ($stat == '1' ? 'Mengaktifkan' : 'Menonaktifkan') . ' jadwal ujian'
+        );
 
         $this->output_json(['status' => true]);
     }
 
-    public function deleteJadwal() {
+    public function deleteJadwal()
+    {
         $this->load->model('Master_model', 'master');
         $this->load->model('Cbt_model', 'cbt');
         $this->load->model('Log_model', 'logging');
 
-		$id = $this->input->get('id_jadwal', true);
+        $id = $this->input->get('id_jadwal', true);
         $jadwal_dikerjakan = $this->getJadwalTerpakai();
         $terpakai = isset($jadwal_dikerjakan[$id]) && count($jadwal_dikerjakan[$id]) > 0;
-        $rekap_jadwal = $this->db->get_where('cbt_rekap_jadwal', ['id_jadwal'=>$id])->num_rows();
+
+        $this->db->where('id_jadwal', $id);
+        $rekap_jadwal = $this->db->get('cbt_rekap_jadwal')->num_rows();
+
         if ($terpakai && $rekap_jadwal == 0) {
             $data['status'] = false;
             $data['message'] = 'Hasil Ujian belum direkap';
@@ -433,10 +499,11 @@ class Cbtjadwal extends MY_Controller {
             $data['status'] = false;
             $data['message'] = 'Jadwal Ujian gagal dihapus';
         }
-		$this->output_json($data);
-	}
+        $this->output_json($data);
+    }
 
-    public function deleteAllJadwal() {
+    public function deleteAllJadwal()
+    {
         $this->load->model('Master_model', 'master');
         $this->load->model('Cbt_model', 'cbt');
         $this->load->model('Log_model', 'logging');
@@ -485,13 +552,13 @@ class Cbtjadwal extends MY_Controller {
     {
         $arrId = json_decode($this->input->post('ids_jadwal', true));
 
-        $this->db->select('a.id_rekap_nilai, a.id_jadwal, a.id_tp, a.tp, a.id_smt, a.smt, a.id_jenis, a.kode_jenis,'.
-            'a.id_bank, a.id_mapel, a.id_siswa, a.id_kelas, a.kelas, a.mulai, a.selesai, a.durasi, a.bobot_pg,'.
-            'a.jawaban_pg, a.nilai_pg, a.bobot_esai, a.jawaban_esai, a.nilai_esai, a.id_guru, a.nama_siswa, a.no_peserta,'.
-            'a.soal_kompleks, a.soal_jodohkan, a.soal_isian, a.soal_essai,'.
-            'b.siswa_id, b.kelas_id, b.ruang_id, b.sesi_id, b.tp_id, b.smt_id,'.
-            'c.*,d.*,g.reset as reset_izin,'.
-            'e.id_nilai, e.pg_benar, e.pg_nilai, e.essai_nilai, e.kompleks_nilai, e.jodohkan_nilai, e.isian_nilai,e.dikoreksi,'.
+        $this->db->select('a.id_rekap_nilai, a.id_jadwal, a.id_tp, a.tp, a.id_smt, a.smt, a.id_jenis, a.kode_jenis,' .
+            'a.id_bank, a.id_mapel, a.id_siswa, a.id_kelas, a.kelas, a.mulai, a.selesai, a.durasi, a.bobot_pg,' .
+            'a.jawaban_pg, a.nilai_pg, a.bobot_esai, a.jawaban_esai, a.nilai_esai, a.id_guru, a.nama_siswa, a.no_peserta,' .
+            'a.soal_kompleks, a.soal_jodohkan, a.soal_isian, a.soal_essai,' .
+            'b.siswa_id, b.kelas_id, b.ruang_id, b.sesi_id, b.tp_id, b.smt_id,' .
+            'c.*,d.*,g.reset as reset_izin,' .
+            'e.id_nilai, e.pg_benar, e.pg_nilai, e.essai_nilai, e.kompleks_nilai, e.jodohkan_nilai, e.isian_nilai,e.dikoreksi,' .
             'f.id_durasi, f.status, f.lama_ujian, f.mulai, f.selesai, f.reset as reset_waktu');
         $this->db->from('cbt_rekap_nilai a');
         $this->db->join('cbt_sesi_siswa b', 'a.id_siswa = b.siswa_id AND a.id_tp = b.tp_id AND a.id_smt = b.smt_id', 'left');
@@ -528,4 +595,3 @@ class Cbtjadwal extends MY_Controller {
         $this->output_json($data);
     }
 }
-

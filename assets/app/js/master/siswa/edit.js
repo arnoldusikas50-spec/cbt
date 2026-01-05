@@ -2,7 +2,7 @@ function load_kelas(id) {
     $('#kelas').find('option').not(':first').remove();
 
     $.ajax({
-        url: base_url+'kelas/kelas_by_jurusan/' + id,
+        url: base_url + 'kelas/kelas_by_jurusan/' + id,
         icon: 'GET',
         success: function (data) {
             var option = [];
@@ -36,10 +36,10 @@ $(document).ready(function () {
 
     $('.tahun').datetimepicker({
         icons:
-            {
-                next: 'fa fa-angle-right',
-                previous: 'fa fa-angle-left'
-            },
+        {
+            next: 'bi bi-angle-right',
+            previous: 'bi bi-angle-left'
+        },
         timepicker: false,
         format: 'Y-m-d',
         widgetPositioning: {
@@ -63,7 +63,7 @@ $(document).ready(function () {
                 console.log(data);
                 btn.removeAttr('disabled').text('Simpan');
                 if (data.insert) {
-                    swal.fire({
+                    Swal.fire({
                         "title": "Sukses",
                         "text": data.text,
                         "icon": "success",
@@ -74,7 +74,7 @@ $(document).ready(function () {
                         }
                     });
                 } else {
-                    swal.fire({
+                    Swal.fire({
                         "title": "Error",
                         "text": data.text,
                         "icon": "error",
@@ -82,7 +82,7 @@ $(document).ready(function () {
                 }
             }, error: function (xhr, status, error) {
                 console.log("error", xhr.responseText);
-                swal.fire({
+                Swal.fire({
                     title: "ERROR",
                     text: "Data Tidak Tersimpan",
                     icon: "error"
@@ -91,16 +91,16 @@ $(document).ready(function () {
         });
     });
 
-	$('#tanggallahir').datetimepicker({
-		icons:
-			{
-				next: 'fa fa-angle-right',
-				previous: 'fa fa-angle-left'
-			},
-		format: 'YYYY-MM-DD',
-		widgetPositioning: {
-			horizontal: 'left',
-			vertical: 'bottom'
-		}
-	});
+    $('#tanggallahir').datetimepicker({
+        icons:
+        {
+            next: 'bi bi-angle-right',
+            previous: 'bi bi-angle-left'
+        },
+        format: 'YYYY-MM-DD',
+        widgetPositioning: {
+            horizontal: 'left',
+            vertical: 'bottom'
+        }
+    });
 });

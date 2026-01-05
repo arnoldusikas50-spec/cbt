@@ -1,14 +1,14 @@
 var table;
 
-$(document).ready(function() {
+$(document).ready(function () {
 	ajaxcsrf();
 
 	table = $("#soal").DataTable({
-		initComplete: function() {
+		initComplete: function () {
 			var api = this.api();
 			$("#soal_filter input")
 				.off(".DT")
-				.on("keyup.DT", function(e) {
+				.on("keyup.DT", function (e) {
 					api.search(this.value).draw();
 				});
 		},
@@ -63,7 +63,7 @@ $(document).ready(function() {
 			{
 				targets: 0,
 				data: "id_soal",
-				render: function(data, type, row, meta) {
+				render: function (data, type, row, meta) {
 					return `<div class="text-center">
 									<input name="checked[]" class="check" value="${data}" type="checkbox">
 								</div>`;
@@ -72,23 +72,23 @@ $(document).ready(function() {
 			{
 				targets: 6,
 				data: "id_soal",
-				render: function(data, type, row, meta) {
+				render: function (data, type, row, meta) {
 					return `<div class="text-center">
                                 <a href="${base_url}soal/detail/${data}" class="btn btn-xs btn-default">
-                                    <i class="fa fa-eye"></i> Detail
+                                    <i class="bi bi-eye"></i> Detail
                                 </a>
                                 <a href="${base_url}soal/edit/${data}" class="btn btn-xs btn-warning">
-                                    <i class="fa fa-edit"></i> Edit
+                                    <i class="bi bi-pencil"></i> Edit
                                 </a>
                             </div>`;
 				}
 			}
 		],
 		order: [[5, "desc"]],
-		rowId: function(a) {
+		rowId: function (a) {
 			return a;
 		},
-		rowCallback: function(row, data, iDisplayIndex) {
+		rowCallback: function (row, data, iDisplayIndex) {
 			var info = this.fnPagingInfo();
 			var page = info.iPage;
 			var length = info.iLength;
@@ -102,21 +102,21 @@ $(document).ready(function() {
 		.container()
 		.appendTo("#soal_wrapper .col-md-6:eq(0)");
 
-	$(".select_all").on("click", function() {
+	$(".select_all").on("click", function () {
 		if (this.checked) {
-			$(".check").each(function() {
+			$(".check").each(function () {
 				this.checked = true;
 				$(".select_all").prop("checked", true);
 			});
 		} else {
-			$(".check").each(function() {
+			$(".check").each(function () {
 				this.checked = false;
 				$(".select_all").prop("checked", false);
 			});
 		}
 	});
 
-	$("#soal tbody").on("click", "tr .check", function() {
+	$("#soal tbody").on("click", "tr .check", function () {
 		var check = $("#soal tbody tr .check").length;
 		var checked = $("#soal tbody tr .check:checked").length;
 		if (check === checked) {
@@ -126,7 +126,7 @@ $(document).ready(function() {
 		}
 	});
 
-	$("#bulk").on("submit", function(e) {
+	$("#bulk").on("submit", function (e) {
 		e.preventDefault();
 		e.stopImmediatePropagation();
 
@@ -134,15 +134,15 @@ $(document).ready(function() {
 			url: $(this).attr("action"),
 			data: $(this).serialize(),
 			type: "POST",
-			success: function(respon) {
+			success: function (respon) {
 				if (respon.status) {
-					swal.fire({
+					Swal.fire({
 						title: "Berhasil",
 						text: respon.total + " data berhasil dihapus",
 						icon: "success"
 					});
 				} else {
-					swal.fire({
+					Swal.fire({
 						title: "Gagal",
 						text: "Tidak ada data yang dipilih",
 						icon: "error"
@@ -150,8 +150,8 @@ $(document).ready(function() {
 				}
 				reload_ajax();
 			},
-			error: function() {
-				swal.fire({
+			error: function () {
+				Swal.fire({
 					title: "Gagal",
 					text: "Ada data yang sedang digunakan",
 					icon: "error"
@@ -163,13 +163,13 @@ $(document).ready(function() {
 
 function bulk_delete() {
 	if ($("#soal tbody tr .check:checked").length == 0) {
-		swal.fire({
+		Swal.fire({
 			title: "Gagal",
 			text: "Tidak ada data yang dipilih",
 			icon: "error"
 		});
 	} else {
-		swal.fire({
+		Swal.fire({
 			title: "Anda yakin?",
 			text: "Data akan dihapus!",
 			icon: "warning",

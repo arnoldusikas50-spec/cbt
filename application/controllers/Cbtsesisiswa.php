@@ -7,8 +7,8 @@ class Cbtsesisiswa extends MY_Controller {
 		parent::__construct();
 		if (!$this->auth->logged_in()) {
 			redirect('auth');
-        } else if (!$this->auth->is_admin() && !$this->auth->in_group('panitia') && !$this->auth->in_group('guru')) {
-            show_error('Hanya Administrator dan guru yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
+        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru') && !$this->auth->in_group('panitia') && $this->session->userdata('role') != '4') {
+            show_error('Hanya Administrator, Guru, dan Panitia yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
 		}
 		$this->load->library(['datatables', 'form_validation']); // Load Library Ignited-Datatables
 		$this->load->model('Master_model', 'master');
@@ -47,19 +47,21 @@ class Cbtsesisiswa extends MY_Controller {
         $data['sesi']		= $this->dropdown->getAllSesi();
         $data['ruang']		= $this->cbt->getAllRuang();
         $is_admin = $this->auth->is_admin();
-        $data['is_admin'] = $is_admin;
-
-        $is_panitia = $this->auth->in_group('panitia');
+        $is_panitia = $this->auth->in_group('panitia') || $this->session->userdata('role') == '4';
+        
+        $data['is_admin'] = $is_admin || $is_panitia;
 
         if ($is_admin || $is_panitia) {
             $data['kelas']		= $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
-            $role_id = $is_admin ? 1 : 4;
-            $this->render_view($role_id, 'cbt/sesisiswa/data', $data);
+            if ($is_panitia) {
+                $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+                $this->render_view(4, 'cbt/sesisiswa/data', $data);
+            } else {
+                $this->render_view(1, 'cbt/sesisiswa/data', $data);
+            }
         } else {
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $data['guru'] = $guru;
-            
-            // For teachers, get their assigned classes
             $mapel_guru = $this->kelas->getGuruMapelKelas($guru->id_guru, $tp->id_tp, $smt->id_smt);
             $mapel = $this->maybe_unserialize($mapel_guru->mapel_kelas ?? '[]');
 
@@ -170,4 +172,3 @@ class Cbtsesisiswa extends MY_Controller {
 		$this->output_json($data);
 	}
 }
-

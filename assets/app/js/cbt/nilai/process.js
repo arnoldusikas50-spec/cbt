@@ -95,8 +95,8 @@
                     durSiswa = ej + em + ed;
                 }
 
-                const iconLoading = sudahMulai ? '<i class="fa fa-spinner fa-spin"></i> ' : '';
-                const loading = sudahSelesai ? '<i class="fa fa-check"></i> ' : iconLoading;
+                const iconLoading = sudahMulai ? '<i class="bi bi-spinner fa-spin"></i> ' : '';
+                const loading = sudahSelesai ? '<i class="bi bi-check"></i> ' : iconLoading;
 
                 durasi.mulai_ujian = mulai;
                 durasi.selesai_ujian = selesai;
@@ -160,7 +160,7 @@ function processSoal(soal, soals, jsonJawaban, jsonNilai) {
                         }
                     });
                 }
-                jawabanSiswa.jawaban_siswa = {links: arrJwbnSiswa};
+                jawabanSiswa.jawaban_siswa = { links: arrJwbnSiswa };
             }
 
             const arrJwbn = [];
@@ -240,8 +240,8 @@ function processNilaiPg(info, adaJawabanPg, jawabansSiswa) {
                 const point = benar && info.bobot_pg > 0 ? (info.bobot_pg / info.tampil_pg).toFixed(2) : 0;
 
                 const analisa = benar
-                    ? '<i class="fa fa-check-circle text-green text-lg"></i>'
-                    : '<i class="fa fa-times-circle text-red text-lg"></i>';
+                    ? '<i class="bi bi-check-circle text-green text-lg"></i>'
+                    : '<i class="bi bi-x-circle text-red text-lg"></i>';
 
                 jwbPg.nilai = { ...jwbPg.nilai, benar, point, analisa };
 
@@ -268,7 +268,7 @@ function processNilaiPg(info, adaJawabanPg, jawabansSiswa) {
     }
 
     arrJawabanPg.sort((a, b) => a.nomor - b.nomor);
-    return {jawaban_pg: arrJawabanPg, skor_pg: skorPg.toFixed(2)}
+    return { jawaban_pg: arrJawabanPg, skor_pg: skorPg.toFixed(2) }
 }
 
 function processNilaiKompleks(info, adaJawabanPg2, jawabansSiswa, bobot, nilai) {
@@ -292,10 +292,10 @@ function processNilaiKompleks(info, adaJawabanPg2, jawabansSiswa, bobot, nilai) 
             const point = +(pointItem * arrBenar.length).toFixed(2);
 
             const analisa = arrBenar.length === jawabanBenar.length
-                ? '<i class="fa fa-check-circle text-green text-lg"></i>'
+                ? '<i class="bi bi-check-circle text-green text-lg"></i>'
                 : arrBenar.length > 0
-                    ? '<i class="fa fa-times-circle text-yellow text-lg"></i>'
-                    : '<i class="fa fa-times-circle text-red text-lg"></i>';
+                    ? '<i class="bi bi-x-circle text-yellow text-lg"></i>'
+                    : '<i class="bi bi-x-circle text-red text-lg"></i>';
 
             Object.assign(nilaiPg2, {
                 analisa,
@@ -396,10 +396,10 @@ function processNilaiJodohkan(info, adaJawabanJodoh, jawabansSiswa, bobot, nilai
             nilaiJod.point_otomatis = parseFloat(pointSoal);
 
             nilaiJod.analisa = itemBenar === items
-                ? '<i class="fa fa-check-circle text-green text-lg"></i>'
+                ? '<i class="bi bi-check-circle text-green text-lg"></i>'
                 : (itemBenar === 0
-                    ? '<i class="fa fa-times-circle text-red text-lg"></i>'
-                    : '<i class="fa fa-times-circle text-yellow text-lg"></i>');
+                    ? '<i class="bi bi-x-circle text-red text-lg"></i>'
+                    : '<i class="bi bi-x-circle text-yellow text-lg"></i>');
 
             otomatisJod = nilaiJod.nilai_otomatis;
         });
@@ -442,8 +442,8 @@ function processNilaiIsian(info, adaJawabanIsian, jawabansSiswa, bobot, nilai) {
             nilaiIs.point_otomatis = parseFloat(point);
 
             nilaiIs.analisa = benar
-                ? '<i class="fa fa-check-circle text-green text-lg"></i>'
-                : '<i class="fa fa-times-circle text-yellow text-lg"></i>';
+                ? '<i class="bi bi-check-circle text-green text-lg"></i>'
+                : '<i class="bi bi-x-circle text-yellow text-lg"></i>';
 
             otomatisIs = nilaiIs.nilai_otomatis;
         });
@@ -490,8 +490,8 @@ function processNilaiEsai(info, adaJawabanEssai, jawabansSiswa, bobot, nilai) {
             nilaiEs.point_otomatis = parseFloat(point);
 
             nilaiEs.analisa = benar
-                ? '<i class="fa fa-check-circle text-green text-lg"></i>'
-                : '<i class="fa fa-times-circle text-yellow text-lg"></i>';
+                ? '<i class="bi bi-check-circle text-green text-lg"></i>'
+                : '<i class="bi bi-x-circle text-yellow text-lg"></i>';
 
             otomatisEs = nilaiEs.nilai_otomatis;
         });

@@ -1,4 +1,4 @@
-<div class="content-wrapper bg-white pt-4">
+<main class="app-main bg-white pt-4">
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -6,9 +6,9 @@
                     <h1><?= $judul ?></h1>
                 </div>
                 <div class="col-6">
-                    <a href="<?= base_url('bukuinduk') ?>" type="button" class="btn btn-sm btn-danger float-right">
-                        <i class="fas fa-arrow-circle-left"></i><span
-                                class="d-none d-sm-inline-block ml-1">Kembali</span>
+                    <a href="<?= base_url('bukuinduk') ?>" type="button" class="btn btn-sm btn-danger float-end">
+                        <i class="bi bi-arrow-left-square"></i><span
+                            class="d-none d-sm-inline-block ms-1">Kembali</span>
                     </a>
                 </div>
             </div>
@@ -44,7 +44,7 @@
                                 <label>Pilih Tahun Pelajaran</label>
                                 <select name="tahun" id="id-tahun" class="form-control form-control-sm">
                                     <?php
-                                    foreach ($tahun as $key => $value) :
+                                    foreach ($tahun as $key => $value):
                                         $selected = $key == $tahun_selected ? 'selected="selected"' : ''; ?>
                                         <option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
                                     <?php endforeach; ?>
@@ -54,7 +54,7 @@
                                 <label>Pilih Semester</label>
                                 <select name="semester" id="id-smt" class="form-control form-control-sm">
                                     <?php
-                                    foreach ($semester as $key => $value) :
+                                    foreach ($semester as $key => $value):
                                         $selected = $key == $smt_selected ? 'selected="selected"' : ''; ?>
                                         <option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
                                     <?php endforeach; ?>
@@ -75,43 +75,43 @@
                 </div>
             </div>
     </section>
-</div>
+    </div>
 
-<script>
-    var thnSelected = '<?= isset($tahun_selected) ? $tahun_selected : '';?>';
-    var smtSelected = '<?= isset($smt_selected) ? $smt_selected : '';?>';
-    var klsSelected = '<?= isset($kelas_selected) ? $kelas_selected : '';?>';
+    <script>
+        var thnSelected = '<?= isset($tahun_selected) ? $tahun_selected : ''; ?>';
+        var smtSelected = '<?= isset($smt_selected) ? $smt_selected : ''; ?>';
+        var klsSelected = '<?= isset($kelas_selected) ? $kelas_selected : ''; ?>';
 
-    $(document).ready(function () {
+        $(document).ready(function () {
 
-        var opsiTahun = $('#id-tahun');
-        var tslctd = thnSelected == '' ? "selected='selected'" : "";
-        opsiTahun.prepend("<option value='0' " + tslctd + " disabled='disabled'>Pilih Tahun Pelajaran</option>");
-        opsiTahun.change(function () {
-            getDataSiswa($(this).val(), opsiSmt.val(), opsiKelas.val());
-        });
+            var opsiTahun = $('#id-tahun');
+            var tslctd = thnSelected == '' ? "selected='selected'" : "";
+            opsiTahun.prepend("<option value='0' " + tslctd + " disabled='disabled'>Pilih Tahun Pelajaran</option>");
+            opsiTahun.change(function () {
+                getDataSiswa($(this).val(), opsiSmt.val(), opsiKelas.val());
+            });
 
-        var opsiSmt = $('#id-smt');
-        var sslctd = smtSelected == '' ? "selected='selected'" : "";
-        opsiSmt.prepend("<option value='0' " + sslctd + " disabled='disabled'>Pilih Semester</option>");
-        opsiSmt.change(function () {
-            getDataSiswa(opsiTahun.val(), $(this).val(), opsiKelas.val());
-        });
+            var opsiSmt = $('#id-smt');
+            var sslctd = smtSelected == '' ? "selected='selected'" : "";
+            opsiSmt.prepend("<option value='0' " + sslctd + " disabled='disabled'>Pilih Semester</option>");
+            opsiSmt.change(function () {
+                getDataSiswa(opsiTahun.val(), $(this).val(), opsiKelas.val());
+            });
 
-        var opsiKelas = $('#id-kelas');
-        console.log(klsSelected);
-        var kslctd = klsSelected == '' ? "selected='selected'" : "";
-        opsiKelas.prepend("<option value='0' " + kslctd + " disabled='disabled'>Pilih Kelas</option>");
-        opsiKelas.change(function () {
-            getDataSiswa(opsiTahun.val(), opsiSmt.val(), $(this).val());
-        });
+            var opsiKelas = $('#id-kelas');
+            console.log(klsSelected);
+            var kslctd = klsSelected == '' ? "selected='selected'" : "";
+            opsiKelas.prepend("<option value='0' " + kslctd + " disabled='disabled'>Pilih Kelas</option>");
+            opsiKelas.change(function () {
+                getDataSiswa(opsiTahun.val(), opsiSmt.val(), $(this).val());
+            });
 
-        function getDataSiswa(tahun, smt, kelas) {
-            console.log(tahun, smt, kelas);
-            if (tahun != null && smt != null) {
-                window.location.href = base_url + 'bukuinduk?backupnilai=' + tahun + '&semester=' + smt + '&kelas=' + kelas;
+            function getDataSiswa(tahun, smt, kelas) {
+                console.log(tahun, smt, kelas);
+                if (tahun != null && smt != null) {
+                    window.location.href = base_url + 'bukuinduk?backupnilai=' + tahun + '&semester=' + smt + '&kelas=' + kelas;
+                }
             }
-        }
-    })
+        })
 
-</script>
+    </script>

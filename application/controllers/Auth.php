@@ -21,7 +21,8 @@ class Auth extends CI_Controller
                 'errors' => $errors,
                 'data' => $data
             ];
-            if (ob_get_length()) ob_end_clean();
+            if (ob_get_length())
+                ob_end_clean();
             header_remove();
             $this->output
                 ->set_status_header($http_code)
@@ -33,7 +34,8 @@ class Auth extends CI_Controller
         $this->respond_json($status, $message, $data, $errors, $http_code);
     }
 
-    public function index() {
+    public function index()
+    {
         $this->render_login_page('staff');
     }
 
@@ -51,7 +53,9 @@ class Auth extends CI_Controller
         }
 
         if ($this->session->userdata('is_login')) {
-            redirect('dashboard');
+            $user = $this->auth->user($this->session->userdata('user_id'));
+            $redirectUrl = $this->determine_redirect($user, false); // Assuming cbtOnly is false for standard login check
+            redirect($redirectUrl);
             return;
         }
 
@@ -85,14 +89,21 @@ class Auth extends CI_Controller
         $data['cbt_only_default'] = $variant === 'siswa' ? '1' : '0';
         $data['login_title'] = $variant === 'siswa' ? 'LOGIN SISWA CBT' : 'E-LEARNING & CBT';
 
-        $view = $variant === 'siswa' ? 'auth/login_siswa' : 'auth/login_admin';
+        // Use new login page for staff
+        if ($variant !== 'siswa') {
+            $this->load->view('auth/login', $data);
+            return;
+        }
+
+        $view = 'auth/index';
 
         $this->load->view('_templates/auth/_header', $data);
         $this->load->view($view, $data);
         $this->load->view('_templates/auth/_footer');
     }
 
-    public function login() {
+    public function login()
+    {
         $success = false;
         $message = '';
         $role = '0';
@@ -164,6 +175,7 @@ class Auth extends CI_Controller
                                 'username' => $user->username,
                                 'role' => $user->group_id,
                                 'role_name' => $user->role_name,
+                                'school_uuid' => isset($user->company) ? $user->company : null,
                                 'is_login' => true
                             ]);
                             $this->auth->resetErrorLogin($username);
@@ -215,23 +227,25 @@ class Auth extends CI_Controller
             return $default;
         }
 
+        // Admin Sekolah Redirect
+        if (isset($user->company) && !empty($user->company)) {
+            return site_url('sekolahpanel');
+        }
+
         $roleName = strtolower($user->role_name ?? '');
         if ($cbtOnly && $roleName === 'siswa') {
             return site_url('cbtsiswa/cbt');
         }
 
         if ($roleName === 'siswa') {
-            return site_url('cbtsiswa');
-        }
-
-        if ($roleName === 'guru') {
-            return site_url('cbtguru');
+            return site_url('dashboard');
         }
 
         return $default;
     }
 
-    public function register() {
+    public function register()
+    {
         if ($this->input->post()) {
             $group = $this->input->post('role');
             $data = [
@@ -247,18 +261,26 @@ class Auth extends CI_Controller
         }
     }
 
-    public function logout() {
+    public function logout()
+    {
+        $role = $this->session->userdata('role_name');
         $this->logging->saveLog(2, 'Logout');
         $this->session->sess_destroy();
-        redirect('auth');
+
+        if (strtolower($role ?? '') === 'siswa') {
+            redirect('auth/siswa');
+        } else {
+            redirect('auth');
+        }
     }
 
-    public function qrcode_login() {
+    public function qrcode_login()
+    {
         $qr_data = $this->input->post('qr_data', true);
-        
+
         // Debug logging
         error_log('QR Login Attempt - Data: ' . $qr_data);
-        
+
         if (!$qr_data) {
             $this->respond(false, 'QR code data is required');
             return;
@@ -267,9 +289,9 @@ class Auth extends CI_Controller
         // QR code should contain student username or nomor_peserta
         // Try username first, then nomor_peserta
         $user = $this->auth->login($qr_data);
-        
+
         error_log('User found by username: ' . ($user ? 'Yes' : 'No'));
-        
+
         // If not found by username, try to find by nomor_peserta
         if (!$user) {
             $user = $this->db->select('a.*, b.user_id, b.group_id, c.id as role, c.name as role_name, c.description')
@@ -278,16 +300,16 @@ class Auth extends CI_Controller
                 ->join('users_groups b', 'a.id=b.user_id')
                 ->join('groups c', 'b.group_id=c.id')
                 ->get()->row();
-                
+
             error_log('User found by nomor_peserta: ' . ($user ? 'Yes' : 'No'));
         }
-        
+
         if (!$user) {
             error_log('User not found for QR data: ' . $qr_data);
             $this->respond(false, 'QR code tidak valid atau siswa tidak ditemukan');
             return;
         }
-        
+
         if (strtolower($user->role_name ?? '') !== 'siswa') {
             error_log('User role is not siswa: ' . ($user->role_name ?? 'unknown'));
             $this->respond(false, 'QR code tidak valid atau siswa tidak ditemukan');
@@ -305,14 +327,14 @@ class Auth extends CI_Controller
             'foto' => $user->foto,
             'login_variant' => 'siswa'
         ];
-        
+
         $this->session->set_userdata($session_data);
-        
+
         // Log the login
         $this->logging->saveLog(1, 'QR Code Login: ' . $qr_data);
-        
+
         error_log('QR Login successful for: ' . $user->username);
-        
+
         $this->respond(true, 'Login berhasil dengan QR code', [
             'redirect' => site_url('cbtsiswa/cbt'),
             'url' => 'siswa/cbt',

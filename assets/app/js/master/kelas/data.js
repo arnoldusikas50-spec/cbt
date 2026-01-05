@@ -113,13 +113,13 @@ $(document).ready(function () {
                 type: "POST",
                 success: function (respon) {
                     if (respon.status) {
-                        swal.fire({
+                        Swal.fire({
                             title: "Berhasil",
                             text: respon.total + " data berhasil dihapus",
                             icon: "success"
                         });
                     } else {
-                        swal.fire({
+                        Swal.fire({
                             title: "Gagal",
                             text: "Tidak ada data yang dipilih",
                             icon: "error"
@@ -128,7 +128,7 @@ $(document).ready(function () {
                     reload_ajax();
                 },
                 error: function () {
-                    swal.fire({
+                    Swal.fire({
                         title: "Gagal",
                         text: "Ada data yang sedang digunakan",
                         icon: "error"
@@ -162,14 +162,14 @@ function load_jurusan() {
 
 function bulk_delete() {
     if ($("#kelas tbody tr .check:checked").length == 0) {
-        swal.fire({
+        Swal.fire({
             title: "Gagal",
             text: "Tidak ada data yang dipilih",
             icon: "error"
         });
     } else {
         $("#bulk").attr("action", base_url + "kelas/delete");
-        swal.fire({
+        Swal.fire({
             title: "Anda yakin?",
             text: "Data akan dihapus!",
             icon: "warning",
@@ -187,7 +187,7 @@ function bulk_delete() {
 
 function bulk_edit() {
     if ($("#kelas tbody tr .check:checked").length == 0) {
-        swal.fire({
+        Swal.fire({
             title: "Gagal",
             text: "Tidak ada data yang dipilih",
             icon: "error"

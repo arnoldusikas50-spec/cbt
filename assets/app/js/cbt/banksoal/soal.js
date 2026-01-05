@@ -3,25 +3,22 @@ var fieldLinks;
 
 let dataJodohkan;
 let adaJawaban = false;
-// let adaPg = [1, 2, 3, 4, 5]; // Available question types: PG, PG Kompleks, Menjodohkan, Isian, Essai
 
 $(document).ready(function () {
     ajaxcsrf();
     $('.textsoal').summernote({
         placeholder: 'Tulis Soal disini',
         tabsize: 2,
-        dialogsInBody: true,
         minHeight: 100,
         toolbar: [
             ['style', ['style']],
-            ['font', ['bold', 'italic', 'underline', 'clear']],
-            ['fontname', ['fontname']],
+            ['font', ['bold', 'italic', 'underline', 'superscript', 'subscript', 'clear']],
             ['fontsize', ['fontsize']],
             ['color', ['color']],
             ['para', ['ul', 'ol', 'paragraph']],
             ['table', ['table']],
             ['insert', ['link', 'picture', 'video', 'file', 'math']],
-            ['view', ['fullscreen', 'codeview', 'help']],
+            ['view', ['fullscreen', 'codeview']],
             ['cleaner', ['cleaner']],
         ],
         callbacks: {
@@ -37,12 +34,12 @@ $(document).ready(function () {
                 deleteImage(target[0].src);
             }
         },
+        dialogsInBody: true,
     });
 
     $('.textjawaban').summernote({
         placeholder: 'Tulis Jawaban disini',
         tabsize: 2,
-        dialogsInBody: true,
         minHeight: 50,
         toolbar: [
             ['font', ['bold', 'italic', 'underline', 'clear']],
@@ -50,7 +47,7 @@ $(document).ready(function () {
             //['color', ['color']],
             ['para', ['ul', 'ol', 'paragraph']],
             ['table', ['table']],
-            ['view', ['fullscreen', 'codeview', 'help']],
+            ['view', ['fullscreen', 'codeview']],
             ['insert', ['picture', 'math']],
         ],
         callbacks: {
@@ -62,12 +59,12 @@ $(document).ready(function () {
                 deleteImage(target[0].src);
             }
         },
+        dialogsInBody: true,
     });
 
     $('.textjawaban-essai').summernote({
         placeholder: 'Tulis Jawaban disini',
         tabsize: 2,
-        dialogsInBody: true,
         toolbar: [
             //['style', ['style']],
             ['font', ['bold', 'italic', 'underline', 'clear']],
@@ -77,7 +74,7 @@ $(document).ready(function () {
             ['para', ['ul', 'ol', 'paragraph']],
             ['table', ['table']],
             ['insert', ['math']],
-            //['view', ['fullscreen', 'codeview', 'help']],
+            ['view', ['codeview']],
             //['cleaner',['cleaner']],
         ],
     });
@@ -99,7 +96,7 @@ $(document).ready(function () {
 
         if (jenisSoal == '3') {
             if (!adaJawaban) {
-                swal.fire({
+                Swal.fire({
                     title: "ERROR",
                     text: "JAWABAN tidak boleh kosong",
                     icon: "error",
@@ -119,10 +116,56 @@ $(document).ready(function () {
                 }
             });
         }
+        // Handle Type 6: Urutan (Ordering)
+        if (jenisSoal == '6') {
+            var urutanData = getUrutanData();
+            if (urutanData.items.length < 2) {
+                Swal.fire({
+                    title: "ERROR",
+                    text: "Minimal 2 item diperlukan untuk soal urutan",
+                    icon: "error",
+                    showCancelButton: false
+                });
+                return;
+            }
+            formData.append('soal_opsi', JSON.stringify(urutanData));
+            formData.append('jawaban', JSON.stringify(urutanData.correct_order));
+        }
+        // Handle Type 7: Cloze (Fill in the blanks)
+        if (jenisSoal == '7') {
+            var clozeText = $('#cloze-text-input').val().trim();
+            var clozeData = getClozeData();
+
+            if (!clozeText || Object.keys(clozeData.blanks).length === 0) {
+                Swal.fire({
+                    title: "ERROR",
+                    text: "Teks dan kunci jawaban tidak boleh kosong",
+                    icon: "error",
+                    showCancelButton: false
+                });
+                return;
+            }
+
+            // Append cloze text to soal field
+            var existingSoal = $('.textsoal').summernote('code');
+            if (!existingSoal.includes(clozeText)) {
+                $('.textsoal').summernote('code', existingSoal + '<div class="cloze-content">' + clozeText.replace(/\n/g, '<br>') + '</div>');
+                formData.set('soal', $('.textsoal').summernote('code'));
+            }
+
+            formData.append('soal_opsi', JSON.stringify(clozeData));
+            // Build jawaban object with correct answers
+            var correctAnswers = {};
+            Object.keys(clozeData.blanks).forEach(function (k) {
+                correctAnswers[k] = clozeData.blanks[k].answer;
+            });
+            formData.append('jawaban', JSON.stringify(correctAnswers));
+        }
         console.log(Object.fromEntries(formData))
 
-        if (inputKosong()) {
-            swal.fire({
+        // Skip inputKosong validation for type 6 and 7 (they have custom validation above)
+        if (jenisSoal != '6' && jenisSoal != '7' && inputKosong()) {
+            Swal.fire({
                 title: "ERROR",
                 text: "SOAL atau JAWABAN tidak boleh kosong",
                 icon: "error",
@@ -141,7 +184,7 @@ $(document).ready(function () {
                         $('#loading').addClass('d-none');
                         console.log(data);
                         if (data.status === 'error') {
-                            swal.fire({
+                            Swal.fire({
                                 title: "ERROR",
                                 text: "SOAL atau JAWABAN tidak boleh kosong",
                                 icon: "warning",
@@ -150,10 +193,10 @@ $(document).ready(function () {
                         } else {
                             showSuccessToast("Soal nomor" + nomor_soal + " berhasil disimpan");
                             if (jenis === '1' || jenis === '2') {
-                                $('#btn-' + jenis + nomor_soal).removeClass('btn-outline-danger');
+                                $('#btn-' + jenis + nomor_soal).removeClass('btn-danger');
                                 $('#btn-' + jenis + nomor_soal).addClass('btn-success');
                             } else {
-                                $('#btn-' + jenis + nomor_soal).removeClass('btn-outline-danger');
+                                $('#btn-' + jenis + nomor_soal).removeClass('btn-danger');
                                 $('#btn-' + jenis + nomor_soal).addClass('btn-primary');
                             }
                         }
@@ -179,7 +222,7 @@ $(document).ready(function () {
             '    <div class="row mb-2">' +
             '       <div class="col-6">' +
             '          <button type="button" class="btn btn-sm btn-default mr-4" onclick="deleteOpsiPg2(this)">' +
-            '<i class="fa fa-trash"></i></button>' +
+            '<i class="bi bi-trash"></i></button>' +
             '<span class="abjad-pg2"><b>Jawaban ' + alphaCaps + '</b></span></div>' +
             '       <div class="col-6 text-right d-flex justify-content-end">' +
             '          <b>Pilih Jawaban</b>' +
@@ -220,7 +263,7 @@ $(document).ready(function () {
 
     var arrJenis = ['', 'PG', 'PG Kompleks', 'Menjodohkan', 'Isian Singkat', 'Uraian/essai'];
     $('#hapus-soal').on('click', function () {
-        swal.fire({
+        Swal.fire({
             title: "HAPUS ?",
             html: "Soal berikut akan dihapus<br>Nomor: <b>" + nomor_soal + "</b><br>Jenis: <b>" + arrJenis[jenis] + "</b>",
             icon: "error",
@@ -240,7 +283,7 @@ $(document).ready(function () {
                         var tit = result ? 'BERHASIL' : 'GAGAL';
                         var msg = result ? 'berhasil' : 'gagal';
                         var ic = result ? 'success' : 'error';
-                        swal.fire({
+                        Swal.fire({
                             title: tit,
                             text: "Soal " + msg + " dihapus",
                             icon: ic,
@@ -271,7 +314,6 @@ function initTextArea() {
     $('.textjawaban2').summernote({
         placeholder: 'Tulis Jawaban disini',
         tabsize: 2,
-        dialogsInBody: true,
         minHeight: 50,
         toolbar: [
             ['font', ['bold', 'italic', 'underline', 'clear']],
@@ -280,108 +322,66 @@ function initTextArea() {
             ['para', ['ul', 'ol', 'paragraph']],
             ['table', ['table']],
             ['insert', ['picture', 'math']],
+            ['view', ['codeview']],
         ],
     });
 }
 
-
-function compressImage(file, maxWidth, quality, callback) {
-    if (!file.type.match(/image.*/) || file.type === 'image/gif' || file.type === 'image/svg+xml') {
-        callback(file);
-        return;
-    }
-
-    var reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function (e) {
-        var img = new Image();
-        img.src = e.target.result;
-        img.onload = function () {
-            var width = img.width;
-            var height = img.height;
-
-            if (width > maxWidth) {
-                height = Math.round(height * maxWidth / width);
-                width = maxWidth;
-            }
-
-            var canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            var ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0, width, height);
-
-            ctx.canvas.toBlob(function (blob) {
-                var newName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
-                var newFile = new File([blob], newName, {
-                    type: 'image/jpeg',
-                    lastModified: Date.now()
-                });
-                console.log('Compressed: ' + (blob.size / 1024).toFixed(2) + 'KB');
-                callback(newFile);
-            }, 'image/jpeg', quality);
-        };
-    };
-    reader.onerror = function () { callback(file); };
-}
-
 function myOwnCallBack(file, idtextarea) {
-    compressImage(file, 1000, 0.75, function (fileToUpload) {
-        var name = $('#textsoal').attr('data-name');
-        var hash = $('#textsoal').attr('data-id');
-        let data = new FormData();
-        data.append("file", fileToUpload);
-        data.append(name, hash);
+    var name = $('#textsoal').attr('data-name');
+    var hash = $('#textsoal').attr('data-id');
+    let data = new FormData();
+    data.append("file", file);
+    data.append(name, hash);
 
-        $.ajax({
-            data: data,
-            type: "POST",
-            url: base_url + "cbtbanksoal/upload_image",
-            //url: "file-uploader.php", //Your own back-end uploader
-            cache: false,
-            contentType: false,
-            processData: false,
-            xhr: function () { //Handle progress upload
-                let myXhr = $.ajaxSettings.xhr();
-                if (myXhr.upload) myXhr.upload.addEventListener('progress', progressHandlingFunction, false);
-                return myXhr;
-            },
-            success: function (reponse) {
-                if (reponse.status === true) {
-                    let listMimeImg = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/svg'];
-                    let listMimeAudio = ['audio/mpeg', 'audio/ogg', 'udio/mp3'];
-                    let listMimeVideo = ['video/mpeg', 'video/mp4', 'video/webm'];
-                    let elem;
+    $.ajax({
+        data: data,
+        type: "POST",
+        url: base_url + "cbtbanksoal/upload_image",
+        //url: "file-uploader.php", //Your own back-end uploader
+        cache: false,
+        contentType: false,
+        processData: false,
+        xhr: function () { //Handle progress upload
+            let myXhr = $.ajaxSettings.xhr();
+            if (myXhr.upload) myXhr.upload.addEventListener('progress', progressHandlingFunction, false);
+            return myXhr;
+        },
+        success: function (reponse) {
+            if (reponse.status === true) {
+                let listMimeImg = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/svg'];
+                let listMimeAudio = ['audio/mpeg', 'audio/ogg', 'udio/mp3'];
+                let listMimeVideo = ['video/mpeg', 'video/mp4', 'video/webm'];
+                let elem;
 
-                    if (fileToUpload.type.match(/image.*/)) {
-                        //Picture
-                        $(idtextarea).summernote('editor.insertImage', base_url + reponse.filename);
-                    } else if (listMimeAudio.indexOf(fileToUpload.type) > -1) {
-                        //Audio
-                        elem = document.createElement("audio");
-                        elem.setAttribute("src", base_url + reponse.filename);
-                        elem.setAttribute("controls", "controls");
-                        elem.setAttribute("preload", "metadata");
-                        $(idtextarea).summernote('editor.insertNode', elem);
-                    } else if (listMimeVideo.indexOf(fileToUpload.type) > -1) {
-                        //Video
-                        elem = document.createElement("video");
-                        elem.setAttribute("src", base_url + reponse.filename);
-                        elem.setAttribute("controls", "controls");
-                        elem.setAttribute("preload", "metadata");
-                        $(idtextarea).summernote('editor.insertNode', elem);
-                    } else {
-                        //Other file type
-                        elem = document.createElement("a");
-                        let linkText = document.createTextNode(fileToUpload.name);
-                        elem.appendChild(linkText);
-                        elem.title = fileToUpload.name;
-                        elem.href = base_url + reponse.filename;
-                        $(idtextarea).summernote('editor.insertNode', elem);
-                    }
+                if (listMimeImg.indexOf(file.type) > -1) {
+                    //Picture
+                    $(idtextarea).summernote('editor.insertImage', base_url + reponse.filename);
+                } else if (listMimeAudio.indexOf(file.type) > -1) {
+                    //Audio
+                    elem = document.createElement("audio");
+                    elem.setAttribute("src", base_url + reponse.filename);
+                    elem.setAttribute("controls", "controls");
+                    elem.setAttribute("preload", "metadata");
+                    $(idtextarea).summernote('editor.insertNode', elem);
+                } else if (listMimeVideo.indexOf(file.type) > -1) {
+                    //Video
+                    elem = document.createElement("video");
+                    elem.setAttribute("src", base_url + reponse.filename);
+                    elem.setAttribute("controls", "controls");
+                    elem.setAttribute("preload", "metadata");
+                    $(idtextarea).summernote('editor.insertNode', elem);
+                } else {
+                    //Other file type
+                    elem = document.createElement("a");
+                    let linkText = document.createTextNode(file.name);
+                    elem.appendChild(linkText);
+                    elem.title = file.name;
+                    elem.href = base_url + reponse.filename;
+                    $(idtextarea).summernote('editor.insertNode', elem);
                 }
             }
-        });
+        }
     });
 }
 
@@ -480,8 +480,8 @@ function getSoalById(id_bank, number, id, jenis_soal) {
     $('#empty-soal').addClass('d-none');
     $('#not-empty-soal').addClass('d-none');
 
-    $('#btn-' + old_id).removeClass('active');
-    $('#btn-' + id).addClass('active');
+    $('#btn-' + old_id).removeClass('btn-active-soal');
+    $('#btn-' + id).addClass('btn-active-soal');
     $('#jenis-id').val(jenis_soal);
     if (jenis_soal === '1') {
         $('#nomor-soal').html('<b>Soal PG Nomor: ' + number + '</b>');
@@ -615,7 +615,7 @@ function getSoalById(id_bank, number, id, jenis_soal) {
         // 5 disable
         $('#root-jawaban-essai').addClass('d-none');
         $('#jawaban-essai').attr('disabled', 'disabled');
-    } else {
+    } else if (jenis_soal === '5') {
         $('#nomor-soal').html('<b>Soal Essai Nomor: ' + number + '</b>');
 
         $('#soal-area').removeClass('col-md-12');
@@ -646,6 +646,57 @@ function getSoalById(id_bank, number, id, jenis_soal) {
         $('#jawaban-benar').removeClass('d-none');
         $('#root-jawaban-essai').removeClass('d-none');
         $('#jawaban-essai').removeAttr('disabled');
+
+        // 6 disable
+        $('#root-opsi-urutan').addClass('d-none');
+        // 7 disable
+        $('#root-opsi-cloze').addClass('d-none');
+    } else if (jenis_soal === '6') {
+        $('#nomor-soal').html('<b>Soal Urutan Nomor: ' + number + '</b>');
+
+        $('#soal-area').removeClass('col-md-12');
+        $('#soal-area').addClass('col-md-6');
+        $('#jawaban-area').removeClass('col-md-12');
+        $('#jawaban-area').addClass('col-md-6');
+
+        // Disable all other options
+        $('#root-opsi-pg').addClass('d-none');
+        $('.textjawaban').attr('disabled', 'disabled');
+        $('#root-jawaban-pg').addClass('d-none');
+        $('#jawaban').prop('required', false);
+        $('#jawaban').attr('disabled', 'disabled');
+        $('#root-opsi-pg2').addClass('d-none');
+        $('#root-opsi-jodohkan').addClass('d-none');
+        $('#root-jawaban-isian').addClass('d-none');
+        $('#root-jawaban-essai').addClass('d-none');
+        $('#jawaban-benar').addClass('d-none');
+        $('#root-opsi-cloze').addClass('d-none');
+
+        // 6 enable
+        $('#root-opsi-urutan').removeClass('d-none');
+    } else if (jenis_soal === '7') {
+        $('#nomor-soal').html('<b>Soal Isian Rumpang Nomor: ' + number + '</b>');
+
+        $('#soal-area').removeClass('col-md-12');
+        $('#soal-area').addClass('col-md-6');
+        $('#jawaban-area').removeClass('col-md-12');
+        $('#jawaban-area').addClass('col-md-6');
+
+        // Disable all other options
+        $('#root-opsi-pg').addClass('d-none');
+        $('.textjawaban').attr('disabled', 'disabled');
+        $('#root-jawaban-pg').addClass('d-none');
+        $('#jawaban').prop('required', false);
+        $('#jawaban').attr('disabled', 'disabled');
+        $('#root-opsi-pg2').addClass('d-none');
+        $('#root-opsi-jodohkan').addClass('d-none');
+        $('#root-jawaban-isian').addClass('d-none');
+        $('#root-jawaban-essai').addClass('d-none');
+        $('#jawaban-benar').addClass('d-none');
+        $('#root-opsi-urutan').addClass('d-none');
+
+        // 7 enable
+        $('#root-opsi-cloze').removeClass('d-none');
     }
 
     $('#loading').removeClass('d-none');
@@ -747,29 +798,47 @@ function getSoalById(id_bank, number, id, jenis_soal) {
                                 if (inArray(k, data.jawaban)) {
                                     checked = 'checked="checked"';
                                 }
-                                var pv = $($.parseHTML(v));
-                                pv.find(`img`).each(function () {
-                                    var curSrc = $(this).attr('src');
-                                    if (curSrc.indexOf("base64") > 0 || !curSrc.includes("uploads")) {
-                                    } else {
-                                        var pathUpload = 'uploads';
-                                        var forReplace = curSrc.split(pathUpload);
-                                        $(this).attr('src', base_url + pathUpload + forReplace[1]);
+                                var htmlContent = v; // Default to raw content
+                                if (v && typeof v === 'string' && (v.indexOf('<') !== -1 || v.indexOf('&lt;') !== -1)) {
+                                    // Only try looking for images if it looks like HTML
+                                    try {
+                                        var pv = $($.parseHTML(v));
+                                        var hasImg = false;
+                                        pv.find(`img`).each(function () {
+                                            hasImg = true;
+                                            var curSrc = $(this).attr('src');
+                                            if (curSrc && (curSrc.indexOf("base64") > 0 || !curSrc.includes("uploads"))) {
+                                            } else {
+                                                var pathUpload = 'uploads';
+                                                var forReplace = curSrc.split(pathUpload);
+                                                if (forReplace.length > 1) {
+                                                    $(this).attr('src', base_url + pathUpload + forReplace[1]);
+                                                }
+                                            }
+                                        });
+
+                                        if (hasImg) {
+                                            // If we modified images, we need to reconstruct the HTML
+                                            // Wrap in div to get innerHTML of everything including top-level nodes
+                                            htmlContent = $('<div>').append(pv.clone()).html();
+                                        }
+                                    } catch (e) {
+                                        console.log('Error parsing option HTML', e);
                                     }
-                                })
+                                }
 
                                 jwb2 += '<div class="pg-kompleks mb-4 ml-3">' +
                                     '    <div class="row mb-2">' +
                                     '       <div class="col-6">' +
                                     '          <button type="button" class="btn btn-sm btn-default mr-4" onclick="deleteOpsiPg2(this)">' +
-                                    '<i class="fa fa-trash"></i></button>' +
+                                    '<i class="bi bi-trash"></i></button>' +
                                     '<span class="abjad-pg2"><b>Jawaban ' + k.toUpperCase() + '</b></span></div>' +
                                     '       <div class="col-6 text-right d-flex justify-content-end">' +
                                     '          <b>Pilih Jawaban</b>' +
                                     '          <input class="check-pg2" type="checkbox" style="width: 24px; height: 24px; margin-left: 8px;" name="jawaban_benar_pg2[]" value="' + k + '" ' + checked + '>' +
                                     '       </div>' +
                                     '    </div>' +
-                                    '    <textarea class="textjawaban2" id="textjawaban2_' + k + '" name="jawaban2_' + k + '" placeholder="Buat jawaban" style="width:100%;">' + pv.html(pv.clone()).html() + '</textarea>\n' +
+                                    '    <textarea class="textjawaban2" id="textjawaban2_' + k + '" name="jawaban2_' + k + '" placeholder="Buat jawaban" style="width:100%;">' + htmlContent + '</textarea>\n' +
                                     '</div>';
                             });
                         } else {
@@ -777,7 +846,7 @@ function getSoalById(id_bank, number, id, jenis_soal) {
                                 '    <div class="row mb-2">' +
                                 '       <div class="col-6">' +
                                 '          <button type="button" class="btn btn-sm btn-default mr-4" onclick="deleteOpsiPg2(this)">' +
-                                '<i class="fa fa-trash"></i></button>' +
+                                '<i class="bi bi-trash"></i></button>' +
                                 '<span class="abjad-pg2"><b>Jawaban A</b></span></div>' +
                                 '       <div class="col-6 text-right d-flex justify-content-end">' +
                                 '          <b>Pilih Jawaban</b>' +
@@ -812,6 +881,50 @@ function getSoalById(id_bank, number, id, jenis_soal) {
                         });
                     } else if (jenis_soal === '4') {
                         $('#jawaban-isian').val($.trim(data.jawaban));
+                    } else if (jenis_soal === '6') {
+                        $('#urutan-items-container').empty();
+                        urutanItemCount = 0;
+                        var opsiks = data.opsi_a;
+                        // Handle structure { items: [...] }
+                        var items = (opsiks && opsiks.items) ? opsiks.items : opsiks;
+
+                        if (items && items.length > 0) {
+                            $.each(items, function (i, val) {
+                                addUrutanItem();
+                                $('.urutan-input').last().val(val);
+                            });
+                        } else {
+                            resetUrutanItems();
+                        }
+                    } else if (jenis_soal === '7') {
+                        // Extract cloze text from the saved HTML content
+                        var fullSoal = data.soal;
+                        var clozeText = '';
+                        if (fullSoal) {
+                            var $temp = $('<div>').html(fullSoal);
+                            var $clozeContent = $temp.find('.cloze-content');
+                            if ($clozeContent.length > 0) {
+                                clozeText = $clozeContent.html().replace(/<br\s*\/?>/gi, '\n');
+                            } else {
+                                // Fallback: try to find text with [[...]] pattern
+                                var rawText = $temp.text();
+                                if (rawText.match(/\[\[.*?\]\]/)) {
+                                    clozeText = rawText;
+                                }
+                            }
+                        }
+
+                        $('#cloze-text-input').val(clozeText ? clozeText.trim() : '');
+
+                        updateClozeAnswers();
+
+                        var jwbs = data.jawaban;
+                        if (jwbs) {
+                            $.each(jwbs, function (k, v) {
+                                var ans = (typeof v === 'object' && v.answer) ? v.answer : v;
+                                $('input[data-blank="' + k + '"]').val(ans);
+                            });
+                        }
                     } else {
                         var sJawabEssai = $($.parseHTML(`<div>${data.jawaban}</div>`));
                         $('#jawaban-essai').summernote('code', sJawabEssai);
@@ -1018,7 +1131,7 @@ function uploadAttach(action, data) {
                 */
                 createPreviewFile();
             } else {
-                swal.fire({
+                Swal.fire({
                     title: "ERROR",
                     html: data.src,
                     icon: "error",
@@ -1048,7 +1161,7 @@ function createPreviewFile(/*elem, event*/) {
                         "<div  class='post-thumb'>" +
                         "<div class='inner-post-thumb'>" +
                         "<a href='javascript:void(0);' data-id='" + file.alias + "' class='remove-pic'>" +
-                        "<i class='fa fa-times' aria-hidden='true'></i></a>" +
+                        "<i class='bi bi-x' aria-hidden='true'></i></a>" +
                         "<div>" +
                         "</div>";
                     $("#media-list").prepend(div);
@@ -1057,7 +1170,7 @@ function createPreviewFile(/*elem, event*/) {
                         "<div class='post-thumb'>" +
                         "<div  class='inner-post-thumb'>" +
                         "<a href='javascript:void(0);' data-id='" + file.alias + "' class='remove-pic'>" +
-                        "<i class='fa fa-times' aria-hidden='true'></i></a>" +
+                        "<i class='bi bi-x' aria-hidden='true'></i></a>" +
                         "<div>" +
                         "</div>";
                     $("#media-list").prepend(div);
@@ -1066,7 +1179,7 @@ function createPreviewFile(/*elem, event*/) {
                         "<div class='post-thumb'>" +
                         "<div  class='inner-post-thumb'>" +
                         "<a href='javascript:void(0);' data-id='" + file.alias + "' class='remove-pic'>" +
-                        "<i class='fa fa-times' aria-hidden='true'></i></a>" +
+                        "<i class='bi bi-x' aria-hidden='true'></i></a>" +
                         "<div>" +
                         "</div>";
                     $("#media-list").prepend(div);
@@ -1140,22 +1253,7 @@ function simpanValue() {
     $('#noteModal').modal('hide');
 }
 
-function deleteOpsiPg2(e) {
-    $(e).closest('.pg-kompleks').remove();
 
-    var opsi2 = $('#opsi-pg2');
-    const $abjads = opsi2.find('.abjad-pg2')
-
-    $abjads.each(function (index, sp) {
-        $(sp).html('<b>Jawaban ' + (index + 10).toString(36).toUpperCase() + '</b>')
-    })
-
-    const $teks = opsi2.find('.textjawaban2');
-    $teks.each(function (index, area) {
-        const abc = (index + 10).toString(36).toLowerCase();
-        $(area).prop('id', 'textjawaban2_' + abc).prop('name', 'jawaban2_' + abc)
-    })
-}
 
 function encode(str) {
     var decoded = decodeURIComponent(str)
@@ -1178,3 +1276,489 @@ function decode(str) {
         return str
     }
 }
+
+
+function tidySoal() {
+    console.log('Starting tidySoal...');
+    var content = $('#textsoal').summernote('code');
+    // Basic check if content is effectively empty
+    if (!content || content.trim() === '' || content === '<p><br></p>') {
+        Swal.fire('Peringatan', 'Silahkan tulis atau paste soal terlebih dahulu sebelum menggunakan fitur Rapikan AI.', 'warning');
+        return;
+    }
+
+    Swal.fire({
+        title: 'Sedang Memproses...',
+        text: 'AI sedang merapikan struktur HTML, tabel, dan layout soal (beserta opsi jawaban)...',
+        allowOutsideClick: false,
+        onBeforeOpen: () => {
+            Swal.showLoading()
+        }
+    });
+
+    // Retrieve CSRF token from textsoal data attributes
+    var csrfName = $('#textsoal').data('name');
+    var csrfHash = $('#textsoal').data('id');
+
+    var formData = new FormData();
+    formData.append('soal', content);
+
+    // Determine active tab/type just like in paraphraseSoal
+    var urlParams = new URLSearchParams(window.location.search);
+    var jenis = urlParams.get('jns');
+    if (!jenis) jenis = '1';
+
+    // Collect options
+    var opsi = {};
+    if (jenis === '1') {
+        opsi['a'] = $('#textjawaban_a').summernote('code');
+        opsi['b'] = $('#textjawaban_b').summernote('code');
+        opsi['c'] = $('#textjawaban_c').summernote('code');
+        opsi['d'] = $('#textjawaban_d').summernote('code');
+        opsi['e'] = $('#textjawaban_e').summernote('code');
+    } else if (jenis === '2') {
+        $('.textjawaban2').each(function () {
+            var name = $(this).attr('name');
+            var key = name.split('_')[1];
+            opsi[key] = $(this).val();
+        });
+    }
+
+    formData.append('opsi', JSON.stringify(opsi));
+    formData.append('jenis', jenis);
+    if (csrfName) formData.append(csrfName, csrfHash);
+
+    $.ajax({
+        url: base_url + "cbtbanksoal/tidy_ai",
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        dataType: "JSON",
+        success: function (data) {
+            if (data.success) {
+                // Update Soal
+                if (data.data) {
+                    $('#textsoal').summernote('code', data.data);
+                }
+
+                // Update Options if available in response
+                if (data.opsi) {
+                    if (jenis === '1') {
+                        if (data.opsi.a) $('#textjawaban_a').summernote('code', data.opsi.a);
+                        if (data.opsi.b) $('#textjawaban_b').summernote('code', data.opsi.b);
+                        if (data.opsi.c) $('#textjawaban_c').summernote('code', data.opsi.c);
+                        if (data.opsi.d) $('#textjawaban_d').summernote('code', data.opsi.d);
+                        if (data.opsi.e) $('#textjawaban_e').summernote('code', data.opsi.e);
+                    } else if (jenis === '2') {
+                        $.each(data.opsi, function (k, v) {
+                            $('#textjawaban2_' + k).summernote('code', v);
+                        });
+                    }
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Selesai!',
+                    text: 'Struktur soal dan jawaban berhasil dirapikan.',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: data.message || 'AI tidak dapat memproses permintaan.'
+                });
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error(xhr.responseText);
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                text: 'Gagal menghubungi server atau timeout.'
+            });
+        }
+    });
+}
+
+function paraphraseSoal() {
+    var content = $('#textsoal').summernote('code');
+    // Basic check if content is empty (stripping tags)
+    if (!content || $('<div>').html(content).text().trim() === '') {
+        Swal.fire('Peringatan', 'Silahkan tulis narasi soal terlebih dahulu sebelum menggunakan fitur Parafrase.', 'warning');
+        return;
+    }
+
+    Swal.fire({
+        title: 'Sedang Memproses...',
+        text: 'AI sedang menganalisis dan meningkatkan kualitas soal (HOTS/Literasi)...',
+        allowOutsideClick: false,
+        onBeforeOpen: () => {
+            Swal.showLoading()
+        }
+    });
+
+    // Retrieve CSRF token from textsoal data attributes
+    var csrfName = $('#textsoal').data('name');
+    var csrfHash = $('#textsoal').data('id');
+
+    var formData = new FormData();
+    formData.append('soal', content);
+    formData.append('bank_id', idBank);
+    var urlParams = new URLSearchParams(window.location.search);
+    var jenis = urlParams.get('jns');
+    // If not found in URL (e.g. first load), default to '1' or active tab
+    if (!jenis) jenis = '1';
+
+    // Collect options if available (PG or Complex)
+    var opsi = {};
+    if (jenis === '1') {
+        opsi['a'] = $('#textjawaban_a').summernote('code');
+        opsi['b'] = $('#textjawaban_b').summernote('code');
+        opsi['c'] = $('#textjawaban_c').summernote('code');
+        opsi['d'] = $('#textjawaban_d').summernote('code');
+        opsi['e'] = $('#textjawaban_e').summernote('code');
+    } else if (jenis === '2') {
+        // For complex multiple choice, options are dynamic
+        $('.textjawaban2').each(function () {
+            var name = $(this).attr('name'); // jawaban2_a
+            var key = name.split('_')[1];
+            opsi[key] = $(this).val(); // usually textarea
+        });
+    }
+
+    // Add options to formData
+    formData.append('opsi', JSON.stringify(opsi));
+    formData.append('jenis', jenis);
+    if (csrfName) formData.append(csrfName, csrfHash);
+
+    $.ajax({
+        url: base_url + "cbtbanksoal/paraphrase_ai",
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        dataType: "JSON",
+        success: function (data) {
+            if (data.success) {
+                $('#textsoal').summernote('code', data.data);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Selesai!',
+                    text: 'Soal berhasil diperbaiki menjadi HOTS & Kontekstual.',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: data.message || 'AI tidak dapat memproses permintaan.'
+                });
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error(xhr.responseText);
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                text: 'Gagal menghubungi server atau timeout.'
+            });
+        }
+    });
+}
+
+
+
+
+function tidyManual() {
+    console.log('Starting tidyManual...');
+    var content = $('#textsoal').summernote('code');
+    // Basic check if content is effectively empty
+    if (!content || content.trim() === '' || content === '<p><br></p>') {
+        Swal.fire('Peringatan', 'Silahkan tulis atau paste soal terlebih dahulu sebelum menggunakan fitur Rapikan Manual.', 'warning');
+        return;
+    }
+
+    Swal.fire({
+        title: 'Sedang Memproses...',
+        text: 'Sedang merapikan struktur HTML, tabel, dan layout soal (Manual)...',
+        allowOutsideClick: false,
+        onBeforeOpen: () => {
+            Swal.showLoading()
+        }
+    });
+
+    // Retrieve CSRF token from textsoal data attributes
+    var csrfName = $('#textsoal').data('name');
+    var csrfHash = $('#textsoal').data('id');
+
+    var formData = new FormData();
+    formData.append('soal', content);
+
+    // Determine active tab/type just like in paraphraseSoal
+    var urlParams = new URLSearchParams(window.location.search);
+    var jenis = urlParams.get('jns');
+    if (!jenis) jenis = '1';
+
+    // Collect options
+    var opsi = {};
+    if (jenis === '1') {
+        opsi['a'] = $('#textjawaban_a').summernote('code');
+        opsi['b'] = $('#textjawaban_b').summernote('code');
+        opsi['c'] = $('#textjawaban_c').summernote('code');
+        opsi['d'] = $('#textjawaban_d').summernote('code');
+        opsi['e'] = $('#textjawaban_e').summernote('code');
+    } else if (jenis === '2') {
+        $('.textjawaban2').each(function () {
+            var name = $(this).attr('name');
+            var key = name.split('_')[1];
+            opsi[key] = $(this).val();
+        });
+    }
+
+    formData.append('opsi', JSON.stringify(opsi));
+    if (csrfName) formData.append(csrfName, csrfHash);
+
+    $.ajax({
+        url: base_url + "cbtbanksoal/tidy_manual",
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        dataType: "JSON",
+        success: function (data) {
+            if (data.success) {
+                // Update Soal
+                if (data.data) {
+                    $('#textsoal').summernote('code', data.data);
+                }
+
+                // Update Options if available in response
+                if (data.opsi) {
+                    if (jenis === '1') {
+                        if (data.opsi.a) $('#textjawaban_a').summernote('code', data.opsi.a);
+                        if (data.opsi.b) $('#textjawaban_b').summernote('code', data.opsi.b);
+                        if (data.opsi.c) $('#textjawaban_c').summernote('code', data.opsi.c);
+                        if (data.opsi.d) $('#textjawaban_d').summernote('code', data.opsi.d);
+                        if (data.opsi.e) $('#textjawaban_e').summernote('code', data.opsi.e);
+                    } else if (jenis === '2') {
+                        $.each(data.opsi, function (k, v) {
+                            $('#textjawaban2_' + k).summernote('code', v);
+                        });
+                    }
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Selesai!',
+                    text: 'Struktur soal dan jawaban berhasil dirapikan (Manual).',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: data.message || 'Gagal memproses permintaan.'
+                });
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error(xhr.responseText);
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                text: 'Gagal menghubungi server atau timeout.'
+            });
+        }
+    });
+}
+
+console.log("soal.js loaded completely");
+
+// =====================================================
+// TYPE 6: URUTAN (ORDERING) - Teacher Functions
+// =====================================================
+var urutanItemCount = 2;
+
+function tambahSoalUrutan(el) {
+    var nomor = $(el).data('nomor');
+    var bank = $(el).data('bank');
+
+    $.ajax({
+        url: base_url + "cbtbanksoal/tambahSoal",
+        type: "POST",
+        dataType: "JSON",
+        data: {
+            nomor: nomor,
+            jenis: 6,
+            bank: bank
+        },
+        success: function (data) {
+            console.log(data);
+            window.location.href = base_url + 'cbtbanksoal/buatsoal/' + bank + '?tab=6';
+        }, error: function (xhr, status, error) {
+            console.log("error", xhr.responseText);
+            showDangerToast('Gagal menambah soal');
+        }
+    });
+}
+
+function resetUrutanItems() {
+    urutanItemCount = 2;
+    $('#urutan-items-container').html(
+        '<div class="urutan-item mb-2" data-idx="0">' +
+        '<div class="d-flex align-items-center">' +
+        '<span class="me-2 fw-bold" style="min-width: 30px;">1.</span>' +
+        '<input type="text" class="form-control urutan-input flex-grow-1" placeholder="Item pertama (urutan benar)">' +
+        '<button type="button" class="btn btn-danger btn-sm ms-2 btn-remove-urutan" onclick="removeUrutanItem(this)"><i class="bi bi-x"></i></button>' +
+        '</div>' +
+        '</div>' +
+        '<div class="urutan-item mb-2" data-idx="1">' +
+        '<div class="d-flex align-items-center">' +
+        '<span class="me-2 fw-bold" style="min-width: 30px;">2.</span>' +
+        '<input type="text" class="form-control urutan-input flex-grow-1" placeholder="Item kedua">' +
+        '<button type="button" class="btn btn-danger btn-sm ms-2 btn-remove-urutan" onclick="removeUrutanItem(this)"><i class="bi bi-x"></i></button>' +
+        '</div>' +
+        '</div>'
+    );
+}
+
+function addUrutanItem() {
+    urutanItemCount++;
+    $('#urutan-items-container').append(
+        '<div class="urutan-item mb-2" data-idx="' + (urutanItemCount - 1) + '">' +
+        '<div class="d-flex align-items-center">' +
+        '<span class="me-2 fw-bold" style="min-width: 30px;">' + urutanItemCount + '.</span>' +
+        '<input type="text" class="form-control urutan-input flex-grow-1" placeholder="Item ke-' + urutanItemCount + '">' +
+        '<button type="button" class="btn btn-danger btn-sm ms-2 btn-remove-urutan" onclick="removeUrutanItem(this)"><i class="bi bi-x"></i></button>' +
+        '</div>' +
+        '</div>'
+    );
+    updateUrutanNumbers();
+}
+
+function removeUrutanItem(btn) {
+    if ($('.urutan-item').length > 2) {
+        $(btn).closest('.urutan-item').remove();
+        updateUrutanNumbers();
+    } else {
+        Swal.fire('Error', 'Minimal 2 item diperlukan', 'error');
+    }
+}
+
+function updateUrutanNumbers() {
+    $('.urutan-item').each(function (idx) {
+        $(this).find('span').first().text((idx + 1) + '.');
+        $(this).attr('data-idx', idx);
+    });
+    urutanItemCount = $('.urutan-item').length;
+}
+
+function getUrutanData() {
+    var items = [];
+    $('.urutan-input').each(function () {
+        var val = $(this).val().trim();
+        if (val) items.push(val);
+    });
+    return { items: items, correct_order: items.map(function (_, i) { return i; }) };
+}
+
+// Event listener for adding urutan items
+$(document).on('click', '#tambah-item-urutan', function () {
+    addUrutanItem();
+});
+
+// =====================================================
+// TYPE 7: ISIAN RUMPANG (CLOZE) - Teacher Functions
+// =====================================================
+function tambahSoalCloze(el) {
+    var nomor = $(el).data('nomor');
+    var bank = $(el).data('bank');
+
+    $.ajax({
+        url: base_url + "cbtbanksoal/tambahSoal",
+        type: "POST",
+        dataType: "JSON",
+        data: {
+            nomor: nomor,
+            jenis: 7,
+            bank: bank
+        },
+        success: function (data) {
+            console.log(data);
+            window.location.href = base_url + 'cbtbanksoal/buatsoal/' + bank + '?tab=7';
+        }, error: function (xhr, status, error) {
+            console.log("error", xhr.responseText);
+            showDangerToast('Gagal menambah soal');
+        }
+    });
+}
+
+function parseClozeBlankIds(text) {
+    var regex = /\[\[([^\]]+)\]\]/g;
+    var matches = [];
+    var match;
+    while ((match = regex.exec(text)) !== null) {
+        if (matches.indexOf(match[1]) === -1) {
+            matches.push(match[1]);
+        }
+    }
+    return matches;
+}
+
+function updateClozeAnswers() {
+    var text = $('#cloze-text-input').val();
+    var blankIds = parseClozeBlankIds(text);
+    var container = $('#cloze-answers-container');
+
+    // Preserve existing values
+    var existingValues = {};
+    container.find('.cloze-answer-input').each(function () {
+        existingValues[$(this).data('blank')] = $(this).val();
+    });
+
+    container.html('');
+
+    if (blankIds.length === 0) {
+        container.html('<div class="alert alert-info small">Ketik teks di atas menggunakan format <b>[[kata]]</b> untuk membuat bagian rumpang.</div>');
+        return;
+    }
+
+    blankIds.forEach(function (blankId) {
+        var existingVal = existingValues[blankId] || '';
+        container.append(
+            '<div class="form-group mb-2 border p-2 rounded" style="background: #f9f9f9;">' +
+            '<label class="mb-1 fw-bold text-primary">Jawaban untuk [[' + blankId + ']]</label>' +
+            '<input type="text" class="form-control cloze-answer-input" data-blank="' + blankId + '" ' +
+            'value="' + existingVal + '" placeholder="Isi jawaban yang benar...">' +
+            '</div>'
+        );
+    });
+}
+
+function getClozeData() {
+    var blanks = {};
+    $('.cloze-answer-input').each(function () {
+        var blankId = $(this).data('blank');
+        var answer = $(this).val().trim();
+        if (blankId && answer) {
+            blanks[blankId] = { answer: answer, case_sensitive: false };
+        }
+    });
+    return { blanks: blanks };
+}
+
+// Event listeners for cloze
+$(document).on('click', '#parse-cloze-blanks', function () {
+    updateClozeAnswers();
+});
+
+$(document).on('input', '#cloze-text-input', function () {
+    clearTimeout(window.clozeParseTimeout);
+    window.clozeParseTimeout = setTimeout(updateClozeAnswers, 500);
+});
+

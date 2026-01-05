@@ -1,4 +1,4 @@
-<div class="content-wrapper bg-white pt-4">
+<main class="app-main bg-white pt-4">
 
 
     <section class="content">
@@ -22,8 +22,8 @@
                                 <tr class="alert-default-danger">
                                     <th class="text-center align-middle border-danger" style="width: 50px">NO</th>
                                     <th class="border-danger">
-                                        <span class="pl-2 align-middle">Edit Pilihan Deskripsi Spiritual</span>
-                                        <button id="btn1" class="btn btn-sm btn-danger float-right btn-save"
+                                        <span class="ps-2 align-middle">Edit Pilihan Deskripsi Spiritual</span>
+                                        <button id="btn1" class="btn btn-sm btn-danger float-end btn-save"
                                                 data-jenis="1">Simpan
                                         </button>
                                     </th>
@@ -47,8 +47,8 @@
                                 <tr class="alert-default-danger">
                                     <th class="text-center align-middle border-danger" style="width: 50px">NO</th>
                                     <th class="border-danger">
-                                        <span class="pl-2 align-middle">Edit Pilihan Deskripsi Sosial</span>
-                                        <button id="btn2" class="btn btn-sm btn-danger float-right btn-save"
+                                        <span class="ps-2 align-middle">Edit Pilihan Deskripsi Sosial</span>
+                                        <button id="btn2" class="btn btn-sm btn-danger float-end btn-save"
                                                 data-jenis="2">Simpan
                                         </button>
                                     </th>
@@ -130,3 +130,5 @@
 
     })
 </script>
+
+

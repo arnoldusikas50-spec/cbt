@@ -59,5 +59,5 @@ $route['login-siswa'] = 'Auth/siswa';
 $route['login-admin'] = 'Auth/index';
 $route['logout'] = 'Auth/logout';
 $route['jenis-dokumen'] = 'jenis_dokumen';
-$route['404_override'] = 'auth';
+$route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

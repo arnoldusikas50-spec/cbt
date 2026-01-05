@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: AbangAzmi
- * Date: 27/06/2020
- * Time: 08.51
- */
+
 
 class Elearning_model extends CI_Model {
 

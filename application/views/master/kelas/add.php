@@ -5,7 +5,7 @@ foreach ($jumlahSiswa as $js) {
     $jjs[] = $js->id;
 }
 ?>
-<div class="content-wrapper bg-white pt-4">
+<main class="app-main bg-white pt-4">
 
 
     <section class="content">
@@ -16,22 +16,24 @@ foreach ($jumlahSiswa as $js) {
                     <div class="card-title">
                         <h6>Tambah Kelas</h6>
                     </div>
-                    <div class="card-tools">
+                    <div class="card-tools ms-auto">
                         <button type="submit" class="btn btn-primary btn-sm">
-                            <i class="fa fa-save mr-1"></i>Simpan
+                            <i class="bi bi-save me-1"></i>Simpan
                         </button>
-                    <a href="<?= base_url('datakelas') ?>" type="button" class="btn btn-sm btn-danger float-right ml-2">
-                        <i class="fas fa-arrow-circle-left"></i><span
-                                class="d-none d-sm-inline-block ml-1">Kembali</span>
-                    </a>   
+                        <a href="<?= base_url('datakelas') ?>" type="button"
+                            class="btn btn-sm btn-danger float-end ms-2">
+                            <i class="bi bi-arrow-left-square"></i><span
+                                class="d-none d-sm-inline-block ms-1">Kembali</span>
+                        </a>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group row">
+                            <div class="mb-3 row">
                                 <?php
-                                if (isset($id_kelas)) echo form_hidden('id_kelas', $id_kelas);
+                                if (isset($id_kelas))
+                                    echo form_hidden('id_kelas', $id_kelas);
                                 ?>
                                 <label for="nama_kelas" class="col-md-3 col-form-label">Nama Kelas</label>
                                 <div class="col-md-9">
@@ -40,13 +42,13 @@ foreach ($jumlahSiswa as $js) {
                                     if (isset($siswa)) {
                                         foreach ($siswa as $key => $row) {
                                             if ($row->id_kelas == null || $row->id_kelas == 0) {
-                                                $siswas [$row->id_siswa] = $row->nama .' - '.$row->nis;
+                                                $siswas[$row->id_siswa] = $row->nama . ' - ' . $row->nis;
                                             }
                                         }
                                     }
                                     if (isset($siswakelas)) {
                                         foreach ($siswakelas as $key => $row) {
-                                            $siswas [$row->id_siswa] = $row->nama .' - '.$row->nis;
+                                            $siswas[$row->id_siswa] = $row->nama . ' - ' . $row->nis;
                                         }
                                     }
 
@@ -65,15 +67,15 @@ foreach ($jumlahSiswa as $js) {
                                     ?>
                                 </div>
                             </div>
-                            <div class="form-group row">
+                            <div class="mb-3 row">
                                 <label class="col-md-3 control-label">Kode Kelas</label>
                                 <div class="col-md-9">
                                     <input type='text' name='kode_kelas' class='form-control'
-                                           value="<?= $kelas->kode_kelas ?>" required/>
+                                        value="<?= $kelas->kode_kelas ?>" required />
                                 </div>
                             </div>
-                            <?php if ($setting->jenjang == '3') : ?>
-                                <div class="form-group row">
+                            <?php if ($setting->jenjang == '3'): ?>
+                                <div class="mb-3 row">
                                     <label for="jurusan_id" class="col-md-3 control-label">Jurusan</label>
                                     <div class="col-md-9">
                                         <?php
@@ -89,7 +91,7 @@ foreach ($jumlahSiswa as $js) {
                             <?php endif; ?>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group row">
+                            <div class="mb-3 row">
                                 <label for="level_id" class="col-md-3 control-label">Level</label>
                                 <div class="col-md-9">
                                     <?php
@@ -109,13 +111,14 @@ foreach ($jumlahSiswa as $js) {
                         <div class="col-md-12">
                             <div class="card border">
                                 <div class="card-body">
-                                    <div class="form-group row">
+                                    <div class="mb-3 row">
                                         <label for="jumlah_siswa" class="col-md-12 control-label">Daftar Siswa</label>
                                         <div class="col-md-12">
-                                            <select name="siswa[]" class="form-control" id="jumlah_siswa" multiple="multiple" style="position: absolute; left: -9999px;">
-                                            <?php foreach ($siswas as $id=>$siswa) :?>
-                                            <option value="<?= $id ?>" <?= in_array($id, $jjs) ? 'selected="selected"' : '';?>><?=$siswa?></option>
-                                            <?php endforeach; ?>
+                                            <select name="siswa[]" class="form-control" id="jumlah_siswa"
+                                                multiple="multiple" style="position: absolute; left: -9999px;">
+                                                <?php foreach ($siswas as $id => $siswa): ?>
+                                                    <option value="<?= $id ?>" <?= in_array($id, $jjs) ? 'selected="selected"' : ''; ?>><?= $siswa ?></option>
+                                                <?php endforeach; ?>
                                             </select>
                                         </div>
                                     </div>
@@ -125,7 +128,7 @@ foreach ($jumlahSiswa as $js) {
                         <!-- <div class="col-md-4">
                             <div class="card border">
                                 <div class="card-body">
-                                    <div class="form-group row">
+                                    <div class="mb-3 row">
                                         <label for="siswa_id" class="control-label">Ketua Kelas</label>
                                         <?php
                                         echo form_dropdown(
@@ -146,15 +149,15 @@ foreach ($jumlahSiswa as $js) {
             <?= form_close() ?>
         </div>
     </section>
-</div>
+    </div>
 
-<script>
-    const arrAllSiswa = JSON.parse(JSON.stringify(<?= json_encode($siswas)?>));
-    const arrSelSiswa = JSON.parse(JSON.stringify(<?= json_encode($jjs)?>));
-    $(document).ready(function () {
-        $("#guru_id option:first").attr('disabled', 'disabled');
-        $("#jurusan_id option:first").attr('disabled', 'disabled');
-        $("#level_id option:first").attr('disabled', 'disabled');
-    });
-</script>
-<script src="<?= base_url() ?>/assets/app/js/master/kelas/add.js"></script>
+    <script>
+        const arrAllSiswa = JSON.parse(JSON.stringify(<?= json_encode($siswas) ?>));
+        const arrSelSiswa = JSON.parse(JSON.stringify(<?= json_encode($jjs) ?>));
+        $(document).ready(function () {
+            $("#guru_id option:first").attr('disabled', 'disabled');
+            $("#jurusan_id option:first").attr('disabled', 'disabled');
+            $("#level_id option:first").attr('disabled', 'disabled');
+        });
+    </script>
+    <script src="<?= base_url() ?>/assets/app/js/master/kelas/add.js"></script>

@@ -1,14 +1,14 @@
 var table;
 
-$(document).ready(function() {
+$(document).ready(function () {
   ajaxcsrf();
 
   table = $("#siswa").DataTable({
-    initComplete: function() {
+    initComplete: function () {
       var api = this.api();
       $("#siswa_filter input")
         .off(".DT")
-        .on("keyup.DT", function(e) {
+        .on("keyup.DT", function (e) {
           api.search(this.value).draw();
         });
     },
@@ -51,7 +51,7 @@ $(document).ready(function() {
         searchable: false
       },
       { data: "nis" },
-		{ data: "nisn" },
+      { data: "nisn" },
       { data: "nama" },
       { data: "username" },
       { data: "password" }
@@ -64,18 +64,18 @@ $(document).ready(function() {
           id_siswa: "id_siswa",
           ada: "ada"
         },
-        render: function(data, type, row, meta) {
+        render: function (data, type, row, meta) {
           let btn;
           if (data.ada > 0) {
             btn = "";
           } else {
             btn = `<button data-id="${data.id_siswa}" type="button" class="btn btn-xs btn-primary btn-aktif">
-								<i class="fa fa-user-plus"></i>
+								<i class="bi bi-person-plus"></i>
 							</button>`;
           }
           return `<div class="text-center">
 									<a class="btn btn-xs btn-warning" href="${base_url}datasiswa/edit/${data.id_siswa}">
-										<i class="fa fa-pencil"></i>
+										<i class="bi bi-pencil"></i>
 									</a>
 									${btn}
 								</div>`;
@@ -84,7 +84,7 @@ $(document).ready(function() {
       {
         targets: 0,
         data: "id_siswa",
-        render: function(data, type, row, meta) {
+        render: function (data, type, row, meta) {
           return `<div class="text-center">
 									<input name="checked[]" class="check" value="${data}" type="checkbox">
 								</div>`;
@@ -92,10 +92,10 @@ $(document).ready(function() {
       }
     ],
     order: [[2, "asc"]],
-    rowId: function(a) {
+    rowId: function (a) {
       return a;
     },
-    rowCallback: function(row, data, iDisplayIndex) {
+    rowCallback: function (row, data, iDisplayIndex) {
       var info = this.fnPagingInfo();
       var page = info.iPage;
       var length = info.iLength;
@@ -109,21 +109,21 @@ $(document).ready(function() {
     .container()
     .appendTo("#siswa_wrapper .col-md-6:eq(1)");
 
-  $(".select_all").on("click", function() {
+  $(".select_all").on("click", function () {
     if (this.checked) {
-      $(".check").each(function() {
+      $(".check").each(function () {
         this.checked = true;
         $(".select_all").prop("checked", true);
       });
     } else {
-      $(".check").each(function() {
+      $(".check").each(function () {
         this.checked = false;
         $(".select_all").prop("checked", false);
       });
     }
   });
 
-  $("#siswa tbody").on("click", "tr .check", function() {
+  $("#siswa tbody").on("click", "tr .check", function () {
     var check = $("#siswa tbody tr .check").length;
     var checked = $("#siswa tbody tr .check:checked").length;
     if (check === checked) {
@@ -133,7 +133,7 @@ $(document).ready(function() {
     }
   });
 
-  $("#bulk").on("submit", function(e) {
+  $("#bulk").on("submit", function (e) {
     e.preventDefault();
     e.stopImmediatePropagation();
 
@@ -141,15 +141,15 @@ $(document).ready(function() {
       url: $(this).attr("action"),
       data: $(this).serialize(),
       type: "POST",
-      success: function(respon) {
+      success: function (respon) {
         if (respon.status) {
-          swal.fire({
+          Swal.fire({
             title: "Berhasil",
             text: respon.total + " data berhasil dihapus",
             icon: "success"
           });
         } else {
-          swal.fire({
+          Swal.fire({
             title: "Gagal",
             text: "Tidak ada data yang dipilih",
             icon: "error"
@@ -157,8 +157,8 @@ $(document).ready(function() {
         }
         reload_ajax();
       },
-      error: function() {
-        swal.fire({
+      error: function () {
+        Swal.fire({
           title: "Gagal",
           text: "Ada data yang sedang digunakan",
           icon: "error"
@@ -167,18 +167,18 @@ $(document).ready(function() {
     });
   });
 
-  $("#siswa").on("click", ".btn-aktif", function() {
+  $("#siswa").on("click", ".btn-aktif", function () {
     let id = $(this).data("id");
 
     $.ajax({
       url: base_url + "datasiswa/create_user",
       data: "id=" + id,
       type: "GET",
-      success: function(response) {
+      success: function (response) {
         if (response.msg) {
           var title = response.status ? "Berhasil" : "Gagal";
           var type = response.status ? "success" : "error";
-          swal.fire({
+          Swal.fire({
             title: title,
             text: response.msg,
             type: type
@@ -192,13 +192,13 @@ $(document).ready(function() {
 
 function bulk_delete() {
   if ($("#siswa tbody tr .check:checked").length == 0) {
-    swal.fire({
+    Swal.fire({
       title: "Gagal",
       text: "Tidak ada data yang dipilih",
       icon: "error"
     });
   } else {
-    swal.fire({
+    Swal.fire({
       title: "Anda yakin?",
       text: "Data akan dihapus!",
       icon: "warning",

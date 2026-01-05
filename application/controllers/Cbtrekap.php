@@ -1,21 +1,25 @@
 <?php
 
 
-class Cbtrekap extends MY_Controller {
+class Cbtrekap extends MY_Controller
+{
 
-	public function __construct() {
-		parent::__construct();
-		if (!$this->auth->logged_in()) {
-			redirect('auth');
-        } else if ( !$this->auth->is_admin() && !$this->auth->in_group('panitia') && !$this->auth->in_group('guru')){
-			show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
-		}
-		$this->load->library(['datatables', 'form_validation']); // Load Library Ignited-Datatables
-		$this->load->library('upload');
-		$this->form_validation->set_error_delimiters('', '');
-	}
+    public function __construct()
+    {
+        parent::__construct();
+        if (!$this->auth->logged_in()) {
+            redirect('auth');
+        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru')) {
+            show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
+        }
+        $this->load->library(['datatables', 'form_validation']); // Load Library Ignited-Datatables
+        $this->load->library('upload');
+        $this->form_validation->set_error_delimiters('', '');
+        $this->_check_update_db();
+    }
 
-    public function index() {
+    public function index()
+    {
         $this->load->model('Master_model', 'master');
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Dropdown_model', 'dropdown');
@@ -25,7 +29,7 @@ class Cbtrekap extends MY_Controller {
             'user' => $user,
             'judul' => 'Rekap Hasil Penilaian',
             'subjudul' => 'Penilaian',
-            'setting'		=> $this->dashboard->getSetting()
+            'setting' => $this->dashboard->getSetting()
         ];
 
         $tp = $this->master->getTahunActive();
@@ -39,7 +43,7 @@ class Cbtrekap extends MY_Controller {
         $data['rekaps'] = $this->cekRekapSiswa();
         $data['session_id'] = $this->session->session_id;
 
-        if($this->auth->is_admin()){
+        if ($this->auth->is_admin()) {
             $this->render_view(1, 'cbt/rekap/rekap', $data);
         } else {
             $this->load->model('Kelas_model', 'kelas');
@@ -68,7 +72,7 @@ class Cbtrekap extends MY_Controller {
         $this->load->model('Guru_model', 'guru_model');
 
         $bank_where = [];
-        if(!$this->auth->is_admin() && !$this->auth->in_group('panitia')){
+        if (!$this->auth->is_admin()) {
             $this->load->model('Users_model', 'users');
             $user = $this->auth->user();
             $guru = $this->users->getDataGuruByUsername($user->username);
@@ -82,14 +86,14 @@ class Cbtrekap extends MY_Controller {
             ->with_sesisiswa([
                 'where' => [],
                 'with' => [
-                    ['relation'=>'siswa', 'fields'=>'id_siswa,nama,nis,agama'],
+                    ['relation' => 'siswa', 'fields' => 'id_siswa,nama,nis,agama'],
                 ]
             ])
             ->with_bank([
                 'where' => $bank_where,
                 'fields' => 'soal_agama,bank_kode,bank_level,bank_kelas,tampil_pg,tampil_kompleks,tampil_jodohkan,tampil_isian,tampil_esai,bank_guru_id',
                 'with' => [
-                    ['relation'=>'mapel', 'fields'=>'nama_mapel'],
+                    ['relation' => 'mapel', 'fields' => 'nama_mapel'],
                 ]
             ])
             ->with_jenis()
@@ -100,7 +104,7 @@ class Cbtrekap extends MY_Controller {
         $id_kelass = [];
         $total = 0;
         if ($jadwals) {
-            $idsjadwal = array_column((array)$jadwals, 'id_jadwal');
+            $idsjadwal = array_column((array) $jadwals, 'id_jadwal');
             $total = $this->cbt_jadwal_model->where('id_jadwal', $idsjadwal)->count_rows();
 
             if (count($idsjadwal) > 0) {
@@ -129,7 +133,7 @@ class Cbtrekap extends MY_Controller {
                 $id_kelas = array_map('strval', array_column($jadwal->bank_kelas, 'kelas_id'));
 
                 // Filter siswa berdasarkan kelas_id
-                $filter_siswa = array_filter((array)$jadwal->sesisiswa, static function ($s) use ($id_kelas) {
+                $filter_siswa = array_filter((array) $jadwal->sesisiswa, static function ($s) use ($id_kelas) {
                     return in_array($s->kelas_id ?? null, $id_kelas, true);
                 });
 
@@ -177,7 +181,7 @@ class Cbtrekap extends MY_Controller {
         }
 
         $kelases = [];
-        if (count($id_kelass) >0) {
+        if (count($id_kelass) > 0) {
             $kelases = $this->master_kelas_model
                 ->fields('id_kelas,kode_kelas,nama_kelas')
                 ->where('id_kelas', $id_kelass)
@@ -191,7 +195,7 @@ class Cbtrekap extends MY_Controller {
             'total' => $total,
             'pengawas' => $arrPengawas,
             'kelases' => $kelases,
-            'cbtsiswa' => (array)$cbtsiswa
+            'cbtsiswa' => (array) $cbtsiswa
         ];
 
         $this->output_json($data);
@@ -202,7 +206,7 @@ class Cbtrekap extends MY_Controller {
         $this->load->model('Rekap_jadwal_model', 'rekap_jadwal');
         $this->load->model('Master_kelas_model', 'master_kelas_model');
         $rekap_where = [];
-        if(!$this->auth->is_admin() && !$this->auth->in_group('panitia')){
+        if (!$this->auth->is_admin()) {
             $this->load->model('Users_model', 'users');
             $user = $this->auth->user();
             $guru = $this->users->getDataGuruByUsername($user->username);
@@ -239,7 +243,7 @@ class Cbtrekap extends MY_Controller {
                 }
                 $rekap->bank_kelas = $klss;
                 if (isset($rekap->rekapsiswa)) {
-                    $rekap->rekapsiswa = (array)$rekap->rekapsiswa;
+                    $rekap->rekapsiswa = (array) $rekap->rekapsiswa;
                     foreach ($rekap->rekapsiswa as $sis) {
                         if (!is_object($sis->siswa)) {
                             $sis->siswa = $this->maybe_unserialize($sis->siswa ?? '{}');
@@ -255,7 +259,7 @@ class Cbtrekap extends MY_Controller {
         }
 
         $kelases = [];
-        if (count($id_kelass) >0) {
+        if (count($id_kelass) > 0) {
             $kelases = $this->master_kelas_model
                 ->fields('id_kelas,kode_kelas,nama_kelas')
                 ->where('id_kelas', $id_kelass)
@@ -265,14 +269,15 @@ class Cbtrekap extends MY_Controller {
 
         $data = [
             'success' => true,
-            'rekap' => (array)$rekaps,
+            'rekap' => (array) $rekaps,
             'total' => $total,
             'kelases' => $kelases
         ];
         $this->output_json($data);
     }
 
-    public function rekap() {
+    public function rekap()
+    {
         $post = $this->input->post('rekap', false);
         $idsJadwal = json_decode($this->input->post('ids_jadwal', true));
         $idBank = json_decode($this->input->post('ids_bank', true));
@@ -329,7 +334,7 @@ class Cbtrekap extends MY_Controller {
                         }
                     }
                     $idxBank = array_search($id_bank, array_column($bankSoal, 'id_bank'));
-                    $bank = (object)$bankSoal[$idxBank];
+                    $bank = (object) $bankSoal[$idxBank];
                     $kelasBank = $this->maybe_unserialize($bank->bank_kelas ?? []);
                     unset($bank->bank_kelas);
                     $klsids = [];
@@ -338,7 +343,7 @@ class Cbtrekap extends MY_Controller {
                     }
 
                     $kelas_bank = $this->master_kelas_model->where('id_kelas', $klsids)->with_level()->as_array()->get_all();
-                    foreach ($kelas_bank as $key=>$kelas) {
+                    foreach ($kelas_bank as $key => $kelas) {
                         $kelas_bank[$key]['jumlah_siswa'] = $this->maybe_unserialize($kelas['jumlah_siswa']);
                     }
 
@@ -352,17 +357,33 @@ class Cbtrekap extends MY_Controller {
                         $soal->jawaban = $this->maybe_unserialize($soal->jawaban ?? '');
                     }
 
-                    $soalPg = array_filter($soals, static function($val) {return ($val->jenis == '1');});
-                    $soalPg2 = array_filter($soals, static function($val) {return ($val->jenis == '2');});
-                    $soalJod = array_filter($soals, static function($val) {return ($val->jenis == '3');});
-                    $soalIs = array_filter($soals, static function($val) {return ($val->jenis == '4');});
-                    $soalEs = array_filter($soals, static function($val) {return ($val->jenis == '5');});
+                    $soalPg = array_filter($soals, static function ($val) {
+                        return ($val->jenis == '1');
+                    });
+                    $soalPg2 = array_filter($soals, static function ($val) {
+                        return ($val->jenis == '2');
+                    });
+                    $soalJod = array_filter($soals, static function ($val) {
+                        return ($val->jenis == '3');
+                    });
+                    $soalIs = array_filter($soals, static function ($val) {
+                        return ($val->jenis == '4');
+                    });
+                    $soalEs = array_filter($soals, static function ($val) {
+                        return ($val->jenis == '5');
+                    });
+                    $soalUr = array_filter($soals, static function ($val) {
+                        return ($val->jenis == '6');
+                    });
+                    $soalCl = array_filter($soals, static function ($val) {
+                        return ($val->jenis == '7');
+                    });
 
                     unset($bank->guru, $bank->mapel, $bank->soal);
 
                     $inserted['bank_soal'] = json_encode($bank);
                     $inserted['kode_bank'] = $bank->bank_kode;
-                    $inserted['kelas_bank'] =json_encode( $kelas_bank);
+                    $inserted['kelas_bank'] = json_encode($kelas_bank);
                     $inserted['level_bank'] = $bank->bank_level;
                     $inserted['kode_jenis'] = $jenis->kode_jenis;
                     $inserted['id_mapel'] = $mapel->id_mapel;
@@ -373,6 +394,8 @@ class Cbtrekap extends MY_Controller {
                     $inserted['soal_jodohkan'] = json_encode(array_values($soalJod));
                     $inserted['soal_isian'] = json_encode(array_values($soalIs));
                     $inserted['soal_esai'] = json_encode(array_values($soalEs));
+                    $inserted['soal_urutan'] = json_encode(array_values($soalUr));
+                    $inserted['soal_cloze'] = json_encode(array_values($soalCl));
                     $inserted['id_guru'] = $guru->id_guru;
                     $inserted['nama_guru'] = $guru->nama_guru;
 
@@ -406,7 +429,8 @@ class Cbtrekap extends MY_Controller {
         $this->output_json($data);
     }
 
-    public function hapusDuplikatJadwal($ids_jadwal) {
+    public function hapusDuplikatJadwal($ids_jadwal)
+    {
         $this->db->select_min('id_rekap');
         $this->db->where_in('id_jadwal', $ids_jadwal);
         $this->db->group_by('id_jadwal');
@@ -441,10 +465,10 @@ class Cbtrekap extends MY_Controller {
 
     private function getCbtSiswa($idJadwal, $limit, $offset)
     {
-        $this->db->select('a.id_siswa,a.id_jadwal,a.id_bank,a.nilai_input,a.jawaban,a.nilai,a.mulai,a.selesai,a.status,a.lama_ujian,a.pelanggaran,'.
-            'j.id_tp,j.id_smt,s.smt,s.nama_smt,t.tahun,'.
-            'h.id_kelas, h.nama_kelas,'.
-            'e.*,f.*,'.
+        $this->db->select('a.id_siswa,a.id_jadwal,a.id_bank,a.nilai_input,a.jawaban,a.nilai,a.mulai,a.selesai,a.status,a.lama_ujian,a.pelanggaran,' .
+            'j.id_tp,j.id_smt,s.smt,s.nama_smt,t.tahun,' .
+            'h.id_kelas, h.nama_kelas,' .
+            'e.*,f.*,' .
             'g.nomor_peserta');
         $this->db->from('cbt_siswa a');
         $this->db->join('cbt_jadwal j', 'a.id_jadwal=j.id_jadwal');
@@ -594,7 +618,8 @@ class Cbtrekap extends MY_Controller {
         $this->output_json($data);
     }
 
-    function hitungWaktu($durasi) {
+    function hitungWaktu($durasi)
+    {
         if (!empty($durasi['mulai']) && !empty($durasi['selesai'])) {
             $lamanya = isset($durasi['lama_ujian']) ? $durasi['lama_ujian'] : null;
 
@@ -682,17 +707,17 @@ class Cbtrekap extends MY_Controller {
             }
         }
 
-        if (count($for_insert)>0) {
+        if (count($for_insert) > 0) {
             $this->db->insert_batch('cbt_rekap_siswa', $for_insert);
         }
-        if (count($for_update)>0) {
+        if (count($for_update) > 0) {
             $this->db->update_batch('cbt_rekap_siswa', $for_update, 'id_rekap_siswa');
         }
 
         //update status rekap tabel jadwal
         $updateJadwal = [];
         foreach ($id_jadwal_update as $item) {
-            $updateJadwal[] =[
+            $updateJadwal[] = [
                 'id_jadwal' => $item,
                 'rekap' => '1'
             ];
@@ -809,11 +834,11 @@ class Cbtrekap extends MY_Controller {
 
         $this->load->model('Rekap_jadwal_model', 'rekap_jadwal');
         $rekap = $this->rekap_jadwal
-            ->where(['id_jadwal'=>$id_jadwal])
+            ->where(['id_jadwal' => $id_jadwal])
             ->with_rekapsiswa([
-                'where'=>['id_siswa'=>$id_siswa],
+                'where' => ['id_siswa' => $id_siswa],
                 'with' => [
-                    ['relation'=>'siswa', 'fields'=>'id_siswa,nama,nis,agama']
+                    ['relation' => 'siswa', 'fields' => 'id_siswa,nama,nis,agama']
                 ]
             ])
             ->get();
@@ -833,6 +858,8 @@ class Cbtrekap extends MY_Controller {
         $rekap->soal_jodohkan = $this->maybe_unserialize($rekap->soal_jodohkan);
         $rekap->soal_isian = $this->maybe_unserialize($rekap->soal_isian);
         $rekap->soal_esai = $this->maybe_unserialize($rekap->soal_esai ?? '');
+        $rekap->soal_urutan = $this->maybe_unserialize($rekap->soal_urutan ?? '[]');
+        $rekap->soal_cloze = $this->maybe_unserialize($rekap->soal_cloze ?? '[]');
         $rekap->rekapsiswa = (array) $rekap->rekapsiswa;
         $this->createSkorSiswa($rekap, true);
 
@@ -843,7 +870,7 @@ class Cbtrekap extends MY_Controller {
         $soal_1 = array_filter($rekap->soal_pg, function ($soal) {
             return $soal->tampilkan == '1';
         });
-        $soal_2 =  array_filter($rekap->soal_kompleks, function ($soal) {
+        $soal_2 = array_filter($rekap->soal_kompleks, function ($soal) {
             return $soal->tampilkan == '1';
         });
         $soal_3 = array_filter($rekap->soal_jodohkan, function ($soal) {
@@ -869,7 +896,7 @@ class Cbtrekap extends MY_Controller {
         $data['id_jadwal'] = $rekap->id_jadwal;
         $data['id_bank'] = $jadwal->id_bank ?? null;
         $data['tp_jadwal'] = $rekap->tp;
-        $data['jenis'] = (object)['id_jenis'=>$rekap->id_jenis, 'kode_jenis'=>$rekap->kode_jenis];
+        $data['jenis'] = (object) ['id_jenis' => $rekap->id_jenis, 'kode_jenis' => $rekap->kode_jenis];
 
         if ($this->auth->is_admin()) {
             $this->render_view(1, 'cbt/nilai/koreksi', $data);
@@ -880,7 +907,8 @@ class Cbtrekap extends MY_Controller {
         }
     }
 
-    private function decodeIds($post) {
+    private function decodeIds($post)
+    {
         $details = [];
         foreach ($post as $detail) {
             try {
@@ -943,11 +971,11 @@ class Cbtrekap extends MY_Controller {
         //$data['jadwal'] = $jadwals;
 
         $rekap = $this->rekap_jadwal
-            ->where(['id_jadwal'=>$jadwal_selected])
+            ->where(['id_jadwal' => $jadwal_selected])
             ->with_rekapsiswa([
-                'where'=>['id_kelas'=>$kelas_selected],
+                'where' => ['id_kelas' => $kelas_selected],
                 'with' => [
-                    ['relation'=>'siswa', 'fields'=>'id_siswa,nama,nis,agama']
+                    ['relation' => 'siswa', 'fields' => 'id_siswa,nama,nis,agama']
                 ]
             ])
             ->get();
@@ -982,9 +1010,11 @@ class Cbtrekap extends MY_Controller {
         });
 
         $rekap->rekapsiswa = (array) $rekap->rekapsiswa;
-        foreach ($rekap->rekapsiswa as $ks=>$rekapsiswa) {
-            if ($rekap->bank_soal->soal_agama != '-' && $rekap->bank_soal->soal_agama != '0'
-                && $rekap->bank_soal->soal_agama !== $rekapsiswa->siswa->agama) {
+        foreach ($rekap->rekapsiswa as $ks => $rekapsiswa) {
+            if (
+                $rekap->bank_soal->soal_agama != '-' && $rekap->bank_soal->soal_agama != '0'
+                && $rekap->bank_soal->soal_agama !== $rekapsiswa->siswa->agama
+            ) {
                 unset($rekap->rekapsiswa[$ks]);
             }
         }
@@ -1002,7 +1032,8 @@ class Cbtrekap extends MY_Controller {
         }
     }
 
-    public function hapusRekap() {
+    public function hapusRekap()
+    {
         $this->load->model('Log_model', 'logging');
         $ids = json_decode($this->input->post('ids', true));
         //sleep(1);
@@ -1019,14 +1050,14 @@ class Cbtrekap extends MY_Controller {
         if ($delNilai && $delRekap) {
             $updateJadwal = [];
             foreach ($ids as $item) {
-                $updateJadwal[] =[
+                $updateJadwal[] = [
                     'id_jadwal' => $item,
                     'rekap' => '0'
                 ];
             }
             $this->db->update_batch('cbt_jadwal', $updateJadwal, 'id_jadwal');
             $this->logging->saveLog($this->LOG_TYPE->EDIT, 'Menghapus rekap hasil ujian');
-            $this->session->set_flashdata('rekapnilai', '<div id="flashdata" class="alert alert-default-success align-content-center w-100" role="alert"> Berhasil menghapus <b>'.count($ids).'</b> nilai </div>');
+            $this->session->set_flashdata('rekapnilai', '<div id="flashdata" class="alert alert-default-success align-content-center w-100" role="alert"> Berhasil menghapus <b>' . count($ids) . '</b> nilai </div>');
         } else {
             $this->session->set_flashdata('rekapnilai', '<div id="flashdata" class="alert alert-default-danger align-content-center w-100" role="alert"> Hapus nilai gagal </div>');
         }
@@ -1035,16 +1066,18 @@ class Cbtrekap extends MY_Controller {
         $this->output_json($data);
     }
 
-    function getDataFromArray1ByUserId($array, $userId) {
-        foreach($array as $key => $data) {
-            if($data->id_siswa == $userId)
+    function getDataFromArray1ByUserId($array, $userId)
+    {
+        foreach ($array as $key => $data) {
+            if ($data->id_siswa == $userId)
                 return $array;
         }
         return array();
     }
 
     // new
-    public function ekspor_rekap() {
+    public function ekspor_rekap()
+    {
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Rekap_jadwal_model', 'rekap_jadwal');
 
@@ -1056,7 +1089,7 @@ class Cbtrekap extends MY_Controller {
             'user' => $user,
             'judul' => 'Ekspor',
             'subjudul' => 'Ekspor Rekap',
-            'setting'		=> $this->dashboard->getSetting()
+            'setting' => $this->dashboard->getSetting()
         ];
 
         $tp_smt = $this->getTpSmt();
@@ -1072,19 +1105,19 @@ class Cbtrekap extends MY_Controller {
 
         $this->load->model('Rekap_jadwal_model', 'rekap_jadwal');
         $rekap = $this->rekap_jadwal
-            ->where(['id_jadwal'=>$jadwal])
+            ->where(['id_jadwal' => $jadwal])
             ->with_rekapsiswa([
-                'where'=>['id_kelas'=>$kelas],
+                'where' => ['id_kelas' => $kelas],
                 'with' => [
-                    ['relation'=>'siswa', 'fields'=>'id_siswa,nama,nis,agama']
+                    ['relation' => 'siswa', 'fields' => 'id_siswa,nama,nis,agama']
                 ]
             ])
             ->get();
 
-        if($this->auth->is_admin()){
+        if ($this->auth->is_admin()) {
             $data['rekap'] = $rekap;
             $this->render_view(1, 'cbt/rekap/ekspor_rekap', $data);
-        }else{
+        } else {
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $data['guru'] = $guru;
             //$data['jadwal'] = $this->dropdown->getAllJadwalGuru($tp->id_tp, $smt->id_smt, $guru->id_guru);
@@ -1108,9 +1141,9 @@ class Cbtrekap extends MY_Controller {
         $this->load->model('Rekap_jadwal_model', 'rekap_jadwal');
 
         $rekap = $this->rekap_jadwal
-            ->where(['id_jadwal'=>$jadwal])
+            ->where(['id_jadwal' => $jadwal])
             ->with_rekapsiswa([
-                'where'=>['id_kelas'=>$kelas],
+                'where' => ['id_kelas' => $kelas],
             ])
             ->get();
 
@@ -1127,6 +1160,37 @@ class Cbtrekap extends MY_Controller {
         }
         $rekap->bank_kelas = $klss;
 
+        // Auto-patch missing types
+        $soal_urutan_chk = $this->maybe_unserialize($rekap->soal_urutan ?? '[]');
+        $soal_cloze_chk = $this->maybe_unserialize($rekap->soal_cloze ?? '[]');
+
+        if (empty($soal_urutan_chk) || empty($soal_cloze_chk)) {
+            $id_bank = $this->db->select('id_bank')->from('cbt_jadwal')->where('id_jadwal', $jadwal)->get()->row()->id_bank ?? 0;
+            if ($id_bank) {
+                $all_soals = $this->cbt->getSoalByBankId($id_bank);
+                if (empty($soal_urutan_chk)) {
+                    $soal_urutan_new = array_values(array_filter($all_soals, function ($s) {
+                        return $s->jenis == '6';
+                    }));
+                    if (!empty($soal_urutan_new)) {
+                        $enc = json_encode($soal_urutan_new);
+                        $this->db->where('id_rekap', $rekap->id_rekap)->update('cbt_rekap_jadwal', ['soal_urutan' => $enc]);
+                        $rekap->soal_urutan = $enc;
+                    }
+                }
+                if (empty($soal_cloze_chk)) {
+                    $soal_cloze_new = array_values(array_filter($all_soals, function ($s) {
+                        return $s->jenis == '7';
+                    }));
+                    if (!empty($soal_cloze_new)) {
+                        $enc = json_encode($soal_cloze_new);
+                        $this->db->where('id_rekap', $rekap->id_rekap)->update('cbt_rekap_jadwal', ['soal_cloze' => $enc]);
+                        $rekap->soal_cloze = $enc;
+                    }
+                }
+            }
+        }
+
         $soal_1 = array_filter($this->maybe_unserialize($rekap->soal_pg), function ($soal) {
             return $soal->tampilkan == '1';
         });
@@ -1142,12 +1206,20 @@ class Cbtrekap extends MY_Controller {
         $soal_5 = array_filter($this->maybe_unserialize($rekap->soal_esai), function ($soal) {
             return $soal->tampilkan == '1';
         });
+        $soal_6 = array_filter($this->maybe_unserialize($rekap->soal_urutan ?? '[]'), function ($soal) {
+            return $soal->tampilkan == '1';
+        });
+        $soal_7 = array_filter($this->maybe_unserialize($rekap->soal_cloze ?? '[]'), function ($soal) {
+            return $soal->tampilkan == '1';
+        });
 
         $rekap->soal_pg = array_values($soal_1);
         $rekap->soal_kompleks = array_values($soal_2);
         $rekap->soal_jodohkan = array_values($soal_3);
         $rekap->soal_isian = array_values($soal_4);
         $rekap->soal_esai = array_values($soal_5);
+        $rekap->soal_urutan = array_values($soal_6);
+        $rekap->soal_cloze = array_values($soal_7);
 
         $arrIdKelas = [];
         foreach ($rekap->kelas_bank as $kls) {
@@ -1178,11 +1250,13 @@ class Cbtrekap extends MY_Controller {
         $hasilAnalisis = $this->analyzeData($normalizedSiswa, $kunci, $rekap->bank_soal->opsi);
 
         $arrIdSiswa = [];
-        $rekap->rekapsiswa = (array)$rekap->rekapsiswa;
-        foreach ($rekap->rekapsiswa as $ks=>$rekapsiswa) {
+        $rekap->rekapsiswa = (array) $rekap->rekapsiswa;
+        foreach ($rekap->rekapsiswa as $ks => $rekapsiswa) {
             $rekapsiswa->siswa = $this->maybe_unserialize($rekapsiswa->siswa ?? '{}');
-            if ($rekap->bank_soal->soal_agama != '-' && $rekap->bank_soal->soal_agama != '0'
-                && $rekap->bank_soal->soal_agama !== ($rekapsiswa->agama ?? $rekapsiswa->siswa->agama)) {
+            if (
+                $rekap->bank_soal->soal_agama != '-' && $rekap->bank_soal->soal_agama != '0'
+                && $rekap->bank_soal->soal_agama !== ($rekapsiswa->agama ?? $rekapsiswa->siswa->agama)
+            ) {
                 unset($rekap->rekapsiswa[$ks]);
             } else {
                 $arrIdSiswa[] = $rekapsiswa->id_siswa;
@@ -1193,7 +1267,7 @@ class Cbtrekap extends MY_Controller {
         if (count($arrIdSiswa) > 0) {
             $durasies = $this->cbt_siswa_model
                 ->fields('id_jadwal,id_siswa,mulai,selesai,lama_ujian')
-                ->where(['id_jadwal'=>$jadwal])
+                ->where(['id_jadwal' => $jadwal])
                 ->where('id_siswa', $arrIdSiswa)
                 ->get_all();
 
@@ -1220,7 +1294,8 @@ class Cbtrekap extends MY_Controller {
         $this->output_json($data);
     }
 
-    function unserialize_with_key($serialized) {
+    function unserialize_with_key($serialized)
+    {
         $arr = $this->maybe_unserialize($serialized);
         $result = [];
         foreach ($arr as $value) {
@@ -1229,7 +1304,8 @@ class Cbtrekap extends MY_Controller {
         return $result;
     }
 
-    public function export_all() {
+    public function export_all()
+    {
         $this->load->model('Master_model', 'master');
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Cbt_model', 'cbt');
@@ -1240,7 +1316,7 @@ class Cbtrekap extends MY_Controller {
             'user' => $user,
             'judul' => 'Ekspor Hasil Penilaian',
             'subjudul' => 'Ekspor Nilai',
-            'setting'		=> $this->dashboard->getSetting()
+            'setting' => $this->dashboard->getSetting()
         ];
 
         $tp = $this->master->getTahunActive();
@@ -1251,7 +1327,7 @@ class Cbtrekap extends MY_Controller {
         $data['smt'] = $this->dashboard->getSemester();
         $data['smt_active'] = $smt;
 
-        if($this->auth->is_admin()){
+        if ($this->auth->is_admin()) {
             $all_rekap = $this->rekap_jadwal
                 ->fields('id_rekap, id_tp, tp, id_smt, smt, id_jadwal, id_jenis, kode_jenis, kelas_bank')
                 ->get_all();
@@ -1268,7 +1344,8 @@ class Cbtrekap extends MY_Controller {
                     $row->kelas_bank = $this->maybe_unserialize($row->kelas_bank);
                     foreach ($row->kelas_bank as $kls_bank) {
                         unset($kls_bank->jumlah_siswa);
-                        if (isset($kls_bank->id_kelas)) $map_kelas[$row->id_tp][$row->id_smt][$row->id_jenis][$kls_bank->id_kelas] = $kls_bank->nama_kelas;
+                        if (isset($kls_bank->id_kelas))
+                            $map_kelas[$row->id_tp][$row->id_smt][$row->id_jenis][$kls_bank->id_kelas] = $kls_bank->nama_kelas;
                     }
                     unset($row->kelas_bank);
                 }
@@ -1277,7 +1354,7 @@ class Cbtrekap extends MY_Controller {
                 $data['tahuns'] = $map_tahun;//$this->cbt->getDistinctTahun();
                 $data['semester'] = $map_smt;//$this->cbt->getDistinctSmt();
 
-                $data['all_rekap'] = count((array)$all_rekap);
+                $data['all_rekap'] = count((array) $all_rekap);
             }
 
             $this->render_view(1, 'cbt/rekap/ekspor_all', $data);
@@ -1285,7 +1362,7 @@ class Cbtrekap extends MY_Controller {
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $all_rekap = $this->rekap_jadwal
                 ->fields('id_rekap, id_tp, tp, id_smt, smt, id_jadwal, id_jenis, kode_jenis, kelas_bank')
-                ->where(['id_guru'=>$guru->id_guru])
+                ->where(['id_guru' => $guru->id_guru])
                 ->get_all();
 
             if ($all_rekap) {
@@ -1300,7 +1377,8 @@ class Cbtrekap extends MY_Controller {
                     $row->kelas_bank = $this->maybe_unserialize($row->kelas_bank);
                     foreach ($row->kelas_bank as $kls_bank) {
                         unset($kls_bank->jumlah_siswa);
-                        if (isset($kls_bank->id_kelas)) $map_kelas[$row->id_tp][$row->id_smt][$row->id_jenis][$kls_bank->id_kelas] = $kls_bank->nama_kelas;
+                        if (isset($kls_bank->id_kelas))
+                            $map_kelas[$row->id_tp][$row->id_smt][$row->id_jenis][$kls_bank->id_kelas] = $kls_bank->nama_kelas;
                     }
                     unset($row->kelas_bank);
                 }
@@ -1309,7 +1387,7 @@ class Cbtrekap extends MY_Controller {
                 $data['tahuns'] = $map_tahun;
                 $data['semester'] = $map_smt;
 
-                $data['all_rekap'] = count((array)$all_rekap);
+                $data['all_rekap'] = count((array) $all_rekap);
             }
             $data['guru'] = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $this->render_view(2, 'cbt/rekap/ekspor_all', $data);
@@ -1319,7 +1397,8 @@ class Cbtrekap extends MY_Controller {
     /**
      * @throws JsonException
      */
-    public function getNilaiKelas() {
+    public function getNilaiKelas()
+    {
         $this->load->model('Master_model', 'master');
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Cbt_model', 'cbt');
@@ -1336,27 +1415,27 @@ class Cbtrekap extends MY_Controller {
 
         $user = $this->auth->user();
         $where_jadwal = [];
-        if($this->auth->is_admin()){
-            $where_jadwal = ['id_tp'=>$tahun, 'id_smt'=>$smt, 'id_jenis'=>$jenis];
+        if ($this->auth->is_admin()) {
+            $where_jadwal = ['id_tp' => $tahun, 'id_smt' => $smt, 'id_jenis' => $jenis];
         } else {
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
-            $where_jadwal = ['id_tp'=>$tahun, 'id_smt'=>$smt, 'id_jenis'=>$jenis, 'id_guru' => $guru->id_guru];
+            $where_jadwal = ['id_tp' => $tahun, 'id_smt' => $smt, 'id_jenis' => $jenis, 'id_guru' => $guru->id_guru];
         }
 
         $rekap_jadwal = [];
         $rekap_siswa = [];
         $all_siswa = $this->sesisiswa_model
-            ->where(['kelas_id'=>$kelas, 'tp_id'=>$tahun, 'smt_id'=>$smt])
-            ->with_siswa(['fields'=>'id_siswa,nis,nisn,nama,agama'])
+            ->where(['kelas_id' => $kelas, 'tp_id' => $tahun, 'smt_id' => $smt])
+            ->with_siswa(['fields' => 'id_siswa,nis,nisn,nama,agama'])
             ->with_peserta()
             ->get_all();
 
         $rekaps = $this->rekap_jadwal
             ->where($where_jadwal)
             ->with_rekapsiswa([
-                'where'=>['id_kelas'=>$kelas],
+                'where' => ['id_kelas' => $kelas],
                 'with' => [
-                    ['relation'=>'siswa', 'fields'=>'id_siswa,nama,nis,agama']
+                    ['relation' => 'siswa', 'fields' => 'id_siswa,nama,nis,agama']
                 ]
             ])
             ->get_all();
@@ -1391,21 +1470,38 @@ class Cbtrekap extends MY_Controller {
             $soal_5 = array_filter($this->maybe_unserialize($rekap->soal_esai), function ($soal) {
                 return $soal->tampilkan == '1';
             });
+            $soal_6 = array_filter($this->maybe_unserialize($rekap->soal_urutan ?? '[]'), function ($soal) {
+                return $soal->tampilkan == '1';
+            });
+            $soal_7 = array_filter($this->maybe_unserialize($rekap->soal_cloze ?? '[]'), function ($soal) {
+                return $soal->tampilkan == '1';
+            });
 
             $rekap->soal_pg = array_values($soal_1);
             $rekap->soal_kompleks = array_values($soal_2);
             $rekap->soal_jodohkan = array_values($soal_3);
             $rekap->soal_isian = array_values($soal_4);
             $rekap->soal_esai = array_values($soal_5);
+            $rekap->soal_urutan = array_values($soal_6);
+            $rekap->soal_cloze = array_values($soal_7);
 
             $rekap->rekapsiswa = isset($rekap->rekapsiswa) ? (array) $rekap->rekapsiswa : [];
             $this->createSkorSiswa($rekap, false);
         }
 
-        $data['rekap_jadwal'] = array_values((array)$rekaps);
-        $data['siswa'] = array_values((array)$all_siswa);
+        $data['rekap_jadwal'] = array_values((array) $rekaps);
+        $data['siswa'] = array_values((array) $all_siswa);
         $this->output_json($data);
     }
 
+    private function _check_update_db()
+    {
+        $this->load->dbforge();
+        if (!$this->db->field_exists('soal_urutan', 'cbt_rekap_jadwal')) {
+            $this->dbforge->add_column('cbt_rekap_jadwal', [
+                'soal_urutan' => ['type' => 'LONGTEXT', 'null' => true],
+                'soal_cloze' => ['type' => 'LONGTEXT', 'null' => true],
+            ]);
+        }
+    }
 }
-

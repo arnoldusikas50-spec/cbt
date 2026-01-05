@@ -1,15 +1,30 @@
-<?php
-
-
-?>
-
-<div class="content-wrapper" style="margin-top: 30px;">
-    <div class="sticky">
-    </div>
-    <section class="content overlap p-0">
-        <div class="container">
-             <!-- <?php $this->load->view('members/siswa/templates/top'); ?> --> <!-- ikasmedia -->
-            <div class="row">
+	<style>
+	    .no-close .ui-dialog-titlebar-close {
+	        display: none;
+	    }
+	</style>
+	<main>
+	    <header class="masthead">
+	        <?php $this->load->view('members/siswa/templates/top'); ?>
+	    </header>
+	    <div class="container-fluid">
+	        <div class="main-content">
+	            <div class="container-fluid xl-width">
+	                <div class="row g-0">
+	                    <div class="col-md-1"></div>
+	                    <div class="col-md-10">
+	                        <div class="content">
+	                            <div class="row">
+	                                <div class="col-sm-12">
+	                                    <nav aria-label="breadcrumb">
+	                                        <ol class="breadcrumb">
+	                                            <li class="breadcrumb-item"><a href="dashboard">Dashboard</a></li>
+	                                            <li class="breadcrumb-item active" aria-current="page">Daftar Nilai</li>
+	                                        </ol>
+	                                    </nav>
+	                                </div>
+	                            </div>
+	                            <div class="row">
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
@@ -153,8 +168,22 @@
                 </div>
             </div>
         </div>
-    </section>
-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="container-fluid">
+            <div class="row g-0">
+                <div class="col-md-12">
+                    <div class="copyright">COPYRIGHT &copy; <?php $tgl = date('Y'); echo $tgl; ?> | IKASMEDIA </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</main>
 <?= form_open('', array('id' => 'getjadwal')); ?><?= form_close() ?>
 
 <script>
@@ -233,7 +262,7 @@
                 }, error: function (xhr, status, error) {
                     loading.classList.add('d-none')
                     console.log("error", xhr.responseText);
-                    swal.fire({
+                    Swal.fire({
                         title: "ERROR",
                         text: "Terjadi kesalahan, silakan refresh halaman",
                         icon: "error",
@@ -307,7 +336,7 @@
                     trTanggal.classList.add('group', 'alert-default-info');
                     const tglLengkap = `${day.hari}, ${new Date(day.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}`;
                     trTanggal.innerHTML = `
-                    <th rowspan="2" class="text-sm pl-2 border align-middle tanggal-lengkap" colspan="2">${tglLengkap}</th>
+                    <th rowspan="2" class="text-sm ps-2 border align-middle tanggal-lengkap" colspan="2">${tglLengkap}</th>
                     <th colspan="2" class="text-sm text-center align-middle alert-default-success" data-value="status-materi">Materi</th>
                     <th colspan="2" class="text-sm text-center align-middle alert-default-danger" data-value="status-tugas">Tugas</th>`;
                     tbody.appendChild(trTanggal)
@@ -466,7 +495,7 @@
         } else {
             const trTanggal = document.createElement('tr');
             trTanggal.classList.add('group', 'alert-default-info');
-            trTanggal.innerHTML = `<td class="text-sm pl-2 border align-middle tanggal-lengkap text-center" colspan="6">Tidak ada data untuk ditampilkan</td>`;
+            trTanggal.innerHTML = `<td class="text-sm ps-2 border align-middle tanggal-lengkap text-center" colspan="6">Tidak ada data untuk ditampilkan</td>`;
             tbody.appendChild(trTanggal)
         }
         table.appendChild(tbody)
@@ -489,16 +518,16 @@
         // status: 0=blm dikerjakan, 1=blm selesai, 2=selesai, 3=ulangi
 
         if (status === '2') {
-            swal.fire({
+            Swal.fire({
                 title: "Nilai <?= $judul ?? '' ?>",
                 html: '<table class="table table-sm table-borderless w-100">' +
                     '    <tr>' +
                     '        <th class="text-sm">NILAI</th>' +
-                    '        <th class="text-sm text-left">Catatan Guru</th>' +
+                    '        <th class="text-sm text-start">Catatan Guru</th>' +
                     '    </tr>' +
                     '    <tr>' +
                     '        <td class="text-lg text-bold">' + nilai + '</td>' +
-                    '        <td class="text-left">' + msg + '</td>' +
+                    '        <td class="text-start">' + msg + '</td>' +
                     '    </tr>' +
                     '</table>',
                 confirmButtonText: "TUTUP"

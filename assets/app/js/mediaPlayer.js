@@ -12,7 +12,7 @@
             maxPlay = 1,
             played = 0,
             isPreview = false,
-            callback = () => {}
+            callback = () => { }
         } = options;
 
         let remaining = Math.max(0, maxPlay - played);
@@ -43,16 +43,16 @@
         wrapper.innerHTML = `
             ${clonedMedia.outerHTML}
             <div class="controls">
-                <button type="button" id="${playId}" class="btn btn-success btn-circle-sm"><i class="fa fa-play" style="margin-left: 2px"></i></button>
+                <button type="button" id="${playId}" class="btn btn-success btn-circle-sm"><i class="bi bi-play" style="margin-left: 2px"></i></button>
                 <div class="time-display text-gray">
                     <span id="${curId}">0:00</span> / <span id="${durId}">0:00</span>
                 </div>
                 <input type="range" id="${barId}" class="play-progress-bar" value="0" min="0" max="100" ${isPreview ? '' : 'disabled'}>
-                <button type="button" id="${fullScreenId}" class="fullscreen-btn btn ${isAudio ? 'd-none' : ''}"><i class="text-lg text-gray fa fa-expand"></i></button>
+                <button type="button" id="${fullScreenId}" class="fullscreen-btn btn ${isAudio ? 'd-none' : ''}"><i class="text-lg text-gray bi bi-expand"></i></button>
             </div>
             <hr class="my-1">
             <div class="row">
-                <span class="play-count-display text-xs ml-2 font-italic" id="${countId}">${info}</span>
+                <span class="play-count-display text-xs ms-2 font-italic" id="${countId}">${info}</span>
             </div>
         `;
 
@@ -74,10 +74,10 @@
 
         fullscreenBtn.addEventListener('click', () => {
             if (document.fullscreenElement === wrapper) {
-                fullscreenBtn.innerHTML = `<i class="text-lg text-gray fa fa-expand"></i>`;
+                fullscreenBtn.innerHTML = `<i class="text-lg text-gray bi bi-expand"></i>`;
                 document.exitFullscreen();
             } else {
-                fullscreenBtn.innerHTML = `<i class="text-lg text-gray fa fa-compress"></i>`;
+                fullscreenBtn.innerHTML = `<i class="text-lg text-gray bi bi-compress"></i>`;
                 wrapper.requestFullscreen().catch(err => {
                     console.warn("Gagal masuk fullscreen:", err);
                 });
@@ -101,11 +101,11 @@
             if (isPreview) {
                 if (player.paused) {
                     player.play();
-                    playBtn.innerHTML = '<i class="fa fa-pause"></i>';
+                    playBtn.innerHTML = '<i class="bi bi-pause"></i>';
                     callback(idSoal, remaining);
                 } else {
                     player.pause();
-                    playBtn.innerHTML = '<i class="fa fa-play" style="margin-left: 2px"></i>';
+                    playBtn.innerHTML = '<i class="bi bi-play" style="margin-left: 2px"></i>';
                 }
             } else {
                 if (remaining > 0) {
@@ -123,7 +123,7 @@
 
         player.addEventListener('ended', () => {
             progressBar.value = 0;
-            playBtn.innerHTML = '<i class="fa fa-play" style="margin-left: 2px"></i>';
+            playBtn.innerHTML = '<i class="bi bi-play" style="margin-left: 2px"></i>';
             if (!isPreview) {
                 playBtn.disabled = remaining <= 0;
             }
@@ -136,7 +136,7 @@
             maxPlay = 1,
             played = 0,
             isPreview = false,
-            callback = () => {}
+            callback = () => { }
         } = options;
 
         createMediaPlayer(this, {
@@ -154,7 +154,7 @@
             maxPlay = 1,
             played = 0,
             isPreview = false,
-            callback = () => {}
+            callback = () => { }
         } = options;
 
         createMediaPlayer(this, {

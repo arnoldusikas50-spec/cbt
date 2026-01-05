@@ -2,7 +2,7 @@
 
 ?>
 
-<div class="content-wrapper bg-white pt-4">
+<main class="app-main bg-white pt-4">
 
 
     <section class="content">
@@ -35,37 +35,37 @@
 
                     <table class="table table-striped table-bordered table-hover" id="tbl-siswa">
                         <thead>
-                        <tr>
-                            <th width="50" height="50" class="text-center p-0 align-middle">No.</th>
-                            <th class="text-center p-0 align-middle">N I S N</th>
-                            <th class="text-center p-0 align-middle">N I S</th>
-                            <th class="text-center p-0 align-middle p-0">Nama Siswa</th>
-                            <th class="text-center p-0 align-middle">Naik / Lulus</th>
-                        </tr>
+                            <tr>
+                                <th width="50" height="50" class="text-center p-0 align-middle">No.</th>
+                                <th class="text-center p-0 align-middle">N I S N</th>
+                                <th class="text-center p-0 align-middle">N I S</th>
+                                <th class="text-center p-0 align-middle p-0">Nama Siswa</th>
+                                <th class="text-center p-0 align-middle">Naik / Lulus</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <?php
-                        $no = 1;
-                        foreach ($siswas as $siswa) :
-                            ?>
-                            <tr>
-                                <td class="d-none id-siswa"><?= $siswa->id_siswa ?></td>
-                                <td class="text-center"><?= $no ?></td>
-                                <td class="text-center"><?= $siswa->nisn ?></td>
-                                <td class="text-center"><?= $siswa->nis ?></td>
-                                <td><?= $siswa->nama ?></td>
-                                <td>
-                                    <?php
-                                    echo form_dropdown('naik', $naiks, $siswa->naik != null ? $siswa->naik : '', 'class="form-control form-control-sm naik"'); ?>
-                                </td>
-                            </tr>
-                            <?php $no++; endforeach; ?>
+                            <?php
+                            $no = 1;
+                            foreach ($siswas as $siswa):
+                                ?>
+                                <tr>
+                                    <td class="d-none id-siswa"><?= $siswa->id_siswa ?></td>
+                                    <td class="text-center"><?= $no ?></td>
+                                    <td class="text-center"><?= $siswa->nisn ?></td>
+                                    <td class="text-center"><?= $siswa->nis ?></td>
+                                    <td><?= $siswa->nama ?></td>
+                                    <td>
+                                        <?php
+                                        echo form_dropdown('naik', $naiks, $siswa->naik != null ? $siswa->naik : '', 'class="form-control form-control-sm naik"'); ?>
+                                    </td>
+                                </tr>
+                                <?php $no++; endforeach; ?>
                         </tbody>
                     </table>
 
                     <?= form_open('', array('id' => 'formkenaikan')) ?>
-                    <button type="submit" class="btn btn-primary card-tools mt-3 float-right">
-                        <i class="fas fa-save mr-2"></i>Simpan
+                    <button type="submit" class="btn btn-primary card-tools mt-3 float-end ms-auto">
+                        <i class="bi bi-save me-2"></i>Simpan
                     </button>
                     <?= form_close() ?>
 
@@ -73,58 +73,58 @@
             </div>
         </div>
     </section>
-</div>
+    </div>
 
-<script>
-    $(document).ready(function () {
-        $('#formkenaikan').submit('click', function (e) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            console.log("data:", $(this).serialize());
+    <script>
+        $(document).ready(function () {
+            $('#formkenaikan').submit('click', function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                console.log("data:", $(this).serialize());
 
-            const $rows1 = $('#tbl-siswa').find('tr'), headers1 = $rows1.splice(0, 1);
-            var jsonObj = [];
-            $rows1.each((i, row) => {
-                const id_siswa = $(row).find('.id-siswa').text();
-                const naik = $(row).find('.naik').val();
+                const $rows1 = $('#tbl-siswa').find('tr'), headers1 = $rows1.splice(0, 1);
+                var jsonObj = [];
+                $rows1.each((i, row) => {
+                    const id_siswa = $(row).find('.id-siswa').text();
+                    const naik = $(row).find('.naik').val();
 
-                let item = {};
-                item ["id_siswa"] = id_siswa;
-                item ["naik"] = naik;
+                    let item = {};
+                    item["id_siswa"] = id_siswa;
+                    item["naik"] = naik;
 
-                jsonObj.push(item);
+                    jsonObj.push(item);
+                });
+
+                console.log($(this).serialize() + '&naik=' + JSON.stringify(jsonObj));
+
+                $.ajax({
+                    url: base_url + "rapor/savenaik",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: $(this).serialize() + '&naik=' + JSON.stringify(jsonObj),
+                    success: function (data) {
+                        console.log("result", data);
+                        Swal.fire({
+                            title: "Sukses",
+                            text: data + " Data berhasil disimpan",
+                            icon: "success",
+                            showCancelButton: false,
+                        }).then(result => {
+                            if (result.value) {
+                                window.location.reload()
+                            }
+                        });
+                    }, error: function (xhr, status, error) {
+                        console.log("error", xhr.responseText);
+                        Swal.fire({
+                            title: "ERROR",
+                            text: "Data Tidak Tersimpan",
+                            icon: "error",
+                            showCancelButton: false,
+                        });
+                    }
+                });
             });
 
-            console.log($(this).serialize() + '&naik=' + JSON.stringify(jsonObj));
-
-            $.ajax({
-                url: base_url + "rapor/savenaik",
-                type: "POST",
-                dataType: "JSON",
-                data: $(this).serialize() + '&naik=' + JSON.stringify(jsonObj),
-                success: function (data) {
-                    console.log("result", data);
-                    swal.fire({
-                        title: "Sukses",
-                        text: data + " Data berhasil disimpan",
-                        icon: "success",
-                        showCancelButton: false,
-                    }).then(result => {
-                        if (result.value) {
-                            window.location.reload()
-                        }
-                    });
-                }, error: function (xhr, status, error) {
-                    console.log("error", xhr.responseText);
-                    swal.fire({
-                        title: "ERROR",
-                        text: "Data Tidak Tersimpan",
-                        icon: "error",
-                        showCancelButton: false,
-                    });
-                }
-            });
         });
-
-    });
-</script>
+    </script>

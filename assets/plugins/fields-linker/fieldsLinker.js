@@ -20,7 +20,7 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
 
-;(function ($) {
+; (function ($) {
     $.fn.fieldsLinker = function (action, input) {
         factory = this;
         if (action == 'init') {
@@ -32,7 +32,7 @@ function getRandomInt(max) {
 
             factory.work = new FieldsLinker(factory.selector);
             if (fieldsLinkerMemory.length == 0) {
-                fieldsLinkerMemory.push({"selector": factory.selector, "factory": factory});
+                fieldsLinkerMemory.push({ "selector": factory.selector, "factory": factory });
             } else {
                 let found = false;
                 fieldsLinkerMemory.forEach(function (x, i) {
@@ -42,7 +42,7 @@ function getRandomInt(max) {
                     }
                 });
                 if (!found) {
-                    fieldsLinkerMemory.push({"selector": factory.selector, "factory": factory});
+                    fieldsLinkerMemory.push({ "selector": factory.selector, "factory": factory });
                 }
             }
             factory.work.init(input);
@@ -223,7 +223,7 @@ function FieldsLinker(selector) {
             if (colors[self.listB[positionB]] == null) colors[self.listB[positionB]] = [];
             colors[self.listB[positionB]].push(handleCurrentBg);
             $(`ul[data-col="${self.chosenListA}"]`).find(`li:contains(${self.listA[positionA]})`)
-                .css({'background-color': handleCurrentBg});
+                .css({ 'background-color': handleCurrentBg });
         });
         $.each(colors, function (ii, vv) {
             var li_kiri = $(`ul[data-col="${self.chosenListB}"]`).find(`li:contains(${ii})`);
@@ -234,13 +234,13 @@ function FieldsLinker(selector) {
                     grad += ', ' + c + ' ' + percent * i + '%, ' + c + ' ' + percent * (i + 1) + '%';
                 });
                 li_kiri
-                    .css({'background-color': vv[vv.length - 1]})
-                    .css({'background-image': 'linear-gradient(' + grad + ')'})
+                    .css({ 'background-color': vv[vv.length - 1] })
+                    .css({ 'background-image': 'linear-gradient(' + grad + ')' })
                     .addClass('linked');
             } else {
                 li_kiri
-                    .css({'background-color': vv[0]})
-                    .css({'background-image': 'linear-gradient(' + vv[0] + ',' + vv[0] + ')'})
+                    .css({ 'background-color': vv[0] })
+                    .css({ 'background-image': 'linear-gradient(' + vv[0] + ',' + vv[0] + ')' })
                     .addClass('linked');
             }
         })
@@ -300,8 +300,8 @@ function FieldsLinker(selector) {
         for (var i = self.linksByName.length - 1; i >= 0; i--) {
             if (self.linksByName[i].tables == tablesAB && self.linksByName[i].to == nameB) {
                 $(`ul[data-col="${self.chosenListB}"]`).find(`li:contains(${nameB})`)
-                    .css({'background-color': '#fff'})
-                    .css({'background-image': 'linear-gradient(#fff,#fff)'})
+                    .css({ 'background-color': '#fff' })
+                    .css({ 'background-image': 'linear-gradient(#fff,#fff)' })
                     .removeClass('linked');
                 self.linksByName.splice(i, 1);
             }
@@ -319,7 +319,7 @@ function FieldsLinker(selector) {
 
         $.each(self.listA, function (n, is) {
             if ($.inArray(is, sisa) < 0) {
-                $(`ul[data-col="${self.chosenListA}"]`).find(`li:contains(${is})`).css({'background-color': '#fff'});
+                $(`ul[data-col="${self.chosenListA}"]`).find(`li:contains(${is})`).css({ 'background-color': '#fff' });
             }
         });
     }
@@ -546,7 +546,7 @@ function FieldsLinker(selector) {
             var $eraseIcon = $('<i></i>');
             $eraseIcon
                 .appendTo($li)
-                .addClass('fa fa-undo unlink')
+                .addClass('bi bi-undo unlink')
                 .attr('draggable', 'false')
                 .css({
                     'right': '28px',
@@ -558,7 +558,7 @@ function FieldsLinker(selector) {
             var $pullIcon = $('<i></i>');
             $pullIcon
                 .appendTo($li)
-                .addClass('fa fa-arrows-alt link')
+                .addClass('bi bi-arrows-alt link')
                 .attr('draggable', 'false')
                 .css({
                     'right': '8px',
@@ -685,9 +685,9 @@ function FieldsLinker(selector) {
                 if (self.isDisabled) return;
                 let el = $(this);
                 var handleCurrentColor = self.handleBackground[el.index() % self.handleBackground.length];
-                $(self.$root).find('.selected').removeClass('selected').css({'background-color': '#fff'});
+                $(self.$root).find('.selected').removeClass('selected').css({ 'background-color': '#fff' });
                 el.addClass('selected');
-                el.css({'background-color': handleCurrentColor});
+                el.css({ 'background-color': handleCurrentColor });
                 self.move = {};
                 self.move.offsetA = el.data('offset');
                 self.move.nameA = el.data('name');

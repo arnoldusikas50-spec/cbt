@@ -30,7 +30,7 @@ $(document).ready(function () {
 		columns: [
 			{
 				data: "id_jenis",
-                className: "text-center align-middle",
+				className: "text-center align-middle",
 				orderable: false,
 				searchable: false
 			},
@@ -42,17 +42,39 @@ $(document).ready(function () {
 			},
 			{
 				data: "nama_jenis",
-                className: "align-middle",
+				className: "align-middle",
 			},
 			{
 				data: "kode_jenis",
-                className: "text-center align-middle",
+				className: "text-center align-middle",
+			},
+			{
+				data: "status",
+				className: "text-center align-middle",
+				orderable: false,
+				searchable: false
 			}
 		],
 		columnDefs: [
 			{
-				searchable: false,
+				// Status column
 				targets: 4,
+				data: "status",
+				render: function (data, type, row, meta) {
+					const isActive = data === '1' || data === 1;
+					const badgeClass = isActive ? 'bg-success' : 'bg-secondary';
+					const statusText = isActive ? 'Aktif' : 'Non-Aktif';
+					return `<span class="badge ${badgeClass} cursor-pointer" 
+								onclick="toggleStatus('${row.id_jenis}', '${data}')" 
+								style="cursor:pointer" title="Klik untuk toggle">
+								${statusText}
+							</span>`;
+				}
+			},
+			{
+				// Aksi column
+				searchable: false,
+				targets: 5,
 				data: {
 					id_jenis: "id_jenis",
 					nama_jenis: "nama_jenis",
@@ -60,10 +82,10 @@ $(document).ready(function () {
 				},
 				render: function (data, type, row, meta) {
 					return `<div class="text-center">
-									<a class="ml-1 mr-2 btn btn-warning btn-sm" data-toggle="modal" data-target="#editJenisModal" data-id='${data.id_jenis}' data-nama='${data.nama_jenis}' data-kode='${data.kode_jenis}'>
-										<i class="fa fa-pencil-alt"></i> Edit
-									</a>
-								</div>`;
+								<a class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editJenisModal" data-id='${data.id_jenis}' data-nama='${data.nama_jenis}' data-kode='${data.kode_jenis}'>
+									<i class="bi bi-pencil"></i> Edit
+								</a>
+							</div>`;
 				}
 			},
 			{
@@ -71,8 +93,8 @@ $(document).ready(function () {
 				data: "id_jenis",
 				render: function (data, type, row, meta) {
 					return `<div class="text-center align-middle">
-									<input name="checked[]" class="check" value="${data}" type="checkbox">
-								</div>`;
+								<input name="checked[]" class="check" value="${data}" type="checkbox">
+							</div>`;
 				}
 			}
 		],
@@ -96,13 +118,13 @@ $(document).ready(function () {
 
 	$("div.toolbar").html(
 		'<button id="hapusterpilih" onclick="bulk_delete()" type="button" class="btn btn-danger" data-toggle="tooltip" title="Hapus Terpilh" disabled="disabled">' +
-		'<i class="far fa-trash-alt"></i></button>'
+		'<i class="b bi-trash"></i></button>'
 		/*
 		'<div class="btn-group">' +
-		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Print"><i class="fas fa-print"></i></button>' +
-		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As PDF"><i class="fas fa-file-pdf"></i></button>' +
-		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As Word"><i class="fa fa-file-word"></i></button>' +
-		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As Excel"><i class="fa fa-file-excel"></i></button>' +
+		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Print"><i class="bi bi-print"></i></button>' +
+		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As PDF"><i class="bi bi-file-pdf"></i></button>' +
+		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As Word"><i class="bi bi-file-word"></i></button>' +
+		'<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As Excel"><i class="bi bi-file-excel"></i></button>' +
 		'</div>'
 		*/
 	);
@@ -118,7 +140,7 @@ $(document).ready(function () {
 			$(".check").each(function () {
 				this.checked = false;
 				$(".select_all").prop("checked", false);
-				$('#hapusterpilih').attr('disabled','disabled');
+				$('#hapusterpilih').attr('disabled', 'disabled');
 			});
 		}
 	});
@@ -133,9 +155,9 @@ $(document).ready(function () {
 		}
 
 		if (checked === 0) {
-            $('#hapusterpilih').attr('disabled','disabled');
+			$('#hapusterpilih').attr('disabled', 'disabled');
 		} else {
-            $('#hapusterpilih').removeAttr('disabled');
+			$('#hapusterpilih').removeAttr('disabled');
 		}
 	});
 
@@ -230,13 +252,13 @@ $(document).ready(function () {
 			success: function (respon) {
 				$('#hapusterpilih').addClass('d-none');
 				if (respon.status) {
-					swal.fire({
+					Swal.fire({
 						title: "Berhasil",
 						text: respon.total + " data berhasil dihapus",
 						icon: "success"
 					});
 				} else {
-					swal.fire({
+					Swal.fire({
 						title: "Gagal",
 						text: "Tidak ada data yang dipilih",
 						icon: "error"
@@ -246,7 +268,7 @@ $(document).ready(function () {
 			},
 			error: function () {
 				$('#hapusterpilih').addClass('d-none');
-				swal.fire({
+				Swal.fire({
 					title: "Gagal",
 					text: "Ada data yang sedang digunakan",
 					icon: "error"
@@ -258,13 +280,13 @@ $(document).ready(function () {
 
 function bulk_delete() {
 	if ($("#jenis tbody tr .check:checked").length == 0) {
-		swal.fire({
+		Swal.fire({
 			title: "Gagal",
 			text: "Tidak ada data yang dipilih",
 			icon: "error"
 		});
 	} else {
-		swal.fire({
+		Swal.fire({
 			title: "Anda yakin?",
 			text: "Data akan dihapus!",
 			icon: "warning",
@@ -280,3 +302,34 @@ function bulk_delete() {
 	}
 }
 
+/**
+ * Toggle status aktif/non-aktif jenis ujian
+ */
+function toggleStatus(id, currentStatus) {
+	ajaxcsrf();
+	$.ajax({
+		url: base_url + "cbtjenis/toggleStatus",
+		type: "POST",
+		dataType: "JSON",
+		data: {
+			id_jenis: id,
+			status: currentStatus
+		},
+		success: function (data) {
+			if (data.success) {
+				showSuccessToast(data.message);
+				table.ajax.reload(null, false);
+			} else {
+				showDangerToast(data.message);
+			}
+		},
+		error: function (xhr, status, error) {
+			console.log("error", xhr.responseText);
+			showDangerToast('Error mengubah status');
+		}
+	});
+}
+
+function reload_ajax() {
+	table.ajax.reload(null, false);
+}

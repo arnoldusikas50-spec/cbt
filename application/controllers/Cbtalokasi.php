@@ -1,20 +1,23 @@
 <?php
 
 
-class Cbtalokasi extends MY_Controller {
+class Cbtalokasi extends MY_Controller
+{
 
-	public function __construct() {
-		parent::__construct();
-		if (!$this->auth->logged_in()) {
-			redirect('auth');
-        } else if (!$this->auth->is_admin() && !$this->auth->in_group('panitia') && !$this->auth->in_group('guru')) {
+    public function __construct()
+    {
+        parent::__construct();
+        if (!$this->auth->logged_in()) {
+            redirect('auth');
+        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru')) {
             show_error('Hanya Administrator dan guru yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
-		}
-		$this->load->library(['form_validation']); // Load Library Ignited-Datatables
-		$this->form_validation->set_error_delimiters('', '');
-	}
+        }
+        $this->load->library(['form_validation']); // Load Library Ignited-Datatables
+        $this->form_validation->set_error_delimiters('', '');
+    }
 
-    private function getDistinctTgl($tp, $smt, $jenis) {
+    private function getDistinctTgl($tp, $smt, $jenis)
+    {
         $this->db->distinct('a.tgl_mulai');
         $this->db->select('a.id_jenis, a.tgl_mulai');
         $this->db->from('cbt_jadwal a');
@@ -33,7 +36,8 @@ class Cbtalokasi extends MY_Controller {
         return $ret;
     }
 
-    private function getDistinctRuang($tp, $smt, $arrKelas) {
+    private function getDistinctRuang($tp, $smt, $arrKelas)
+    {
         $this->db->distinct('a.ruang_id');
         $this->db->select('a.ruang_id, a.sesi_id, b.kode_ruang, b.nama_ruang, c.kode_sesi, c.nama_sesi, c.waktu_mulai, c.waktu_akhir');
         $this->db->from('cbt_sesi_siswa a');
@@ -41,7 +45,7 @@ class Cbtalokasi extends MY_Controller {
         $this->db->where('a.smt_id', $smt);
         $this->db->join('cbt_ruang b', 'b.id_ruang=a.ruang_id');
         $this->db->join('cbt_sesi c', 'c.id_sesi=a.sesi_id');
-        if (count($arrKelas)>0) {
+        if (count($arrKelas) > 0) {
             $this->db->where_in('kelas_id', $arrKelas);
         }
         $this->db->order_by('b.nama_ruang', 'ASC');
@@ -52,7 +56,7 @@ class Cbtalokasi extends MY_Controller {
         if ($result) {
             foreach ($result as $row) {
                 if (!isset($sesis[$row->sesi_id])) {
-                    $sesis[$row->sesi_id] = (object)[
+                    $sesis[$row->sesi_id] = (object) [
                         'sesi_id' => $row->sesi_id,
                         'kode_sesi' => $row->kode_sesi,
                         'nama_sesi' => $row->nama_sesi,
@@ -61,7 +65,7 @@ class Cbtalokasi extends MY_Controller {
                         'ruangan' => []
                     ];
                 }
-                $sesis[$row->sesi_id]->ruangan[$row->ruang_id] = (object)[
+                $sesis[$row->sesi_id]->ruangan[$row->ruang_id] = (object) [
                     'ruang_id' => $row->ruang_id,
                     'kode_ruang' => $row->kode_ruang,
                     'nama_ruang' => $row->nama_ruang
@@ -71,7 +75,8 @@ class Cbtalokasi extends MY_Controller {
         return $sesis;
     }
 
-    public function index() {
+    public function index()
+    {
         $this->load->model('Dropdown_model', 'dropdown');
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Cbt_model', 'cbt');
@@ -79,9 +84,9 @@ class Cbtalokasi extends MY_Controller {
         $setting = $this->dashboard->getSetting();
         $data = [
             'user' => $user,
-            'judul'	=> 'Alokasi Waktu',
-            'subjudul'=> 'Alokasi Waktu Ujian',
-            'setting'		=> $setting
+            'judul' => 'Alokasi Waktu',
+            'subjudul' => 'Alokasi Waktu Ujian',
+            'setting' => $setting
         ];
 
         $tp = $this->dashboard->getTahunActive();
@@ -93,16 +98,16 @@ class Cbtalokasi extends MY_Controller {
 
         $id_jenis = $this->cbt->getDistinctJenisJadwal($tp->id_tp, $smt->id_smt);
         $ids = [];
-        if ($id_jenis && count($id_jenis)>0) {
+        if ($id_jenis && count($id_jenis) > 0) {
             foreach ($id_jenis as $jenis) {
                 $ids[] = $jenis->id_jenis;
             }
         }
 
-        if ($ids && count($ids)>0) {
+        if ($ids && count($ids) > 0) {
             $data['jenis'] = $this->cbt->getAllJenisUjianByArrJenis($ids);
         } else {
-            $data['jenis'] = [''=>'belum ada jadwal ujian'];
+            $data['jenis'] = ['' => 'belum ada jadwal ujian'];
         }
 
         $jenis_selected = $this->input->get('jenis', true);
@@ -111,11 +116,11 @@ class Cbtalokasi extends MY_Controller {
 
         $levels = [];
         if ($setting->jenjang == "1") {
-            $levels = [ "0"=>"Pilih Level", "1" => "1", "2"=> "2", "3" => "3", "4"=>"4", "5"=>"5", "6"=>"6"];
+            $levels = ["0" => "Pilih Level", "1" => "1", "2" => "2", "3" => "3", "4" => "4", "5" => "5", "6" => "6"];
         } elseif ($setting->jenjang == "2") {
-            $levels = [ "0"=>"Pilih Level", "7" => "7", "8"=> "8", "9" => "9"];
+            $levels = ["0" => "Pilih Level", "7" => "7", "8" => "8", "9" => "9"];
         } elseif ($setting->jenjang == "3") {
-            $levels = [ "0"=>"Pilih Level", "10" => "10", "11"=> "11", "12" => "12"];
+            $levels = ["0" => "Pilih Level", "10" => "10", "11" => "11", "12" => "12"];
         }
         $data['levels'] = $levels;
 
@@ -137,18 +142,18 @@ class Cbtalokasi extends MY_Controller {
                 }
             }
             $sesis = [];
-            if (count($arrKls)>0) {
+            if (count($arrKls) > 0) {
                 $all_sesis = $this->cbt->getDistinctSesi($tp->id_tp, $smt->id_smt, $arrKls);
                 foreach ($all_sesis as $row) {
                     if (!isset($sesis[$row->ruang_id])) {
-                        $sesis[$row->ruang_id] = (object)[
+                        $sesis[$row->ruang_id] = (object) [
                             'ruang_id' => $row->ruang_id,
                             'kode_ruang' => $row->kode_ruang,
                             'nama_ruang' => $row->nama_ruang,
                             'sesi' => []
                         ];
                     }
-                    $sesis[$row->ruang_id]->sesi[$row->sesi_id] = (object)[
+                    $sesis[$row->ruang_id]->sesi[$row->sesi_id] = (object) [
                         'sesi_id' => $row->sesi_id,
                         'kode_sesi' => $row->kode_sesi,
                         'nama_sesi' => $row->nama_sesi,
@@ -193,18 +198,18 @@ class Cbtalokasi extends MY_Controller {
                 }
             }
             $sesis = [];
-            if (count($arrKls)>0) {
+            if (count($arrKls) > 0) {
                 $all_sesis = $this->cbt->getDistinctSesi($tp->id_tp, $smt->id_smt, $arrKls);
                 foreach ($all_sesis as $row) {
                     if (!isset($sesis[$row->ruang_id])) {
-                        $sesis[$row->ruang_id] = (object)[
+                        $sesis[$row->ruang_id] = (object) [
                             'ruang_id' => $row->ruang_id,
                             'kode_ruang' => $row->kode_ruang,
                             'nama_ruang' => $row->nama_ruang,
                             'sesi' => []
                         ];
                     }
-                    $sesis[$row->ruang_id]->sesi[$row->sesi_id] = (object)[
+                    $sesis[$row->ruang_id]->sesi[$row->sesi_id] = (object) [
                         'sesi_id' => $row->sesi_id,
                         'kode_sesi' => $row->kode_sesi,
                         'nama_sesi' => $row->nama_sesi,
@@ -238,9 +243,9 @@ class Cbtalokasi extends MY_Controller {
         $setting = $this->dashboard->getSetting();
         $data = [
             'user' => $user,
-            'judul'	=> 'Alokasi Waktu',
-            'subjudul'=> 'Alokasi Waktu Ujian',
-            'setting'		=> $setting
+            'judul' => 'Alokasi Waktu',
+            'subjudul' => 'Alokasi Waktu Ujian',
+            'setting' => $setting
         ];
 
         $tp = $this->dashboard->getTahunActive();
@@ -252,16 +257,16 @@ class Cbtalokasi extends MY_Controller {
 
         $id_jenis = $this->cbt->getDistinctJenisJadwal($tp->id_tp, $smt->id_smt);
         $ids = [];
-        if ($id_jenis && count($id_jenis)>0) {
+        if ($id_jenis && count($id_jenis) > 0) {
             foreach ($id_jenis as $jenis) {
                 $ids[] = $jenis->id_jenis;
             }
         }
 
-        if ($ids && count($ids)>0) {
+        if ($ids && count($ids) > 0) {
             $data['jenis'] = $this->cbt->getAllJenisUjianByArrJenis($ids);
         } else {
-            $data['jenis'] = [''=>'belum ada jadwal ujian'];
+            $data['jenis'] = ['' => 'belum ada jadwal ujian'];
         }
 
         if ($this->auth->is_admin()) {
@@ -283,7 +288,8 @@ class Cbtalokasi extends MY_Controller {
         $this->output_json($jadwal);
     }
 
-    public function get_alokasi() {
+    public function get_alokasi()
+    {
         $this->load->model('Cbt_jadwal_model', 'cbt_jadwal_model');
         $this->load->model('Cbt_siswa_model', 'cbt_siswa_model');
         $this->load->model('Cbt_sesisiswa_model', 'sesisiswa_model');
@@ -299,12 +305,12 @@ class Cbtalokasi extends MY_Controller {
 
         $jadwals = $this->cbt_jadwal_model
             ->fields('id_jadwal,id_tp,id_smt,id_bank,id_jenis,tgl_mulai,tgl_selesai,status,jam_ke')
-            ->where(['id_tp'=>$tp->id_tp, 'id_smt'=>$smt->id_smt, 'tgl_mulai'=>$tanggal_selected, 'id_jenis'=>$jenis_selected])
+            ->where(['id_tp' => $tp->id_tp, 'id_smt' => $smt->id_smt, 'tgl_mulai' => $tanggal_selected, 'id_jenis' => $jenis_selected])
             ->with_bank([
-                'fields'=> 'bank_kode,bank_kelas,soal_agama,bank_guru_id',
-                'where'=> ['id_tp' => $tp->id_tp, 'id_smt'=>$smt->id_smt],
+                'fields' => 'bank_kode,bank_kelas,soal_agama,bank_guru_id',
+                'where' => ['id_tp' => $tp->id_tp, 'id_smt' => $smt->id_smt],
                 'with' => [
-                    ['relation' => 'mapel', 'fields'=>'kode,nama_mapel'],
+                    ['relation' => 'mapel', 'fields' => 'kode,nama_mapel'],
                 ]
             ])
             ->get_all();
@@ -353,11 +359,12 @@ class Cbtalokasi extends MY_Controller {
 
         $siswas = $this->sesisiswa_model
             ->where('kelas_id', $arrKelas)
+            ->where(['tp_id' => $tp->id_tp, 'smt_id' => $smt->id_smt])
             ->with_siswa(['fields' => 'id_siswa,nama,nis,nisn,agama'])
             ->with_peserta()
-            ->with_kelas(['fields'=>'kode_kelas,nama_kelas'])
-            ->with_ruang(['fields'=>'kode_ruang,nama_ruang'])
-            ->with_sesi(['fields'=>'kode_sesi,nama_sesi'])
+            ->with_kelas(['fields' => 'kode_kelas,nama_kelas'])
+            ->with_ruang(['fields' => 'kode_ruang,nama_ruang'])
+            ->with_sesi(['fields' => 'kode_sesi,nama_sesi'])
             ->as_array()
             ->get_all();
 
@@ -397,7 +404,7 @@ class Cbtalokasi extends MY_Controller {
         }
 
         $data['sesisiswa'] = $all_siswa;
-        $data['cbtsiswa'] = (array)$cbtsiswa;
+        $data['cbtsiswa'] = (array) $cbtsiswa;
         $data['ruangs'] = array_values($ruangs);
         $data['arr_kelas'] = $arrKelas;
         $data['jadwals_ujian'] = $result;
@@ -405,7 +412,8 @@ class Cbtalokasi extends MY_Controller {
         $this->output_json($data);
     }
 
-    public function saveAlokasi() {
+    public function saveAlokasi()
+    {
         $this->load->model('Dashboard_model', 'dashboard');
         $this->load->model('Log_model', 'logging');
 
@@ -414,8 +422,20 @@ class Cbtalokasi extends MY_Controller {
 
         $for_insert = [];
         $for_update = [];
+        $update_jadwal = [];
+
         foreach ($input as $d) {
+            // Collect update for cbt_jadwal
+            if (isset($d->id_jadwal) && isset($d->jam_ke)) {
+                $update_jadwal[$d->id_jadwal] = [
+                    'id_jadwal' => $d->id_jadwal,
+                    'jam_ke' => $d->jam_ke
+                ];
+            }
+
+            // Only process cbt_pengawas if we have valid pengawas ID or full room mapping
             if (isset($d->id_pengawas) && $d->id_pengawas != "0") {
+
                 $insert = [
                     'id_pengawas' => $d->id_pengawas,
                     'id_jadwal' => $d->id_jadwal,
@@ -431,7 +451,7 @@ class Cbtalokasi extends MY_Controller {
                     $user = $this->auth->user();
                     $guru = $this->dashboard->getDataGuruByUserId($user->id, $d->id_tp, $d->id_smt);
 
-                    $id_pengawas = $d->id_tp.$d->id_smt.$d->id_jadwal.$d->id_ruang.$d->id_sesi;
+                    $id_pengawas = $d->id_tp . $d->id_smt . $d->id_jadwal . $d->id_ruang . $d->id_sesi;
                     $exist = $this->cbt->getPengawas($id_pengawas);
                     if ($exist) {
                         $exist_peng = explode(",", $exist->id_guru);
@@ -452,7 +472,7 @@ class Cbtalokasi extends MY_Controller {
             }
         }
         $updated = 0;
-        if (count($for_insert)>0) {
+        if (count($for_insert) > 0) {
             $updated1 = $this->db->insert_batch('cbt_pengawas', $for_insert);
             if ($updated1) {
                 $updated++;
@@ -468,6 +488,13 @@ class Cbtalokasi extends MY_Controller {
             }
         }
 
+        if (count($update_jadwal) > 0) {
+            $updated3 = $this->db->update_batch('cbt_jadwal', array_values($update_jadwal), 'id_jadwal');
+            if ($updated3)
+                $updated++;
+        }
+
+
         $data['status'] = $updated;
         $data['insert'] = $for_insert;
         $data['update'] = $for_update;
@@ -475,4 +502,3 @@ class Cbtalokasi extends MY_Controller {
 
     }
 }
-

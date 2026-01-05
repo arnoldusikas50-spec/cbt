@@ -69,19 +69,19 @@
                                          data-step="1" data-step-skip="false">
                                         <div class="content-inner">
                                             <div class="row">
-                                                <div class="form-group col-md-6">
+                                                <div class="mb-3 col-md-6">
                                                     <label for="input-nama-db">Host Name</label>
                                                     <input type="text" class="form-control db" id="input-nama-host"
                                                            name="hostname" value="<?= $data->hostname ?>"
                                                            placeholder="localhost" readonly="">
                                                 </div>
-                                                <div class="form-group col-md-6">
+                                                <div class="mb-3 col-md-6">
                                                     <label for="input-nama-db">Host Username</label>
                                                     <input type="text" class="form-control db" id="input-user-host"
                                                            name="hostuser" value="<?= $data->username ?>"
                                                            placeholder="Host Username" readonly="">
                                                 </div>
-                                                <div class="form-group col-md-6">
+                                                <div class="mb-3 col-md-6">
                                                     <label for="input-nama-db">Host Password</label>
                                                     <input type="text" class="form-control" id="input-pass-host"
                                                            value="<?= $data->password ?>" name="hostpass"
@@ -90,7 +90,7 @@
                                                         password.
                                                     </small>
                                                 </div>
-                                                <div class="form-group col-md-6">
+                                                <div class="mb-3 col-md-6">
                                                     <label for="input-nama-db">Nama Database</label>
                                                     <input type="text" class="form-control db" id="input-nama-db"
                                                            name="database" value="<?= $data->database ?>"
@@ -113,19 +113,19 @@
                                                 <p><b>SETUP ADMINISTRATOR</b></p>
                                             </div>
                                             <div class="row">
-                                                <div class="form-group col-md-6">
+                                                <div class="mb-3 col-md-6">
                                                     <label class="col-form-label">Nama Lengkap</label>
                                                     <input type="text" name="nama_lengkap" id="input-nama-adm" placeholder="Nama Lengkap"
                                                            value="<?= $data->nama_admin ?>" class="form-control adm"
                                                            required="" <?= $readAdminNama ?>>
                                                 </div>
-                                                <div class="form-group col-md-6">
+                                                <div class="mb-3 col-md-6">
                                                     <label class="col-form-label">Username</label>
                                                     <input type="text" name="username" id="input-user" placeholder="Nama User Login"
                                                            class="form-control adm" value="<?= $data->user_admin ?>"
                                                            required="" <?= $readAdminUser ?>>
                                                 </div>
-                                                <div class="form-group col-md-6">
+                                                <div class="mb-3 col-md-6">
                                                     <label class="col-form-label">Password</label>
                                                     <input type="text" name="password" id="input-pass" placeholder="Password Login"
                                                            class="form-control adm" required="" <?= $readAdminPass ?>>
@@ -133,14 +133,14 @@
                                                         lebih.
                                                     </small>
                                                 </div>
-                                                <div class="form-group col-md-6">
+                                                <div class="mb-3 col-md-6">
                                                     <label class="col-form-label">Ulangi Password</label>
                                                     <input type="text" id="input-rep-pass" class="form-control adm" placeholder="Konfirmasi Password"
                                                            required="" <?= $readAdminPass ?>>
                                                 </div>
                                             </div>
                                             <div class="d-flex flex-wrap align-items-center justify-content-end">
-                                                <button type="button" id="prev2" class="btn-danger btn mr-auto">
+                                                <button type="button" id="prev2" class="btn-danger btn me-auto">
                                                     Sebelumnya
                                                 </button>
                                                 <button type="button" id="next2" class="btn-success btn">Selanjutnya
@@ -226,7 +226,7 @@
                                                 </div>
                                             </div>
                                             <div class="d-flex flex-wrap align-items-center justify-content-end">
-                                                <button type="button" id="prev3" class="btn-danger btn mr-auto">
+                                                <button type="button" id="prev3" class="btn-danger btn me-auto">
                                                     Sebelumnya
                                                 </button>
                                                 <button type="button" id="next3" class="btn-success btn">Selanjutnya
@@ -285,7 +285,7 @@
                                             </div>
                                             <hr>
                                             <div class="d-flex flex-wrap align-items-center justify-content-end">
-                                                <button type="button" id="prev4" class="btn-danger btn mr-auto">
+                                                <button type="button" id="prev4" class="btn-danger btn me-auto">
                                                     Sebelumnya
                                                 </button>
                                                 <button type="button" id="next4" class="btn-success btn">
@@ -458,13 +458,13 @@
             e.stopImmediatePropagation();
 
             $('.loading').removeClass('d-none');
-            swal.fire({
+            Swal.fire({
                 title: "Menyimpan installasi",
                 text: "Silahkan tunggu....",
                 allowEscapeKey: false,
                 allowOutsideClick: false,
-                onOpen: () => {
-                    swal.showLoading();
+                didOpen: () => {
+                    Swal.showLoading();
                 }
             });
 
@@ -483,7 +483,7 @@
                     console.log(response);
                     const isSuccess = response.admin && response.insert;
                     swal.close();
-                    swal.fire({
+                    Swal.fire({
                         title: isSuccess ? "Status" : "Warning!",
                         html: isSuccess ? "Database berhasil disimpan" : 'Gagal menyimpan data aplikasi',
                         icon: isSuccess ? "success" : "error",
@@ -540,3 +540,4 @@
         }
     }
 </script>
+

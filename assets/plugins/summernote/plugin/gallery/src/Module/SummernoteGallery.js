@@ -6,7 +6,7 @@ export default class SummernoteGallery {
     constructor(options) {
         this.options = $.extend({
             name: 'summernote-gallery',
-            button_label: '<i class="fa fa-file-image-o"></i>',
+            button_label: '<i class="bi bi-file-image-o"></i>',
             tooltip: 'summernote gallery'
         }, options);
 
@@ -18,11 +18,11 @@ export default class SummernoteGallery {
     // set the focus to the last focused element in the editor
     recoverEditorFocus() {
         var last_focused_el = $(this.editor).data('last_focused_element');
-        if(typeof last_focused_el !== "undefined") {
+        if (typeof last_focused_el !== "undefined") {
             var editor = this.editable;
             var range = document.createRange();
             var sel = window.getSelection();
-            var cursor_position =  last_focused_el.length;
+            var cursor_position = last_focused_el.length;
 
             range.setStart(last_focused_el, cursor_position);
             range.collapse(true);
@@ -43,7 +43,7 @@ export default class SummernoteGallery {
     attachEditorEvents() {
         var _this = this;
 
-        $(this.editable).on('keypress, mousemove', function() {
+        $(this.editable).on('keypress, mousemove', function () {
             _this.saveLastFocusedElement();
         })
     }
@@ -97,7 +97,7 @@ export default class SummernoteGallery {
         var button = $.summernote.ui.button({
             contents: this.options.button_label,
             tooltip: this.options.tooltip,
-            click: function() {
+            click: function () {
                 _this.openGallery();
             }
         });
@@ -110,26 +110,26 @@ export default class SummernoteGallery {
         var _this = this;
 
         this.data_manager.event
-        .on('beforeFetch', function () {
-            _this.modal.showLoading();
-        })
-        .on('fetch', function (data, page, link) {
-            _this.modal.addImages(data, page);
+            .on('beforeFetch', function () {
+                _this.modal.showLoading();
+            })
+            .on('fetch', function (data, page, link) {
+                _this.modal.addImages(data, page);
 
-            setTimeout(function () {
-                if (_this.modal.options.loadOnScroll && !_this.modal.imagesContainerHasScroll()) {
-                    // The loadOnScroll wont work if the images container doesn't have the scroll displayed,
-                    // so we need to keep loading the images until the scroll shows.
-                    _this.data_manager.fetchNext();
-                }
-            }, 2000)
-        })
-        .on('afterFetch', function () {
-            _this.modal.hideLoading();
-        })
-        .on('error', function (error) {
-            _this.modal.showError(error, true);
-        });
+                setTimeout(function () {
+                    if (_this.modal.options.loadOnScroll && !_this.modal.imagesContainerHasScroll()) {
+                        // The loadOnScroll wont work if the images container doesn't have the scroll displayed,
+                        // so we need to keep loading the images until the scroll shows.
+                        _this.data_manager.fetchNext();
+                    }
+                }, 2000)
+            })
+            .on('afterFetch', function () {
+                _this.modal.hideLoading();
+            })
+            .on('error', function (error) {
+                _this.modal.showError(error, true);
+            });
     }
 
     openGallery() {

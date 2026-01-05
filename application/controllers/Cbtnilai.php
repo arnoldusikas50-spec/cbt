@@ -9,8 +9,8 @@ class Cbtnilai extends MY_Controller
         parent::__construct();
         if (!$this->auth->logged_in()) {
             redirect('auth');
-        } else if (!$this->auth->is_admin() && !$this->auth->in_group('panitia') && !$this->auth->in_group('guru')) {
-            show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
+        } else if (!$this->auth->is_admin() && !$this->auth->in_group('guru') && !$this->auth->in_group('panitia') && $this->session->userdata('role') != '4') {
+            show_error('Hanya Administrator, Guru, dan Panitia yang diberi hak untuk mengakses halaman ini, <a href="' . base_url('dashboard') . '">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
         }
         $this->load->library(['form_validation']); // Load Library Ignited-Datatables
         //$this->load->library('upload');
@@ -58,10 +58,10 @@ class Cbtnilai extends MY_Controller
         if ($this->auth->in_group('guru')) {
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $data['guru'] = $guru;
-            $where = ['id_tp' => $tp->id_tp, 'id_smt'=>$smt->id_smt, 'bank_guru_id'=>$guru->id_guru];
+            $where = ['id_tp' => $tp->id_tp, 'id_smt' => $smt->id_smt, 'bank_guru_id' => $guru->id_guru];
             $id_guru = $guru->id_guru;
         } else {
-            $where = ['id_tp' => $tp->id_tp, 'id_smt'=>$smt->id_smt];
+            $where = ['id_tp' => $tp->id_tp, 'id_smt' => $smt->id_smt];
             $id_guru = null;
         }
 
@@ -73,11 +73,11 @@ class Cbtnilai extends MY_Controller
 
             $jadwals = $this->cbt_jadwal_model
                 ->fields('id_jadwal,id_tp,id_smt,id_bank,id_jenis')
-                ->where(['id_tp'=>$tp->id_tp, 'id_smt'=>$smt->id_smt])
+                ->where(['id_tp' => $tp->id_tp, 'id_smt' => $smt->id_smt])
                 ->with_bank([
-                    'where'=> $where,
+                    'where' => $where,
                     'with' => [
-                        ['relation' => 'mapel', 'fields'=>'kode,nama_mapel']
+                        ['relation' => 'mapel', 'fields' => 'kode,nama_mapel']
                     ]
                 ])
                 ->get_all();
@@ -99,10 +99,13 @@ class Cbtnilai extends MY_Controller
         }
         $data['tp_jadwal'] = $tp->tahun;
 
-        if ($this->auth->is_admin() || $this->auth->in_group('panitia')) {
+        if ($this->auth->is_admin()) {
             $data['kelas'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
-            $role = $this->auth->is_admin() ? 1 : 4;
-            $this->render_view($role, 'cbt/nilai/data_nilai', $data);
+            $this->render_view(1, 'cbt/nilai/data_nilai', $data);
+        } elseif ($this->auth->in_group('panitia') || $this->session->userdata('role') == '4') {
+            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $data['kelas'] = $this->dropdown->getAllKelas($tp->id_tp, $smt->id_smt);
+            $this->render_view(4, 'cbt/nilai/data_nilai', $data);
         } else {
             $jadwals = $this->cbt->getJadwalGuru($tp->id_tp, $smt->id_smt, $id_guru);
             $arrKls = [];
@@ -135,16 +138,25 @@ class Cbtnilai extends MY_Controller
         $data['smt_active'] = $smt;
         $data['tp_jadwal'] = $tp->tahun;
 
-        $jadwal = $this->olah_nilai(1, $tp->id_tp, $smt->id_smt, $kelas_selected, $jadwal_selected, true);
-        unset($jadwal->soal_kompleks, $jadwal->soal_jodohkan, $jadwal->soal_isian, $jadwal->soal_esai);
+        try {
+            $jadwal = $this->olah_nilai(1, $tp->id_tp, $smt->id_smt, $kelas_selected, $jadwal_selected, true);
+            if ($jadwal && is_object($jadwal)) {
+                unset($jadwal->soal_kompleks, $jadwal->soal_jodohkan, $jadwal->soal_isian, $jadwal->soal_esai);
+            }
 
-        $data['kelas'] = $this->master_kelas_model->where(['id_tp'=>$tp->id_tp, 'id_smt'=>$smt->id_smt])->as_dropdown('nama_kelas')->get_all();
-        $data['jadwal'] = $jadwal;
-        $data['kelas_selected'] = $kelas_selected;
-        $data['jadwal_selected'] = $jadwal_selected;
+            $data['kelas'] = $this->master_kelas_model->where(['id_tp' => $tp->id_tp, 'id_smt' => $smt->id_smt])->as_dropdown('nama_kelas')->get_all();
+            $data['jadwal'] = $jadwal;
+            $data['kelas_selected'] = $kelas_selected;
+            $data['jadwal_selected'] = $jadwal_selected;
 
-        $data['success'] = true;
-        $this->output_json($data);
+            $data['success'] = true;
+            $this->output_json($data);
+        } catch (\Throwable $e) {
+            $this->output_json([
+                'success' => false,
+                'message' => $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine()
+            ]);
+        }
     }
 
     public function save_pengurangan()
@@ -260,16 +272,26 @@ class Cbtnilai extends MY_Controller
         $soal_5 = array_filter($jadwal->soal_esai, function ($soal) {
             return $soal->tampilkan == '1';
         });
+        $soal_6 = array_filter($jadwal->soal_urutan ?? [], function ($soal) {
+            return $soal->tampilkan == '1';
+        });
+        $soal_7 = array_filter($jadwal->soal_cloze ?? [], function ($soal) {
+            return $soal->tampilkan == '1';
+        });
         $data['soal_pg'] = array_values($soal_1);
         $data['soal_kompleks'] = array_values($soal_2);
         $data['soal_jodohkan'] = array_values($soal_3);
         $data['soal_isian'] = array_values($soal_4);
         $data['soal_esai'] = array_values($soal_5);
+        $data['soal_urutan'] = array_values($soal_6);
+        $data['soal_cloze'] = array_values($soal_7);
         $data['is_rekap'] = 0;
 
-        if ($this->auth->is_admin() || $this->auth->in_group('panitia')) {
-            $role = $this->auth->is_admin() ? 1 : 4;
-            $this->render_view($role, 'cbt/nilai/koreksi', $data);
+        if ($this->auth->is_admin()) {
+            $this->render_view(1, 'cbt/nilai/koreksi', $data);
+        } elseif ($this->auth->in_group('panitia') || $this->session->userdata('role') == '4') {
+            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(4, 'cbt/nilai/koreksi', $data);
         } else {
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $data['guru'] = $guru;
@@ -306,16 +328,18 @@ class Cbtnilai extends MY_Controller
         $data['smt_active'] = $smt;
 
         $data['kelas'] = $this->master_kelas_model
-            ->where(['id_tp'=>$tp->id_tp, 'id_smt'=>$smt->id_smt, 'id_kelas'=>$kelas_selected])
+            ->where(['id_tp' => $tp->id_tp, 'id_smt' => $smt->id_smt, 'id_kelas' => $kelas_selected])
             ->get();
         $data['kelas_selected'] = $kelas_selected;
         $data['jadwal_selected'] = $jadwal_selected;
         $jadwals = $this->olah_nilai(1, $tp->id_tp, $smt->id_smt, $kelas_selected, $jadwal_selected);
         $data['jadwal'] = $jadwals;
 
-        if ($this->auth->is_admin() || $this->auth->in_group('panitia')) {
-            $role = $this->auth->is_admin() ? 1 : 4;
-            $this->render_view($role, 'cbt/nilai/input_nilai', $data);
+        if ($this->auth->is_admin()) {
+            $this->render_view(1, 'cbt/nilai/input_nilai', $data);
+        } elseif ($this->auth->in_group('panitia') || $this->session->userdata('role') == '4') {
+            $data['panitia'] = $this->dashboard->getDataPanitiaByUserId($user->id, $tp->id_tp, $smt->id_smt);
+            $this->render_view(4, 'cbt/nilai/input_nilai', $data);
         } else {
             $guru = $this->dashboard->getDataGuruByUserId($user->id, $tp->id_tp, $smt->id_smt);
             $data['guru'] = $guru;
@@ -323,4 +347,3 @@ class Cbtnilai extends MY_Controller
         }
     }
 }
-

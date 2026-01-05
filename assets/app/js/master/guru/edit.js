@@ -13,10 +13,10 @@ $(document).ready(function () {
             success: function (response) {
                 btn.removeAttr('disabled').text('Update');
                 if (response.status) {
-                    swal.fire('Sukses', 'Data Berhasil diupdate', 'success')
+                    Swal.fire('Sukses', 'Data Berhasil diupdate', 'success')
                         .then((result) => {
                             if (result.value) {
-                                window.location.href = base_url+'dosen';
+                                window.location.href = base_url + 'dosen';
                             }
                         });
                 } else {
@@ -40,10 +40,10 @@ $(document).ready(function () {
 
     $('#tanggallahir').datetimepicker({
         icons:
-            {
-                next: 'fa fa-angle-right',
-                previous: 'fa fa-angle-left'
-            },
+        {
+            next: 'bi bi-angle-right',
+            previous: 'bi bi-angle-left'
+        },
         format: 'YYYY-MM-DD',
         widgetPositioning: {
             horizontal: 'left',

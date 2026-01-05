@@ -45,14 +45,14 @@ $(document).ready(function () {
                 searchable: false,
                 visible: false
             },
-			{
-				data: "id_guru",
+            {
+                data: "id_guru",
                 searchable: false,
-				render: function (data, type, row) {
+                render: function (data, type, row) {
                     var kelas = row.nama_kelas === null ? "" : row.nama_kelas;
                     var jabatan = row.level === null ? "--" : row.level;
-                    var foto = row.foto !=null ? row.foto : base_url +'assets/img/siswa.png';
-                    var kode = row.kode_guru !=null ? row.kode_guru : '';
+                    var foto = row.foto != null ? row.foto : base_url + 'assets/img/siswa.png';
+                    var kode = row.kode_guru != null ? row.kode_guru : '';
 
                     return `<div class="card card-primary card-outline">
                             <div class="box-info text-center user-profile-2">
@@ -65,10 +65,10 @@ $(document).ready(function () {
                                     <div class="user-button">
                                         <div class="row">
                                              <a href="${base_url}dataguru/editJabatan/${data}" class="btn btn-sm bg-primary col-12 mb-2">
-                                                  <i class="fa fa-pencil-alt mr-1"></i> Edit Mapel/Jabatan
+                                                  <i class="bi bi-pencil mr-1"></i> Edit Mapel/Jabatan
                                              </a>
                                              <a href="${base_url}dataguru/edit/${data}" class="btn btn-sm bg-warning col-12">
-                                                  <i class="fa fa-pencil-alt mr-1"></i> Edit Profil
+                                                  <i class="bi bi-pencil mr-1"></i> Edit Profil
                                              </a>
                                         </div>
                                     </div>
@@ -96,8 +96,8 @@ $(document).ready(function () {
                         '            </tr>' +
                         '          </table>';
                         */
-				}
-			},
+                }
+            },
             {
                 data: "tahun",
                 className: "text-center",
@@ -110,27 +110,27 @@ $(document).ready(function () {
             },
         ],
         columnDefs: [
-			{
-				targets: 0,
-				data: "id_guru",
-				render: function (data, type, row, meta) {
-					return `<div class="text-center">
+            {
+                targets: 0,
+                data: "id_guru",
+                render: function (data, type, row, meta) {
+                    return `<div class="text-center">
 									<input id="check${data}" name="checked[]" class="check" value="${data}" type="checkbox">
 								</div>`;
-				}
-			},
-			{
-				targets: 5,
-				data: "id_guru",
+                }
+            },
+            {
+                targets: 5,
+                data: "id_guru",
                 visible: false,
-				render: function (data, type, row, meta) {
-					return `<div class="text-center">
+                render: function (data, type, row, meta) {
+                    return `<div class="text-center">
 							<a href="${base_url}dataguru/editJabatan/${data}" class="btn btn-xs bg-warning">
-								<i class="fa fa-pencil-alt mr-1"></i> Edit Mapel/Jabatan
+								<i class="bi bi-pencil mr-1"></i> Edit Mapel/Jabatan
 							</a>` +
-						`</div>`;
-				}
-			},
+                        `</div>`;
+                }
+            },
             {
                 searchable: false,
                 targets: 6,
@@ -139,9 +139,9 @@ $(document).ready(function () {
                 render: function (data, type, row, meta) {
                     return `<div class="text-center">
 							<a href="${base_url}dataguru/edit/${data}" class="btn btn-xs bg-warning">
-								<i class="fa fa-pencil-alt mr-1"></i> Edit Profil
+								<i class="bi bi-pencil mr-1"></i> Edit Profil
 							</a>` +
-						`</div>`;
+                        `</div>`;
                 }
             },
             {
@@ -181,18 +181,18 @@ $(document).ready(function () {
         .container()
         .appendTo("#guru_wrapper .col-md-6:eq(1)");
 
-    table.on('draw', function(data){
+    table.on('draw', function (data) {
         $('#guru tbody').addClass('row');
         $('#guru tbody tr').addClass('col-md-3 p-0');
     });
 
     $("div.toolbar").html(
-        '<button id="hapusterpilih" onclick="bulk_delete()" type="button" class="btn btn-danger mr-3 d-none" data-toggle="tooltip" title="Hapus Terpilh"><i class="far fa-trash-alt"></i></button>' +
+        '<button id="hapusterpilih" onclick="bulk_delete()" type="button" class="btn btn-danger mr-3 d-none" data-toggle="tooltip" title="Hapus Terpilh"><i class="b bi-trash"></i></button>' +
         '<div class="btn-group">' +
-        '<button type="button" class="btn btn-default" data-toggle="tooltip" title="Print"><i class="fas fa-print"></i></button>' +
-        '<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As PDF"><i class="fas fa-file-pdf"></i></button>' +
-        '<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As Word"><i class="fa fa-file-word"></i></button>' +
-        '<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As Excel"><i class="fa fa-file-excel"></i></button>' +
+        '<button type="button" class="btn btn-default" data-toggle="tooltip" title="Print"><i class="bi bi-print"></i></button>' +
+        '<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As PDF"><i class="bi bi-file-pdf"></i></button>' +
+        '<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As Word"><i class="bi bi-file-word"></i></button>' +
+        '<button type="button" class="btn btn-default" data-toggle="tooltip" title="Export As Excel"><i class="bi bi-file-excel"></i></button>' +
         //'<button type="button" class="btn btn-default" data-toggle="modal" data-target="#mapelNonAktif">Lihat Mapel Nonaktif</button>' +
         '</div>'
     );
@@ -239,13 +239,13 @@ $(document).ready(function () {
             success: function (respon) {
                 $(".select_all").prop("checked", false);
                 if (respon.status) {
-                    swal.fire({
+                    Swal.fire({
                         title: "Berhasil",
                         text: respon.total + " data berhasil dihapus",
                         icon: "success"
                     });
                 } else {
-                    swal.fire({
+                    Swal.fire({
                         title: "Gagal",
                         text: "Tidak ada data yang dipilih",
                         icon: "error"
@@ -254,7 +254,7 @@ $(document).ready(function () {
                 reload_ajax();
             },
             error: function () {
-                swal.fire({
+                Swal.fire({
                     title: "Gagal",
                     text: "Ada data yang sedang digunakan",
                     icon: "error"
@@ -267,14 +267,14 @@ $(document).ready(function () {
 
 function bulk_delete() {
     if ($("#guru tbody tr .check:checked").length == 0) {
-        swal.fire({
+        Swal.fire({
             title: "Gagal",
             text: "Tidak ada data yang dipilih",
             icon: "error"
         });
     } else {
         $("#bulk").attr("action", base_url + "dataguru/delete");
-        swal.fire({
+        Swal.fire({
             title: "Anda yakin?",
             text: "Data akan dihapus!",
             icon: "warning",

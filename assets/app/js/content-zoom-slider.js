@@ -1,103 +1,79 @@
-(function ($) {
-  $.fn.contentZoomSlider = function (options) {
-    let $this = $(this),
-    r=".ranger";
-    // Default options
-    let settings = $.extend(
-      {
-        toolContainer: "#tool-container",
-        setp: 5,
-        min: 50,
-        max: 200,
-        zoom: 100,
-      },
-      options
-    );
+// content-zoom-slider.js (Vanilla JS v2)
+// Replaces jQuery plugin
+// Updated for Bootstrap 5 (me-*, ms-*)
 
-    init();
-    
-    function init() {
-      addToolBar();
-      registerEvents();
-      setZoomValue(settings.zoom/100);
+function initContentZoomSlider(targetSelector, options = {}) {
+  const target = document.querySelector(targetSelector);
+  if (!target) return;
+
+  const settings = Object.assign({
+    toolContainer: "#tool-container",
+    step: 5,
+    min: 50,
+    max: 200,
+    zoom: 100
+  }, options);
+
+  const toolContainer = document.querySelector(settings.toolContainer);
+  if (!toolContainer) return;
+
+  // Helper: set zoom
+  function setZoom(val) {
+    // Clamp
+    if (val < settings.min) val = settings.min;
+    if (val > settings.max) val = settings.max;
+
+    const scale = val / 100;
+
+    // Apply Zoom
+    if ('zoom' in document.documentElement.style) {
+      target.style.zoom = scale;
+    } else {
+      // Firefox fallback
+      target.style.transform = `scale(${scale})`;
+      target.style.transformOrigin = '50% 0';
     }
 
-    function registerEvents() {
-      $(document)
-        .off("click", `${settings.toolContainer} .zoom-out`)
-        .on("click", `${settings.toolContainer} .zoom-out`, function () {
-          zoomOut();
-        });
+    // Update UI
+    const range = toolContainer.querySelector('.ranger');
+    if (range) range.value = scale;
 
-      $(document)
-        .off("click", `${settings.toolContainer} .zoom-in`)
-        .on("click", `${settings.toolContainer} .zoom-in`, function () {
-          zoomIn();
-        });
+    const label = toolContainer.querySelector('.zoom-value');
+    if (label) label.textContent = Math.round(val) + "%";
 
-      $(document)
-          .off("input", `${settings.toolContainer} ${r}`)
-          .on("input", `${settings.toolContainer} ${r}`, function () {
-            zoomScroll();
-          });
-      /*
-      $(document)
-        .off("mousemove", `${settings.toolContainer} ${r}`)
-        .on("mousemove", `${settings.toolContainer} ${r}`, function () {
-          zoomScroll();
-        });
-       */
-    }
+    settings.zoom = val;
+  }
 
-    function addToolBar() {
-      $(settings.toolContainer).html(`<div class="row">
+  // Render Toolbar (BS5 Classes: mr->me, ml->ms)
+  toolContainer.innerHTML = `
+        <div class="row">
             <div class="col-sm-12 p-1 text-center zoominout d-flex flex-row align-items-center justify-content-center">
-            <span class="mr-2">Zoom</span>
-                <button class="zoom-out btn"><i class="fa fa-minus m-1 text-primary"></i></button>
-                <input class="ranger" type="range" value="${settings.zoom / 100}" step="${settings.setp / 100}"
+                <span class="me-2">Zoom</span>
+                <button type="button" class="zoom-out btn"><i class="bi bi-minus m-1 text-primary"></i></button>
+                <input class="ranger" type="range" value="${settings.zoom / 100}" step="${settings.step / 100}"
                     min="${settings.min / 100}"
-                    max="${settings.max / 100}" />
-                <button class="zoom-in btn"><i class="fa fa-plus m-1 text-primary"></i></button>
-                <span class="zoom-value ml-2">${settings.zoom}%</span>
+                    max="${settings.max / 100}" style="width: 100px; margin: 0 10px;">
+                <button type="button" class="zoom-in btn"><i class="bi bi-plus m-1 text-primary"></i></button>
+                <span class="zoom-value ms-2">${settings.zoom}%</span>
             </div>
-        </div>`);
-    }
+        </div>
+    `;
 
-    function zoomIn() {
-      let zoom = getZoomValue();
-      if (zoom < settings.max/100) {
-        setZoomValue(zoom + settings.setp/100);
-      }
-    }
+  // Events
+  const btnOut = toolContainer.querySelector('.zoom-out');
+  const btnIn = toolContainer.querySelector('.zoom-in');
+  const ranger = toolContainer.querySelector('.ranger');
 
-    function zoomOut() {
-      let zoom = getZoomValue();
-      if (zoom > settings.min/100) {
-        setZoomValue(zoom - settings.setp/100);
-      }
-    }
+  if (btnOut) {
+    btnOut.onclick = () => setZoom(settings.zoom - settings.step);
+  }
+  if (btnIn) {
+    btnIn.onclick = () => setZoom(settings.zoom + settings.step);
+  }
+  if (ranger) {
+    ranger.oninput = (e) => setZoom(parseFloat(e.target.value) * 100);
+  }
 
-    function zoomScroll() {
-      let zoom = parseFloat($(`${settings.toolContainer} ${r}`).val());
-      setZoomValue(zoom);
-    }
-
-    function getZoomValue() {
-      let zoom = parseFloat($this.css("zoom"));
-      if (!zoom) {
-        zoom = 1;
-      }
-      return zoom;
-    }
-
-    function setZoomValue(zoom) {
-      $this.css('-moz-transform', `scale(${zoom}`);
-      $this.css('transform-origin', '50%,0');
-      
-      $this.css({ zoom: zoom });
-
-      $(`${settings.toolContainer} ${r}`).val(zoom);
-      $(`${settings.toolContainer} .zoom-value`).text((zoom * 100).toFixed(0) + "%");
-    }
-  };
-})(jQuery);
+  // Initialize
+  setZoom(settings.zoom);
+}

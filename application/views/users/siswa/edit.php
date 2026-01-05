@@ -1,15 +1,15 @@
-<div class="content-wrapper bg-white pt-4">
+<main class="app-main bg-white pt-4">
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-6">
                     <h1><?= $judul ?></h1>
                 </div>
-                <?php if ($is_admin) : ?>
+                <?php if ($is_admin): ?>
                     <div class="col-6">
-                        <a href="<?= base_url('usersiswa') ?>" type="button" class="btn btn-sm btn-danger float-right">
-                            <i class="fas fa-arrow-circle-left"></i><span
-                                    class="d-none d-sm-inline-block ml-1">Kembali</span>
+                        <a href="<?= base_url('usersiswa') ?>" type="button" class="btn btn-sm btn-danger float-end">
+                            <i class="bi bi-arrow-left-circle"></i><span
+                                class="d-none d-sm-inline-block ms-1">Kembali</span>
                         </a>
                     </div>
                 <?php endif; ?>
@@ -31,14 +31,14 @@
                                     <?php if ($siswa->foto == 'assets/img/siswa.png'): ?>
                                         <?php if ($siswa->jenis_kelamin == 'L'): ?>
                                             <img src="<?= base_url() ?>/assets/img/siswa-l.png"
-                                                 class="img-circle profile-avatar mt-2" alt="User avatar">
+                                                class="img-circle profile-avatar mt-2" alt="User avatar">
                                         <?php else: ?>
                                             <img src="<?= base_url() ?>/assets/img/siswa-p.png"
-                                                 class="img-circle profile-avatar mt-2" alt="User avatar">
+                                                class="img-circle profile-avatar mt-2" alt="User avatar">
                                         <?php endif; ?>
                                     <?php else: ?>
                                         <img src="<?= base_url() ?>/assets/img/<?= $siswa->foto ?>"
-                                             class="img-circle profile-avatar mt-2" alt="User avatar">
+                                            class="img-circle profile-avatar mt-2" alt="User avatar">
                                     <?php endif; ?>
                                     <h4 class="mt-5"><?= $siswa->nama ?></h4>
                                     Kelas <?= $siswa->nama_kelas ?>
@@ -60,14 +60,14 @@
                                     <span class="input-group-text">Username</span>
                                 </div>
                                 <input type="text" class="form-control" name="username" value="<?= $siswa->username ?>"
-                                       placeholder="Username" required>
+                                    placeholder="Username" required>
                             </div>
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend w-40">
                                     <span class="input-group-text">Password Lama</span>
                                 </div>
                                 <input type="text" name="old" class="form-control" value="<?= $siswa->password ?>"
-                                       placeholder="Password Lama" required>
+                                    placeholder="Password Lama" required>
                             </div>
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend w-40">
@@ -80,9 +80,9 @@
                                     <span class="input-group-text">Konfirmasi Password</span>
                                 </div>
                                 <input type="text" name="new_confirm" class="form-control"
-                                       placeholder="Konfirmasi Password Baru" required>
+                                    placeholder="Konfirmasi Password Baru" required>
                             </div>
-                            <button type="submit" id="btn-pass" class="btn btn-warning float-right">Ganti Password
+                            <button type="submit" id="btn-pass" class="btn btn-warning float-end">Ganti Password
                             </button>
                         </div>
                     </div>
@@ -90,13 +90,13 @@
             </div>
         </div>
     </section>
-</div>
+    </div>
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        $("#flashdata").fadeTo(10000, 500).slideUp(500, function () {
-            $("#flashdata").slideUp(500);
-        });
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#flashdata").fadeTo(10000, 500).slideUp(500, function () {
+                $("#flashdata").slideUp(500);
+            });
 
-    })
-</script>
+        })
+    </script>

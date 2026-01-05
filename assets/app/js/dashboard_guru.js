@@ -23,7 +23,7 @@ $(document).ready(function(){
 });
 
 function logout() {
-	swal.fire({
+	Swal.fire({
 		title: "Logout",
 		text: "Anda yakin ingin logout?",
 		icon: "question",

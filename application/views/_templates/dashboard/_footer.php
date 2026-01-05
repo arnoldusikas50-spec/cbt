@@ -1,17 +1,18 @@
-</div>
-<!-- /.content-wrapper -->
+</main>
+<!-- /.app-main -->
 
 <!-- Main Footer -->
-<footer class="main-footer alert alert-default-success">
+<!-- Main Footer -->
+<footer class="app-footer bg-light border-top">
     <strong>CBT</strong> [<?= APP_VERSION ?>] | <?= APP_COMMIT ?> <!-- ikasmedia -->
-    <div class="float-right d-none d-sm-inline-block"> <!-- ikasmedia -->
+    <div class="float-end d-none d-sm-inline-block"> <!-- ikasmedia -->
 
-     <strong>PHP version :</strong> <?php print phpversion(); ?>
-    
-    <!--
-    <strong>System Info :</strong> <?php print($_SERVER['SERVER_SOFTWARE']); ?>
+        <strong>PHP version :</strong> <?php print phpversion(); ?>
+
+        <!--
+    <strong>System Info :</strong> <?php print ($_SERVER['SERVER_SOFTWARE']); ?>
     -->
-</div>
+    </div>
 </footer>
 
 <!-- Control Sidebar -->
@@ -30,12 +31,12 @@
 </script>
 <!-- DataTables -->
 <script src="<?= base_url() ?>/assets/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="<?= base_url() ?>/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="<?= base_url() ?>/assets/plugins/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
 <script src="<?= base_url() ?>/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-<script src="<?= base_url() ?>/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="<?= base_url() ?>/assets/plugins/datatables-responsive/js/responsive.bootstrap5.min.js"></script>
 <!-- Datatables Buttons -->
 <script src="<?= base_url() ?>/assets/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="<?= base_url() ?>/assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<!-- <script src="<?= base_url() ?>/assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script> -->
 <script src="<?= base_url() ?>/assets/plugins/jszip/jszip.min.js"></script>
 <script src="<?= base_url() ?>/assets/plugins/pdfmake/pdfmake.min.js"></script>
 <script src="<?= base_url() ?>/assets/plugins/pdfmake/vfs_fonts.js"></script>
@@ -56,10 +57,10 @@
 <!-- moment -->
 <script src="<?= base_url() ?>/assets/plugins/moment/moment.min.js"></script>
 <script src="<?= base_url() ?>/assets/plugins/moment/moment-with-locales.min.js"></script>
-<!-- Tempusdominus Bootstrap 4 -->
-<script src="<?= base_url() ?>/assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- Tempusdominus Bootstrap 5 -->
+<script src="<?= base_url() ?>/assets/plugins/tempus-dominus/tempus-dominus.min.js"></script>
 <!-- Summernote -->
-<script src="<?= base_url() ?>/assets/plugins/summernote/summernote-bs4.min.js"></script>
+<script src="<?= base_url() ?>/assets/plugins/summernote/summernote-lite.min.js"></script>
 <script src="<?= base_url() ?>/assets/plugins/summernote/plugin/audio/summernote-audio.js"></script>
 <script src="<?= base_url() ?>/assets/plugins/summernote/plugin/file/summernote-file.js"></script>
 <script src="<?= base_url() ?>/assets/plugins/summernote/plugin/gallery/dist/summernote-gallery.min.js"></script>
@@ -89,11 +90,6 @@
 
 <!-- AdminLTE App -->
 <script src="<?= base_url() ?>/assets/adminlte/dist/js/adminlte.js"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="<?= base_url() ?>/assets/adminlte/dist/js/pages/dashboard.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="<?= base_url() ?>/assets/adminlte/dist/js/demo.js"></script>
-<!-- /v3 -->
 <!-- datetimepicker -->
 <script src="<?= base_url() ?>/assets/plugins/jquery-datetimepicker/jquery.datetimepicker.full.js"></script>
 <!-- TimeAgo -->
@@ -132,7 +128,7 @@
     }
 
     function logout() {
-        swal.fire({
+        Swal.fire({
             title: "Logout",
             text: "Anda yakin ingin logout?",
             icon: "question",
@@ -147,6 +143,55 @@
         });
     }
 
+</script>
+<!-- Global Flashdata Handler -->
+<script>
+    $(document).ready(function () {
+        <?php
+        $flash_keys = ['message', 'success', 'warning', 'error', 'info', 'updatesiswa', 'update_account', 'updatealumni', 'editsiswa'];
+        foreach ($flash_keys as $key) {
+            if ($this->session->flashdata($key)) {
+                $msg = $this->session->flashdata($key);
+                if (is_array($msg)) {
+                    $msg = implode('<br>', $msg);
+                }
+                // Remove existing alert classes/divs if any, to just get the text
+                $msg = strip_tags($msg, '<b><i><strong><br>');
+                $msg = str_replace(["\r", "\n", "'"], ['', '', "\'"], $msg);
+
+                $type = 'info';
+                if ($key == 'success')
+                    $type = 'success';
+                else if ($key == 'warning')
+                    $type = 'warning';
+                else if ($key == 'error')
+                    $type = 'error';
+                else if ($key == 'updatesiswa')
+                    $type = 'success';
+
+                // Detect type from message content if generic key
+                if ($key == 'message') {
+                    if (stripos($msg, 'berhasil') !== false || stripos($msg, 'sukses') !== false)
+                        $type = 'success';
+                    if (stripos($msg, 'gagal') !== false || stripos($msg, 'error') !== false)
+                        $type = 'error';
+                }
+
+                echo "setTimeout(function() { showToast('{$type}', '{$msg}'); }, 500);";
+            }
+        }
+        ?>
+    });
+
+    function showToast(type, msg) {
+        if (typeof Swal === 'undefined') return;
+
+        // Map to new show.toast.js functions
+        if (type === 'success') showSuccessToast(msg);
+        else if (type === 'warning') showWarningToast(msg);
+        else if (type === 'error') showDangerToast(msg);
+        else showInfoToast(msg);
+    }
 </script>
 
 </body>

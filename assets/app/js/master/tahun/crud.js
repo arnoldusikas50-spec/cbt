@@ -35,10 +35,10 @@ $(document).ready(function () {
 		columnDefs: [
 			{
 				targets: 2,
-				data: {id_tp: "id_tp", active: "active"},
+				data: { id_tp: "id_tp", active: "active" },
 				render: function (data, type, row, meta) {
 					var btnAktifkan = '<span class="text-success">' +
-						'<i class="fa fa-check mr-2"></i>AKTIF' +
+						'<i class="bi bi-check mr-2"></i>AKTIF' +
 						'</span>';
 					var btnNonAktifkan = '<button data-id="${data.id_tp}" type="button" class="btn btn-xs btn-primary btn-aktif">' +
 						'AKTIFKAN' +
@@ -125,7 +125,7 @@ $(document).ready(function () {
 					if (respon.status) {
 						location.href = base_url + "/datatahun";
 					} else {
-						swal.fire({
+						Swal.fire({
 							title: "Gagal",
 							text: "Tidak ada data yang dipilih",
 							icon: "error"
@@ -134,7 +134,7 @@ $(document).ready(function () {
 					reload_ajax();
 				},
 				error: function () {
-					swal.fire({
+					Swal.fire({
 						title: "Gagal",
 						text: "Ada data yang sedang digunakan",
 						icon: "error"
@@ -148,14 +148,14 @@ $(document).ready(function () {
 
 function bulk_delete(frombody, id) {
 	if ($("#tahun tbody tr .check:checked").length == 0) {
-		swal.fire({
+		Swal.fire({
 			title: "Failed",
 			text: "Tidak ada data yang dipilih",
 			icon: "error"
 		});
 	} else {
 		$("#bulkhapus").attr("action", base_url + "datatahun/hapus");
-		swal.fire({
+		Swal.fire({
 			title: "Anda yakin?",
 			text: "Data akan dihapus!",
 			icon: "warning",

@@ -2,12 +2,10 @@
 <!-- /.content-wrapper -->
 
 <!-- Main Footer -->
-<footer class="main-footer">
-    <strong>GarudaCBT</strong> - <?= APP_VERSION ?>
-    <div class="float-right d-none d-sm-inline-block">
-        <!-- <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong>
-        <b>Version</b> 3.0.5 -->
-		PHP version: <?php print phpversion(); ?>
+<footer class="app-footer">
+    Sistem Monitoring v.1.2 | <strong>CBT by Ikasmedia</strong>
+    <div class="float-end d-none d-sm-inline-block">
+        PHP version: <?php print phpversion(); ?>
     </div>
 </footer>
 
@@ -19,20 +17,17 @@
 
 </div>
 
-<!-- Required JS -->
-<!-- v3 -->
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
     $.widget.bridge('uibutton', $.ui.button)
 </script>
 <!-- DataTables -->
 <script src="<?= base_url() ?>/assets/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="<?= base_url() ?>/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="<?= base_url() ?>/assets/plugins/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
 <script src="<?= base_url() ?>/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-<script src="<?= base_url() ?>/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="<?= base_url() ?>/assets/plugins/datatables-responsive/js/responsive.bootstrap5.min.js"></script>
 <!-- Datatables Buttons -->
 <script src="<?= base_url() ?>/assets/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="<?= base_url() ?>/assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
 <script src="<?= base_url() ?>/assets/plugins/jszip/jszip.min.js"></script>
 <script src="<?= base_url() ?>/assets/plugins/pdfmake/pdfmake.min.js"></script>
 <script src="<?= base_url() ?>/assets/plugins/pdfmake/vfs_fonts.js"></script>
@@ -51,9 +46,9 @@
 <script src="<?= base_url() ?>/assets/plugins/jquery-knob/jquery.knob.min.js"></script>
 <!-- Tempusdominus Bootstrap 4 -->
 <script src="<?= base_url() ?>/assets/plugins/moment/moment.min.js"></script>
-<script src="<?= base_url() ?>/assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- Tempusdominus removed due to 404 -->
 <!-- Summernote -->
-<script src="<?= base_url() ?>/assets/plugins/summernote/summernote-bs4.min.js"></script>
+<script src="<?= base_url() ?>/assets/plugins/summernote/summernote-lite.min.js"></script>
 <script src="<?= base_url() ?>/assets/plugins/summernote/plugin/audio/summernote-audio.js"></script>
 <script src="<?= base_url() ?>/assets/plugins/summernote/plugin/file/summernote-file.js"></script>
 <script src="<?= base_url() ?>/assets/plugins/summernote/plugin/gallery/dist/summernote-gallery.min.js"></script>
@@ -82,11 +77,6 @@
 
 <!-- AdminLTE App -->
 <script src="<?= base_url() ?>/assets/adminlte/dist/js/adminlte.js"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="<?= base_url() ?>/assets/adminlte/dist/js/pages/dashboard.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="<?= base_url() ?>/assets/adminlte/dist/js/demo.js"></script>
-<!-- /v3 -->
 <!-- datetimepicker -->
 <script src="<?= base_url() ?>/assets/plugins/jquery-datetimepicker/jquery.datetimepicker.full.js"></script>
 <!-- TimeAgo -->
