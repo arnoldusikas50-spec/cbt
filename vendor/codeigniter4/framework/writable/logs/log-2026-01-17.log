@@ -1,0 +1,51 @@
+CRITICAL - 2026-01-17 16:47:11 --> Error: Undefined constant "CodeIgniter\Database\MySQLi\MYSQLI_STORE_RESULT"
+[Method: CLI, Route: migrate]
+in SYSTEMPATH\Database\Database.php on line 143.
+ 1 SYSTEMPATH\Database\Database.php(61): CodeIgniter\Database\Database->initDriver()
+ 2 SYSTEMPATH\Database\Config.php(82): CodeIgniter\Database\Database->load()
+ 3 SYSTEMPATH\Common.php(391): CodeIgniter\Database\Config::connect()
+ 4 SYSTEMPATH\Database\MigrationRunner.php(143): db_connect()
+ 5 SYSTEMPATH\Config\Services.php(421): CodeIgniter\Database\MigrationRunner->__construct()
+ 6 SYSTEMPATH\Config\BaseService.php(312): CodeIgniter\Config\Services::migrations()
+ 7 SYSTEMPATH\Config\BaseService.php(251): CodeIgniter\Config\BaseService::__callStatic()
+ 8 SYSTEMPATH\Config\Services.php(416): CodeIgniter\Config\BaseService::getSharedInstance()
+ 9 SYSTEMPATH\Config\BaseService.php(321): CodeIgniter\Config\Services::migrations()
+10 SYSTEMPATH\Config\BaseService.php(202): CodeIgniter\Config\BaseService::__callStatic()
+11 SYSTEMPATH\Common.php(1027): CodeIgniter\Config\BaseService::get()
+12 SYSTEMPATH\Commands\Database\Migrate.php(70): service()
+13 SYSTEMPATH\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run()
+14 SYSTEMPATH\CLI\Console.php(47): CodeIgniter\CLI\Commands->run()
+15 SYSTEMPATH\Boot.php(388): CodeIgniter\CLI\Console->run()
+16 SYSTEMPATH\Boot.php(133): CodeIgniter\Boot::runCommand()
+17 ROOTPATH\spark(87): CodeIgniter\Boot::bootSpark()
+CRITICAL - 2026-01-17 16:47:48 --> Error: Undefined constant "CodeIgniter\Database\MySQLi\MYSQLI_STORE_RESULT"
+[Method: CLI, Route: migrate]
+in SYSTEMPATH\Database\Database.php on line 143.
+ 1 SYSTEMPATH\Database\Database.php(61): CodeIgniter\Database\Database->initDriver()
+ 2 SYSTEMPATH\Database\Config.php(82): CodeIgniter\Database\Database->load()
+ 3 SYSTEMPATH\Common.php(391): CodeIgniter\Database\Config::connect()
+ 4 SYSTEMPATH\Database\MigrationRunner.php(143): db_connect()
+ 5 SYSTEMPATH\Config\Services.php(421): CodeIgniter\Database\MigrationRunner->__construct()
+ 6 SYSTEMPATH\Config\BaseService.php(312): CodeIgniter\Config\Services::migrations()
+ 7 SYSTEMPATH\Config\BaseService.php(251): CodeIgniter\Config\BaseService::__callStatic()
+ 8 SYSTEMPATH\Config\Services.php(416): CodeIgniter\Config\BaseService::getSharedInstance()
+ 9 SYSTEMPATH\Config\BaseService.php(321): CodeIgniter\Config\Services::migrations()
+10 SYSTEMPATH\Config\BaseService.php(202): CodeIgniter\Config\BaseService::__callStatic()
+11 SYSTEMPATH\Common.php(1027): CodeIgniter\Config\BaseService::get()
+12 SYSTEMPATH\Commands\Database\Migrate.php(70): service()
+13 SYSTEMPATH\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run()
+14 SYSTEMPATH\CLI\Console.php(47): CodeIgniter\CLI\Commands->run()
+15 SYSTEMPATH\Boot.php(388): CodeIgniter\CLI\Console->run()
+16 SYSTEMPATH\Boot.php(133): CodeIgniter\Boot::runCommand()
+17 ROOTPATH\spark(87): CodeIgniter\Boot::bootSpark()
+CRITICAL - 2026-01-17 16:49:11 --> Error: Undefined constant "CodeIgniter\Database\MySQLi\MYSQLI_STORE_RESULT"
+[Method: CLI, Route: db:table]
+in SYSTEMPATH\Database\Database.php on line 143.
+ 1 SYSTEMPATH\Database\Database.php(61): CodeIgniter\Database\Database->initDriver()
+ 2 SYSTEMPATH\Database\Config.php(82): CodeIgniter\Database\Database->load()
+ 3 SYSTEMPATH\Commands\Database\ShowTableInfo.php(110): CodeIgniter\Database\Config::connect()
+ 4 SYSTEMPATH\CLI\Commands.php(74): CodeIgniter\Commands\Database\ShowTableInfo->run()
+ 5 SYSTEMPATH\CLI\Console.php(47): CodeIgniter\CLI\Commands->run()
+ 6 SYSTEMPATH\Boot.php(388): CodeIgniter\CLI\Console->run()
+ 7 SYSTEMPATH\Boot.php(133): CodeIgniter\Boot::runCommand()
+ 8 ROOTPATH\spark(87): CodeIgniter\Boot::bootSpark()

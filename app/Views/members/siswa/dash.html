@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Siswa - DISDIK NTT</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root {
+            --brand-blue: #0056e0;
+            --brand-dark: #0042b8;
+            --bg-light: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header Lurus */
+        .header-custom {
+            background: linear-gradient(90deg, var(--brand-blue) 0%, var(--brand-dark) 100%);
+            height: 200px;
+            color: white;
+            padding-top: 2rem;
+            position: relative;
+        }
+
+        .header-logo-box {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        /* Welcome Card Floating */
+        .welcome-card {
+            background: white;
+            border-radius: 1.5rem;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            margin-top: -70px;
+            padding: 2.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .status-badge {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 6px 16px;
+            border-radius: 50px;
+            background: #eef2ff;
+            color: var(--brand-blue);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--brand-blue);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 86, 224, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 86, 224, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 86, 224, 0); }
+        }
+
+        /* Clock */
+        .clock-box {
+            background: #f8fafc;
+            border: 1px solid #edf2f7;
+            border-radius: 1rem;
+            padding: 15px 25px;
+            text-align: center;
+        }
+
+        .clock-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--brand-blue);
+            line-height: 1;
+        }
+
+        /* Menu Cards */
+        .menu-card-item {
+            background: white;
+            border-radius: 2.5rem;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid #f1f5f9;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .menu-card-item:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            border-color: rgba(0, 86, 224, 0.2);
+            color: inherit;
+        }
+
+        .card-decor {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: currentColor;
+            opacity: 0.04;
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-card-item:hover .icon-circle {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Module Colors */
+        .mod-absensi { color: #4f46e5; }
+        .mod-absensi .icon-circle { background-color: #eef2ff; }
+
+        .mod-asesmen { color: #e11d48; }
+        .mod-asesmen .icon-circle { background-color: #fff1f2; }
+
+        .mod-hasil { color: #16a34a; }
+        .mod-hasil .icon-circle { background-color: #f0fdf4; }
+
+        .mod-praktikum { color: #0891b2; }
+        .mod-praktikum .icon-circle { background-color: #ecfeff; }
+
+        .badge-active {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #f43f5e;
+            color: white;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 50px;
+            text-transform: uppercase;
+        }
+
+        /* Footer */
+        footer {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+
+        /* Bottom Nav Mobile */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #e2e8f0;
+            padding: 0.75rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .nav-btn {
+            border: none;
+            background: none;
+            color: #94a3b8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .nav-btn.active { color: var(--brand-blue); }
+
+        @media (max-width: 768px) {
+            .welcome-card { padding: 1.5rem; text-align: center; }
+            .header-custom { height: 220px; }
+            .clock-time { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <div class="header-custom">
+        <div class="container d-flex justify-content-between align-items-start">
+            <div class="d-flex align-items-center gap-3">
+                <div class="header-logo-box">
+                    <i data-lucide="graduation-cap" class="text-white" style="width: 32px; height: 32px;"></i>
+                </div>
+                <div>
+                    <h1 class="h5 fw-black mb-0 tracking-tight">DISDIK NTT</h1>
+                    <p class="small opacity-75 mb-0" style="font-size: 10px; letter-spacing: 1px;">ASESMEN BERBASIS KOMPUTER</p>
+                </div>
+            </div>
+            
+            <div class="d-none d-md-flex align-items-center gap-3 text-end">
+                <div>
+                    <p class="small fw-bold mb-0 uppercase">ALBEN ALFA EDISON TAMESES</p>
+                    <p class="small opacity-75 mb-0" style="font-size: 10px;">X-1 • 0092015973</p>
+                </div>
+                <div class="bg-white bg-opacity-10 p-2 rounded-3 border border-white border-opacity-20">
+                    <i data-lucide="user" class="text-white" style="width: 20px; height: 20px;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="container mb-5">
+        
+        <!-- Welcome Section Card -->
+        <div class="welcome-card animate-up">
+            <div class="row align-items-center">
+                <div class="col-md-7">
+                    <div class="status-badge">
+                        <span class="pulse-dot"></span>
+                        SISWA AKTIF
+                    </div>
+                    <h2 class="display-6 fw-black text-dark mb-2">Halo, Alben! 👋</h2>
+                    <p class="text-secondary fw-medium">Siap untuk belajar hal baru hari ini?</p>
+                </div>
+                <div class="col-md-5 mt-4 mt-md-0 d-flex justify-content-md-end">
+                    <div class="clock-box shadow-sm">
+                        <div class="text-uppercase small fw-bold text-muted tracking-widest mb-1" id="current-date" style="font-size: 10px;">-- --- ----</div>
+                        <div class="clock-time" id="digital-clock">00:00:00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Section Area -->
+        <div class="mt-5 pt-4">
+            <div class="d-flex justify-content-between align-items-end mb-4 px-2">
+                <div>
+                    <h3 class="fw-black text-dark text-uppercase h4 mb-1">Menu Navigasi</h3>
+                    <div style="width: 50px; height: 4px; background: var(--brand-blue); border-radius: 10px;"></div>
+                </div>
+                <p class="text-muted small fw-bold text-uppercase tracking-widest mb-0" style="font-size: 10px;">Pilih Aktivitas</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Absensi Card -->
+                <div class="col-sm-6 col-lg-3">
+                    <a href="#" class="menu-card-item mod-absensi">
+                        <div class="card-decor" style="top: -20px; right: -20px;"></div>
+                        <div class="icon-circle">
+                            <i data-lucide="calendar-check" style="width: 36px; height: 36px;"></i>
+                        </div>
+                        <h4 class="fw-black text-dark h5 text-uppercase mb-2">Absensi</h4>
+                        <p class="small text-muted mb-0">Kehadiran Harian &<br>Izin Siswa</p>
+                    </a>
+                </div>
+
+                <!-- Asesmen Card -->
+                <div class="col-sm-6 col-lg-3">
+                    <a href="#" class="menu-card-item mod-asesmen">
+                        <span class="badge-active">Active</span>
+                        <div class="card-decor" style="top: -20px; right: -20px;"></div>
+                        <div class="icon-circle">
+                            <i data-lucide="book-open-check" style="width: 36px; height: 36px;"></i>
+                        </div>
+                        <h4 class="fw-black text-dark h5 text-uppercase mb-2">Asesmen</h4>
+                        <p class="small text-muted mb-0">Ujian Tengah &<br>Akhir Semester</p>
+                    </a>
+                </div>
+
+                <!-- Hasil Card -->
+                <div class="col-sm-6 col-lg-3">
+                    <a href="#" class="menu-card-item mod-hasil">
+                        <div class="card-decor" style="top: -20px; right: -20px;"></div>
+                        <div class="icon-circle">
+                            <i data-lucide="bar-chart-big" style="width: 36px; height: 36px;"></i>
+                        </div>
+                        <h4 class="fw-black text-dark h5 text-uppercase mb-2">Hasil</h4>
+                        <p class="small text-muted mb-0">Laporan Nilai &<br>Evaluasi Belajar</p>
+                    </a>
+                </div>
+
+                <!-- Praktikum Card -->
+                <div class="col-sm-6 col-lg-3">
+                    <a href="#" class="menu-card-item mod-praktikum">
+                        <div class="card-decor" style="top: -20px; right: -20px;"></div>
+                        <div class="icon-circle">
+                            <i data-lucide="flask-conical" style="width: 36px; height: 36px;"></i>
+                        </div>
+                        <h4 class="fw-black text-dark h5 text-uppercase mb-2">Praktikum</h4>
+                        <p class="small text-muted mb-0">Laboratorium Digital &<br>Materi Praktik</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="mt-auto">
+        <div class="container text-center text-md-start">
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <p class="small fw-bold text-dark text-uppercase mb-1" style="letter-spacing: 1px;">Dinas Pendidikan NTT</p>
+                    <p class="small text-muted mb-0" style="font-size: 10px;">DIKEMBANGKAN OLEH <span class="text-primary fw-bold">IKASMEDIA</span> © 2026</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="small fw-black text-light-emphasis text-uppercase tracking-widest" style="font-size: 9px;">Engine Version 4.2.0-STABLE</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bottom Navigation Bar Mobile -->
+    <div class="bottom-nav d-md-none">
+        <button class="nav-btn active">
+            <i data-lucide="home" class="mb-1" style="width: 24px; height: 24px;"></i>
+            <span>Home</span>
+        </button>
+        <button class="nav-btn">
+            <i data-lucide="clipboard-list" class="mb-1" style="width: 24px; height: 24px;"></i>
+            <span>Riwayat</span>
+        </button>
+        <button class="nav-btn">
+            <i data-lucide="bell" class="mb-1" style="width: 24px; height: 24px;"></i>
+            <span>Notif</span>
+        </button>
+        <button class="nav-btn">
+            <i data-lucide="circle-user-round" class="mb-1" style="width: 24px; height: 24px;"></i>
+            <span>Profil</span>
+        </button>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Digital Clock Logic
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('digital-clock').innerText = `${h}:${m}:${s}`;
+
+            const days = ['MINGGU', 'SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU'];
+            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
+            
+            const dayStr = `${days[now.getDay()]}, ${String(now.getDate()).padStart(2, '0')} ${months[now.getMonth()]} ${now.getFullYear()}`;
+            document.getElementById('current-date').innerText = dayStr;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>

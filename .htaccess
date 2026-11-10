@@ -1,0 +1,12 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Force correct MIME types
+    <IfModule mod_mime.c>
+        AddType text/css .css
+        AddType application/javascript .js
+    </IfModule>
+
+    # Redirect to public folder
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
